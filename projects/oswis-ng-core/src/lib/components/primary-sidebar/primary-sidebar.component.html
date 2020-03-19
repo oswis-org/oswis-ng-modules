@@ -1,0 +1,19 @@
+<!--
+<mat-toolbar color="primary" class="mat-elevation-z4">
+</mat-toolbar>
+-->
+<mat-nav-list *ngIf="isLoggedIn()" class="app-sidenav-list no-print" dense>
+  <div *ngFor="let menuItem of menuItems; let i = index" class="app-sidenav-list-item">
+    <mat-list-item (click)="toggleSubMenu(i)" class="app-sidenav-list-item" routerLink="{{ '/' + menuItem?.slug }}" routerLinkActive="active">
+      <mat-icon matListIcon>{{ menuItem?.symbol }}</mat-icon>
+      <span class="app-sidenav-list-item-text" matLine>{{ menuItem?.name }}</span>
+    </mat-list-item>
+    <mat-nav-list *ngIf="menuItem?.subItems?.length > 0" [class.closed]="!isSubmenuOpened(i)" class="app-sidenav-sublist" dense>
+      <mat-list-item *ngFor="let menuSubItem of menuItem.subItems" class="app-sidenav-sublist-item"
+                     routerLink="/{{ menuSubItem?.slug }}" routerLinkActive="active">
+        <mat-icon matListIcon>{{ menuSubItem?.symbol }}</mat-icon>
+        <span class="app-sidenav-sublist-item-text" matLine>{{ menuSubItem?.name }}</span>
+      </mat-list-item>
+    </mat-nav-list>
+  </div>
+</mat-nav-list>

@@ -1,0 +1,36 @@
+<mat-toolbar class="example-toolbar mat-elevation-z6 no-print " color="primary">
+  <button (click)="toggleSidebar(1)" *ngIf="isLoggedIn()" mat-icon-button>
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span class="example-spacer"></span>
+  <button (click)="redirectToHomepage()" *ngIf="isViewportBig" class="app-logo" mat-button>
+    <img alt="Ubytovací systém Přírodovědecké fakulty Univerzity Palackého v Olomouci"
+         src="./assets/app-images/app-logo-white.png"/>
+  </button>
+  <span class="example-spacer"></span>
+  <h1 *ngIf="isViewportBig" class="example-app-name">{{ getAppTitle() }}</h1>
+  <span class="example-spacer">&nbsp;</span>
+  <div *ngIf="!isProduction && isViewportBig" style="color:red;">
+    <button mat-icon-button>
+      <mat-icon>remove_circle</mat-icon>
+    </button>
+    <h1 style="display: inline">DEV!</h1>
+  </div>
+  <span class="example-fill-remaining-space"></span>
+  <button appToggleFullscreen class="fullscreen-controlls fullscreen-controls" mat-icon-button>
+    <mat-icon class="fullscreen-enter">fullscreen</mat-icon>
+    <mat-icon class="fullscreen-exit">fullscreen_exit</mat-icon>
+  </button>
+  <button (click)="redirectToLogin()" *ngIf="!isLoggedIn() && isViewportBig" class="header-user-name" mat-button>
+    <small>Přihlášení</small>
+  </button>
+  <button (click)="toggleSidebar(2)" *ngIf="getCurrentUser() && isViewportBig" class="header-user-name" mat-button>
+    <small>{{getCurrentUser()?.username}}</small>
+  </button>
+  <button (click)="toggleSidebar(2)" *ngIf="isLoggedIn()" class="header-user-icon" mat-icon-button>
+    <mat-icon matBadge="-1" matBadgeColor="warn">face</mat-icon>
+  </button>
+  <button (click)="redirectToLogin()" *ngIf="!isLoggedIn()" class="header-user-icon" mat-icon-button>
+    <mat-icon matBadge="-1" matBadgeColor="warn">lock_open</mat-icon>
+  </button>
+</mat-toolbar>

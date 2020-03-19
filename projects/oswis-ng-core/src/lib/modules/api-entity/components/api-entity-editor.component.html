@@ -1,0 +1,20 @@
+<mat-card class="entity-card mat-elevation-z8">
+  <mat-card-content *ngIf="(creatingNew() || selectedEntityEmpty) || (selectedEntity$ | async) as entity; else loading">
+    <h1>{{ getH1Prefix() + ' ' + entity?.name }}</h1>
+    <form (ngSubmit)="submit(model)" [formGroup]="form">
+      <formly-form [fields]="fields" [form]="form" [model]="model">
+        <div [innerHTML]="help"></div>
+        <button color="primary" mat-raised-button type="submit">Uložit</button>
+      </formly-form>
+    </form>
+  </mat-card-content>
+  <ng-template #loading>
+    <oswis-api-entity-loading-show [empty]="selectedEntityEmpty"></oswis-api-entity-loading-show>
+  </ng-template>
+  <mat-card-actions *ngIf="selectedEntityEmpty || (selectedEntity$ | async) as entity; else loadingActions" class="entity-actions-buttons">
+    <oswis-api-entity-basic-show-actions [component]="this" [edit]="true"></oswis-api-entity-basic-show-actions>
+  </mat-card-actions>
+  <ng-template #loadingActions>
+    <oswis-api-entity-basic-show-actions [component]="this" [edit]="true" [empty]="true"></oswis-api-entity-basic-show-actions>
+  </ng-template>
+</mat-card>

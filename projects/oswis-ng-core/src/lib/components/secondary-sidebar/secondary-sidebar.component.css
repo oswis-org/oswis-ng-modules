@@ -1,0 +1,25 @@
+.app-sidenav-list {
+  min-width: 200px;
+  font-weight: 600;
+}
+
+.app-sidenav-sublist {
+  overflow-y: hidden;
+  max-height: 20em;
+  transition: max-height linear .5s 0s;
+  padding-top: 0 !important;
+}
+
+.app-sidenav-list-item mat-icon {
+  padding-right: 0.5em;
+}
+
+.app-sidenav-sublist-item mat-icon {
+  padding-right: 0.5em;
+  margin-left: 1em;
+}
+
+.app-sidenav-sublist.closed {
+  transition-delay: -0.2s;
+  max-height: 0;
+}

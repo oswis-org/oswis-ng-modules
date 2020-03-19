@@ -1,0 +1,121 @@
+<div>
+  <h3>{{ title || 'Základní informace' }}</h3>
+  <table class="entity-show-simple-table">
+    <tbody *ngIf="nameable" class="info-nameable">
+    <tr>
+      <td>Název</td>
+      <td>{{ nameable?.name }}</td>
+    </tr>
+    <tr>
+      <td>Zkrácený název</td>
+      <td>{{ nameable?.shortName }}</td>
+    </tr>
+    <tr>
+      <td matTooltip="Identifikátor do URL, tzv. „slug“">Identifikátor</td>
+      <td>
+        <div>{{ nameable?.slug }}</div>
+        <div *ngIf="nameable.forcedSlug"><small>(nastaveno ručně)</small></div>
+      </td>
+    </tr>
+    </tbody>
+    <tbody *ngIf="type" class="info-type">
+    <tr>
+      <td>Typ</td>
+      <td><em>{{ type }}</em></td>
+    </tr>
+    </tbody>
+    <tbody *ngIf="appUser" class="info-app-user">
+    <tr *ngIf="appUser">
+      <td>Uživatel</td>
+      <td>
+        <div>{{ appUser?.username }}</div>
+        <div *ngIf="appUser.fullName"><small>{{ appUser?.fullName }}</small></div>
+      </td>
+    </tr>
+    </tbody>
+
+    <tbody *ngIf="username" class="info-username">
+    <tr>
+      <td>Uživatelské jméno</td>
+      <td>{{ username }}</td>
+    </tr>
+    </tbody>
+
+    <tbody *ngIf="fullName" class="info-full-name">
+    <tr>
+      <td>Celé jméno</td>
+      <td>{{ fullName }}</td>
+    </tr>
+    </tbody>
+
+    <tbody *ngIf="email" class="info-email">
+    <tr>
+      <td>E-mail</td>
+      <td><a href="mailto:{{ email }}">{{ email }}</a></td>
+    </tr>
+    </tbody>
+
+    <tbody *ngIf="url" class="info-url">
+    <tr>
+      <td>URL</td>
+      <td><a href="{{ url }}">{{ url }}</a></td>
+    </tr>
+    </tbody>
+
+    <tbody *ngIf="phone" class="info-phone">
+    <tr>
+      <td>Telefon</td>
+      <td><a href="tel:{{ phone }}">{{ phone }}</a></td>
+    </tr>
+    </tbody>
+
+    <tbody *ngIf="active === true || active === false">
+    <tr>
+      <td>Aktivní</td>
+      <td>{{ active ? 'Ano' : 'Ne' }}</td>
+    </tr>
+    </tbody>
+
+
+    <tbody *ngIf="basic" class="info-basic">
+    <tr>
+      <td>ID</td>
+      <td>{{ basic?.id }}</td>
+    </tr>
+    <tr>
+      <td>Vytvořeno</td>
+      <td>
+        <small *ngIf="basic?.createdDateTime" style="display:block;">
+          {{ basic?.createdDateTime|date:'d. M. y H:mm' }}
+        </small>
+        <small *ngIf="basic?.createdAuthor" style="display:block;">
+          {{ basic?.createdAuthor ? (basic?.createdAuthor?.fullName || basic?.createdAuthor?.username) : null }}
+        </small>
+      </td>
+    </tr>
+    <tr>
+      <td>Upraveno</td>
+      <td>
+        <small *ngIf="basic?.updatedDateTime" style="display:block;">
+          {{ basic?.updatedDateTime|date:'d. M. y H:mm' }}
+        </small>
+        <small *ngIf="basic?.updatedAuthor" style="display:block;">
+          {{ basic?.updatedAuthor ? (basic?.updatedAuthor?.fullName || basic?.updatedAuthor?.username) : null }}
+        </small>
+      </td>
+    </tr>
+    </tbody>
+
+    <tbody>
+    <tr>
+      <td>Smazáno</td>
+      <td *ngIf="deleted"><strong>deleted|date:'d. M. y'</strong></td>
+      <td *ngIf="!deleted">Ne</td>
+    </tr>
+    </tbody>
+
+  </table>
+  <p *ngIf="nameable?.description"><strong>Popis: </strong> {{ nameable?.description }}</p>
+  <p *ngIf="nameable?.note"><strong>Poznámka: </strong> {{ nameable?.note }}</p>
+  <p *ngIf="nameable?.internalNote"><strong>Interní poznámka: </strong> {{ nameable?.internalNote }}</p>
+</div>

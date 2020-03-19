@@ -1,0 +1,186 @@
+<div class="mat-elevation-z8 entity-list" style="overflow: visible !important;">
+  <div class="list-wrapper" fxFlex fxLayout="column" style="overflow: visible !important;">
+    <div fxFlex="1 1 56px">
+      <mat-toolbar fxFlex fxLayout="row">
+        <div>{{ getEntityName(11) }}</div>
+        <div class="entity-filter">
+          <mat-form-field>
+            <label for="searchInput">
+              <input #searchInput [(ngModel)]="searchValue" id="searchInput" matInput placeholder="Vyhledat" type="search">
+            </label><!-- (keyup)="applyFilter($event.target.value)" -->
+          </mat-form-field>
+        </div>
+        <button (click)="action.action()" *ngFor="let action of operations" [matTooltip]="action.name"
+                mat-icon-button matTooltipHideDelay="300" matTooltipPosition="below" matTooltipShowDelay="200">
+          <mat-icon>{{action.icon}}</mat-icon>
+        </button>
+        <button [matMenuTriggerFor]="globalItemsOperationsMenu" mat-icon-button
+                matTooltip="Obecné akce" matTooltipHideDelay="300" matTooltipPosition="below" matTooltipShowDelay="200">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #globalItemsOperationsMenu="matMenu" xPosition="before" yPosition="below">
+          <button (click)="operation.action()" *ngFor="let operation of globalItemsOperations" mat-menu-item>
+            <mat-icon>{{ operation.icon }}</mat-icon>
+            <span>{{ operation.name }}</span>
+          </button>
+        </mat-menu>
+        <button [matBadgeHidden]="selectedCount()===0" [matMenuTriggerFor]="selectedItemsOperationsMenu" mat-icon-button
+                matBadge="{{ selectedCount() }}" matBadgeColor="warn" matBadgeDescription="Počet vybraných {{ getEntityName(2, false) }}"
+                matTooltip="Akce s vybranými {{ getEntityName(17, false) }}"
+                matTooltipHideDelay="300" matTooltipPosition="below" matTooltipShowDelay="200">
+          <mat-icon>playlist_add_check</mat-icon>
+        </button>
+        <mat-menu #selectedItemsOperationsMenu="matMenu" xPosition="before" yPosition="below">
+          <button (click)="operation.action()" *ngFor="let operation of selectedItemsOperations" mat-menu-item>
+            <mat-icon>{{ operation.icon }}</mat-icon>
+            <span>{{ operation.name }}</span>
+          </button>
+        </mat-menu>
+      </mat-toolbar>
+    </div>
+    <div class="table-wrapper">
+      <div *ngIf="isLoadingResults || isRateLimitReached" class="loading-shade">
+        <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+        <div *ngIf="isRateLimitReached" class="rate-limit-reached">
+          Nepodařilo se získat {{ getEntityName(14, false) }} ze serveru.
+        </div>
+      </div>
+      <table #table [dataSource]="dataSource" class="entity-list-table" fxFlex="1 1 auto" mat-table matSort>
+
+        <!-- Checkbox Column -->
+        <ng-container [sticky]="true" matColumnDef="select">
+          <th *matHeaderCellDef mat-header-cell>
+            <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+                          [indeterminate]="selection.hasValue() && !isAllSelected()" [matBadgeHidden]="selectedCount()===0"
+                          matBadge="{{ selectedCount() }}" matBadgeColor="warn" matBadgeSize="medium">
+            </mat-checkbox>
+          </th>
+          <td (click)="$event.stopPropagation()" *matCellDef="let row" mat-cell>
+            <mat-checkbox (change)="$event ? selection.toggle(row) : null" (click)="$event.stopPropagation()"
+                          [checked]="selection.isSelected(row)">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
+        <ng-container *ngFor="let col of columnDefs" [matColumnDef]="col.name" [sticky]="col.sticky">
+          <th *matHeaderCellDef [disabled]="!col.getSortableName()" [mat-sort-header]="col.getSortableName()"
+              [ngClass]="col.getAlign()" mat-header-cell>
+            {{ col.title }}
+          </th>
+          <td *matCellDef="let row" [ngClass]="col.getAlign()" mat-cell>
+            <div [ngSwitch]="col.type">
+              <div *ngSwitchCase="ApiEntityListTypeEnum.CHILD_ROWS">
+                <div *ngIf="isArray(getProperty(row, col.name)) && col.child">
+                  <div *ngFor="let item of getProperty(row, col.name)">
+                    {{ col.getPrepend() + (item[col.child] || '') + col.getAppend() }}
+                  </div>
+                </div>
+              </div>
+              <div *ngSwitchCase="ApiEntityListTypeEnum.LIST" class="small spaced-list">
+                <div [ngSwitch]="col.subType">
+                  <div *ngSwitchCase="'ordered'">
+                    <ol *ngIf="isArray(getProperty(row, col.name)) && col.child">
+                      <li *ngFor="let item of getProperty(row, col.name)">
+                        {{ col.getPrepend() + (item[col.child] || '') + col.getAppend() }}
+                      </li>
+                    </ol>
+                  </div>
+                  <div *ngSwitchCase="'unordered'">
+                    <ul *ngIf="isArray(getProperty(row, col.name)) && col.child">
+                      <li *ngFor="let item of getProperty(row, col.name)">
+                        {{ col.getPrepend() + (item[col.child] || '') + col.getAppend() }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div *ngSwitchCase="ApiEntityListTypeEnum.DATE">
+                <span *ngIf="!isArray(getProperty(row, col.name)) || !col.child" style="text-align:right;">
+                {{
+                  col.getPrepend() + (getProperty(row, col.name)|date:'d.M.y' || '') + col.getAppend()
+                  }}
+                </span>
+              </div>
+              <div *ngSwitchCase="ApiEntityListTypeEnum.DATETIME">
+                {{
+                col.getPrepend() + (getProperty(row, col.name)|date:'d.M.y HH:mm' || '') + col.getAppend()
+                }}
+              </div>
+              <div *ngSwitchCase="ApiEntityListTypeEnum.PERCENT">
+                {{
+                col.getPrepend() +
+                (+getProperty(row, col.name) >= 0 ? (+getProperty(row, col.name) * 100) + ' %' : '') + ' ' +
+                col.getAppend()
+                }}
+              </div>
+              <div *ngSwitchCase="ApiEntityListTypeEnum.BOOLEAN">
+                {{ col.getPrepend() }}
+                <mat-icon [style.color]="getBooleanColor(row, col)" style="font-weight:bold;">
+                  {{ getProperty(row, col.name) ? 'done' : 'clear' }}
+                </mat-icon>
+                {{ col.getAppend() }}
+              </div>
+              <div *ngSwitchCase="ApiEntityListTypeEnum.DATETIME_BOOLEAN">
+                {{ col.getPrepend() }}
+                <mat-icon [style.color]="getBooleanColor(row, col)" style="font-weight:bold;">
+                  {{ getProperty(row, col.name) ? 'done' : 'clear' }}
+                </mat-icon>
+                <span *ngIf="getProperty(row, col.name)">
+                  <br><small>{{ (getProperty(row, col.name)|date:'d.M.y HH:mm' || '') }}</small>
+                </span>
+                {{ col.getAppend() }}
+              </div>
+              <div *ngSwitchCase="ApiEntityListTypeEnum.URL">
+                {{ col.getPrepend() }}
+                <a *ngIf="getProperty(row, col.name)" [href]="getProperty(row, col.name)" target="_blank">
+                  {{ getProperty(row, col.name) }}
+                </a>{{ col.getAppend() }}
+              </div>
+              <div *ngSwitchCase="ApiEntityListTypeEnum.EMAIL">
+                {{ col.getPrepend() }}
+                <a *ngIf="getProperty(row, col.name)" [href]="'mailto:' + getProperty(row, col.name)" target="_blank">
+                  {{ getProperty(row, col.name) }}
+                </a>
+                {{ col.getAppend() }}
+              </div>
+              <div *ngSwitchCase="ApiEntityListTypeEnum.PHONE">
+                {{ col.getPrepend() }}
+                <a *ngIf="getProperty(row, col.name)" [href]="'call:' + getProperty(row, col.name)" target="_blank">
+                  {{ getProperty(row, col.name) }}
+                </a>
+                {{ col.getAppend() }}
+              </div>
+              <div *ngSwitchDefault>
+                {{ col.getPrepend() + (getProperty(row, col.name) || '') + col.getAppend() }}
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container [stickyEnd]="true" matColumnDef="actions">
+          <th *matHeaderCellDef [ngStyle]="{'justifyContent': 'flex-start'}" mat-header-cell mat-sort-header>
+            Akce
+          </th>
+          <td *matCellDef="let row" class="left" mat-cell>
+          </td>
+        </ng-container>
+
+        <tr *matHeaderRowDef="displayedColumns; sticky: true" mat-header-row></tr>
+        <tr (click)="selectEntityByRow(row.id,$event)" *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+      </table>
+    </div>
+    <mat-paginator [length]="resultsLength" [pageSizeOptions]="[5, 10, 30, 50, 100, 200, 500]"
+                   [pageSize]="pageSize" [showFirstLastButtons]="true">
+    </mat-paginator>
+
+  </div>
+</div>
+
+
+<div *ngIf="showFilter">
+  <mat-toolbar>
+    <small>
+      Filtry | Nastavení | Informace
+    </small>
+  </mat-toolbar>
+</div>

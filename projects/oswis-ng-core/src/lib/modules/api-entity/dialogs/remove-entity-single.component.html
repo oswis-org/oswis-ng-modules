@@ -1,0 +1,15 @@
+<h1 mat-dialog-title style="color: red;">Odstranění položky</h1>
+<div mat-dialog-content>
+  <p>
+    Opravdu odstranit položku {{ data?.id }}?
+  </p>
+  <p>
+    <span *ngIf="data?.name" style="display: block;">
+      <strong>Název: </strong> {{data?.name}}
+    </span>
+  </p>
+</div>
+<div mat-dialog-actions>
+  <button (click)="onNoClick()" mat-button>Ponechat</button>
+  <button [mat-dialog-close]="true" cdkFocusInitial mat-button>Smazat</button>
+</div>

@@ -1,0 +1,24 @@
+<!--suppress TypeScriptUnresolvedVariable -->
+<mat-card class="entity-card mat-elevation-z8">
+  <mat-card-content *ngIf="selectedEntity$ | async as entity; else loading">
+    <h1>{{ entity?.contactName || getUnnamedTitle() }}</h1>
+
+    <div>
+      <div class="entity-show-tiles-container">
+        <oswis-api-entity-basic-info-show [nameable]="entity"></oswis-api-entity-basic-info-show>
+      </div>
+    </div>
+
+  </mat-card-content>
+  <ng-template #loading>
+    <oswis-api-entity-loading-show [empty]="selectedEntityEmpty"></oswis-api-entity-loading-show>
+  </ng-template>
+  <mat-card-actions *ngIf="selectedEntity$ | async as entity; else emptyActions" class="entity-actions-buttons">
+    <oswis-api-entity-basic-show-actions [component]="this"></oswis-api-entity-basic-show-actions>
+  </mat-card-actions>
+  <ng-template #emptyActions>
+    <mat-card-actions>
+      <oswis-api-entity-basic-show-actions [component]="this" [empty]="true"></oswis-api-entity-basic-show-actions>
+    </mat-card-actions>
+  </ng-template>
+</mat-card>
