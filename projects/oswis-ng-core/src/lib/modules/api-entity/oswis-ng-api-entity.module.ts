@@ -99,7 +99,6 @@ import {OswisNgMaterialModule} from 'oswis-ng-material';
       ],
     }),
     RouterModule,
-    OswisNgMaterialModule,
   ],
   declarations: [
     ApiEntityComponent,
