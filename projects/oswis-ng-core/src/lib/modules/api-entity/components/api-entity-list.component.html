@@ -10,28 +10,34 @@
             </label><!-- (keyup)="applyFilter($event.target.value)" -->
           </mat-form-field>
         </div>
-        <button (click)="action.action()" *ngFor="let action of operations" [matTooltip]="action.name"
+
+        <button (click)="action.action()" *ngFor="let action of operationsStatic" [matTooltip]="action.name"
                 mat-icon-button matTooltipHideDelay="300" matTooltipPosition="below" matTooltipShowDelay="200">
           <mat-icon>{{action.icon}}</mat-icon>
         </button>
-        <button [matMenuTriggerFor]="globalItemsOperationsMenu" mat-icon-button
-                matTooltip="Obecné akce" matTooltipHideDelay="300" matTooltipPosition="below" matTooltipShowDelay="200">
+
+        <button [matMenuTriggerFor]="globalItemsOperationsMenu" mat-icon-button matTooltip="Obecné akce" matTooltipHideDelay="300" matTooltipPosition="below"
+                matTooltipShowDelay="200">
           <mat-icon>more_vert</mat-icon>
         </button>
+
         <mat-menu #globalItemsOperationsMenu="matMenu" xPosition="before" yPosition="below">
-          <button (click)="operation.action()" *ngFor="let operation of globalItemsOperations" mat-menu-item>
+          <button (click)="operation.action()" *ngFor="let operation of operationsGlobal" mat-menu-item>
             <mat-icon>{{ operation.icon }}</mat-icon>
             <span>{{ operation.name }}</span>
           </button>
         </mat-menu>
+
         <button [matBadgeHidden]="selectedCount()===0" [matMenuTriggerFor]="selectedItemsOperationsMenu" mat-icon-button
                 matBadge="{{ selectedCount() }}" matBadgeColor="warn" matBadgeDescription="Počet vybraných {{ getEntityName(2, false) }}"
                 matTooltip="Akce s vybranými {{ getEntityName(17, false) }}"
                 matTooltipHideDelay="300" matTooltipPosition="below" matTooltipShowDelay="200">
           <mat-icon>playlist_add_check</mat-icon>
         </button>
+
         <mat-menu #selectedItemsOperationsMenu="matMenu" xPosition="before" yPosition="below">
-          <button (click)="operation.action()" *ngFor="let operation of selectedItemsOperations" mat-menu-item>
+          <button (click)="operation.isDialog ? getDialogActionForSelected(operation)() : operation.action()" *ngFor="let operation of operationsMultiple"
+                  mat-menu-item>
             <mat-icon>{{ operation.icon }}</mat-icon>
             <span>{{ operation.name }}</span>
           </button>
@@ -169,8 +175,7 @@
         <tr (click)="selectEntityByRow(row.id,$event)" *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
     </div>
-    <mat-paginator [length]="resultsLength" [pageSizeOptions]="[5, 10, 30, 50, 100, 200, 500]"
-                   [pageSize]="pageSize" [showFirstLastButtons]="true">
+    <mat-paginator [length]="resultsLength" [pageSizeOptions]="[5, 10, 30, 50, 100, 200, 500]" [pageSize]="pageSize" [showFirstLastButtons]="true">
     </mat-paginator>
 
   </div>

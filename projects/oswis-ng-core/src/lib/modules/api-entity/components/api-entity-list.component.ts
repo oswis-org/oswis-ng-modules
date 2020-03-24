@@ -15,8 +15,9 @@ import {ApiEntityInterfaceService} from '../api-entity-interface.service';
 import {fromEvent} from 'rxjs';
 import {ApiEntityListTypeEnum} from '../enums/api-entity-list-type.enum';
 import {ApiEntityListAlignEnum} from '../enums/api-entity-list-align.enum';
-import {OperationDefinitionModel} from '../models/operation-definition.model';
+import {ListOperationModel} from '../models/list-operation.model';
 import {ColumnDefinitionModel} from '../models/column-definition.model';
+import {MatDialog} from "@angular/material/dialog";
 
 type Type = any;
 
@@ -30,30 +31,36 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
 
   @Input() displayedColumns: string[];
   @Input() columnDefs: ColumnDefinitionModel[];
+
   @Input() searchValue: string;
-  dataSource = new MatTableDataSource<object>();
-  @Input() selectedItemsOperations: OperationDefinitionModel[] = [];
-  @Input() globalItemsOperations: OperationDefinitionModel[] = [];
-  @Input() operations: OperationDefinitionModel[] = [{name: 'Filtry', icon: 'filter_list', action: this.toggleShowFilterWrapper()}];
+  @Input() public apiEntityService: ApiEntityInterfaceService;
+  @Input() operationsSingle: ListOperationModel[] = [];
+  @Input() operationsMultiple: ListOperationModel[] = [];
+  @Input() operationsGlobal: ListOperationModel[] = [];
+  @Input() operationsStatic: ListOperationModel[] = [
+    {name: 'Filtry', icon: 'filter_list', action: this.toggleShowFilterWrapper()}
+  ];
   @Input() pageSize = 10;
   resultsLength = 0;
   isLoadingResults = true;
   isRateLimitReached = false;
+  public showFilter = false;
+  dataSource = new MatTableDataSource<object>();
   selection = new SelectionModel<Type>(true, []);
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   @ViewChild('searchInput', {read: ElementRef, static: true}) searchInput: ElementRef;
-  // @ViewChild('filter', {read: ElementRef, static: true}) filter: ElementRef;
-  public showFilter = false;
-  @Input() public apiEntityService: ApiEntityInterfaceService;
-  protected defaultSearchColumn = 'search';
-  protected searchParamsString = '';
+  @Input() protected defaultSearchColumn = 'search';
   @Input() protected searchColumns: string[];
+  @Input() protected searchParamsString = '';
+
+  // @ViewChild('filter', {read: ElementRef, static: true}) filter: ElementRef;
 
   constructor(
     protected http: HttpClient,
     protected router: Router,
     protected route: ActivatedRoute,
+    protected dialog: MatDialog,
   ) {
   }
 
@@ -209,17 +216,12 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
       )
       .subscribe();
     this.loadData();
-    /*
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    */
+    // this.dataSource.paginator = this.paginator;
+    // this.dataSource.sort = this.sort;
   }
 
   applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // DataSource defaults to lowercase matches
-    filterValue = filterValue.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    this.dataSource.filter = filterValue;
+    this.dataSource.filter = filterValue.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
   selectEntity(newEntity: Type) {
@@ -227,10 +229,8 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
   }
 
   selectEntityByRow(entityId: number, event) {
-    const redirectPath = '/' + this.getFrontPath() + '/' + entityId;
-    // console.log('Router: ' + redirectPath);
-    this.router.navigate([redirectPath]).then();
-    // console.log('Selected Entity: ' + entityId + ', ' + event);
+    const redirectPath = '/' + this.getFrontPath() + '/' + entityId; // console.log('Router: ' + redirectPath);
+    this.router.navigate([redirectPath]).then(); // console.log('Selected Entity: ' + entityId + ', ' + event);
   }
 
   getFrontPath(): string {
@@ -257,19 +257,48 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
     return Array.isArray(item);
   }
 
-  public downloadPdfList(urlPath: string, type: string = 'get-list-pdf', fileName: string = 'oswis-download-file.pdf') {
+  public getDownloadLink(x, fileName, mimeType: string = 'application/pdf') {
+    const blob = new Blob([ApiEntityListComponent.convertBase64toArrayBuffer(x.data)], {type: mimeType});
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = fileName;
+    return link;
+  }
+
+  public downloadPdfList(urlPath: string, type: string = 'get-list-pdf', fileName: string = 'oswis-download-file.pdf',) {
     this.apiEntityService.downloadPdfList(urlPath, type)
       .pipe(
         tap(x => {
           console.log(x);
-          const blo = ApiEntityListComponent.convertBase64toArrayBuffer(x.data);
-          const blob = new Blob([blo], {type: 'application/pdf'});
-          const downloadURL = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = downloadURL;
-          link.download = fileName;
-          link.click();
+          this.getDownloadLink(x, fileName, 'application/pdf').click();
         })
       ).subscribe();
   }
+
+  getDialogActionForSelected(action: ListOperationModel): () => void {
+    const that = this;
+    return () => that.openDialogForSelected(action.extraData, action);
+  }
+
+  openDialogForSelected(extraData: object, action: ListOperationModel): void {
+    const that = this;
+    const dialogRef = that.dialog.open(action.componentType, {
+      data: {items: this.selection.selected, dateTime: (new Date()).toISOString(), extraData: extraData},
+    });
+    dialogRef.afterClosed().subscribe(data => {
+      action.action(data, () => that.unselectAll());
+    });
+  }
+
+  getDialogActionSingle(action: ListOperationModel) {
+    const that = this;
+    return () => that.openDialogSingle({}, action);
+  }
+
+  openDialogSingle(data?: any, action?: ListOperationModel): void {
+    const that = this;
+    const dialogRef = that.dialog.open(action.componentType, {data: data});
+    dialogRef.afterClosed().subscribe(data => action.action(data));
+  }
+
 }

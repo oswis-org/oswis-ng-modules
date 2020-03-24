@@ -23,7 +23,7 @@ export class ApiEntityEditComponent implements OnInit {
   public help?: string;
   public transform?: (object) => object;
 
-  constructor(protected route: ActivatedRoute, protected router: Router, protected apiEntityService: ApiEntityInterfaceService) {
+  constructor(protected route: ActivatedRoute, protected router: Router, public apiEntityService: ApiEntityInterfaceService) {
     this.apiEntityService.addSelectedChangedCallback(this.loadEntity, this);
   }
 
