@@ -35,6 +35,7 @@ import {NewEntityButtonComponent} from './chunks/new-entity-button.component';
 import {BackToShowActionComponent} from './chunks/back-to-show-action.component';
 import {RefreshActionComponent} from './chunks/refresh-action.component';
 import {OswisNgMaterialModule} from 'oswis-ng-material';
+import {ListActionButtons} from "./chunks/list-action-buttons.component";
 
 @NgModule({
   exports: [
@@ -61,6 +62,7 @@ import {OswisNgMaterialModule} from 'oswis-ng-material';
     BasicShowActionsComponent,
     NewEntityButtonComponent,
     RefreshActionComponent,
+    ListActionButtons,
   ],
   imports: [
     FormsModule,
@@ -99,6 +101,9 @@ import {OswisNgMaterialModule} from 'oswis-ng-material';
       ],
     }),
     RouterModule,
+    OswisNgMaterialModule,
+    OswisNgMaterialModule,
+    OswisNgMaterialModule,
   ],
   declarations: [
     ApiEntityComponent,
@@ -123,6 +128,7 @@ import {OswisNgMaterialModule} from 'oswis-ng-material';
     BasicShowActionsComponent,
     NewEntityButtonComponent,
     RefreshActionComponent,
+    ListActionButtons,
   ],
   providers: [
     ApiEntityService,

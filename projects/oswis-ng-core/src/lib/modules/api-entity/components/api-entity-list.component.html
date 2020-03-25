@@ -11,37 +11,34 @@
           </mat-form-field>
         </div>
 
-        <button (click)="action.action()" *ngFor="let action of operationsStatic" [matTooltip]="action.name"
-                mat-icon-button matTooltipHideDelay="300" matTooltipPosition="below" matTooltipShowDelay="200">
-          <mat-icon>{{action.icon}}</mat-icon>
-        </button>
+        <oswis-api-entity-list-action-button *ngFor="let action of operationsStatic" [operation]="action" [isMenuItem]="false"
+                                             (clicked)="action.isDialog ? getDialogActionForSelected(action)() : action.action()">
+        </oswis-api-entity-list-action-button>
 
-        <button [matMenuTriggerFor]="globalItemsOperationsMenu" mat-icon-button matTooltip="Obecné akce" matTooltipHideDelay="300" matTooltipPosition="below"
-                matTooltipShowDelay="200">
+        <button [matMenuTriggerFor]="globalItemsOperationsMenu" mat-icon-button matTooltip="Obecné akce">
           <mat-icon>more_vert</mat-icon>
         </button>
 
         <mat-menu #globalItemsOperationsMenu="matMenu" xPosition="before" yPosition="below">
-          <button (click)="operation.action()" *ngFor="let operation of operationsGlobal" mat-menu-item>
-            <mat-icon>{{ operation.icon }}</mat-icon>
-            <span>{{ operation.name }}</span>
-          </button>
+          <oswis-api-entity-list-action-button *ngFor="let action of operationsGlobal" [operation]="action"
+                                               (clicked)="action.isDialog ? getDialogActionForSelected(action)() : action.action()">
+          </oswis-api-entity-list-action-button>
         </mat-menu>
+
+        <oswis-api-entity-loading-show></oswis-api-entity-loading-show>
 
         <button [matBadgeHidden]="selectedCount()===0" [matMenuTriggerFor]="selectedItemsOperationsMenu" mat-icon-button
                 matBadge="{{ selectedCount() }}" matBadgeColor="warn" matBadgeDescription="Počet vybraných {{ getEntityName(2, false) }}"
-                matTooltip="Akce s vybranými {{ getEntityName(17, false) }}"
-                matTooltipHideDelay="300" matTooltipPosition="below" matTooltipShowDelay="200">
+                matTooltip="Akce s vybranými {{ getEntityName(17, false) }}">
           <mat-icon>playlist_add_check</mat-icon>
         </button>
 
         <mat-menu #selectedItemsOperationsMenu="matMenu" xPosition="before" yPosition="below">
-          <button (click)="operation.isDialog ? getDialogActionForSelected(operation)() : operation.action()" *ngFor="let operation of operationsMultiple"
-                  mat-menu-item>
-            <mat-icon>{{ operation.icon }}</mat-icon>
-            <span>{{ operation.name }}</span>
-          </button>
+          <oswis-api-entity-list-action-button *ngFor="let action of operationsStatic" [operation]="action" [isMenuItem]="false"
+                                               (clicked)="action.isDialog ? getDialogActionForSelected(action)() : action.action()">
+          </oswis-api-entity-list-action-button>
         </mat-menu>
+
       </mat-toolbar>
     </div>
     <div class="table-wrapper">
