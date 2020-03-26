@@ -19,7 +19,7 @@ export * from './components/api-entity-show.component';
 // Models
 export * from './models/column-definition-values.model';
 export * from './models/column-definition.model';
-export * from './models/list-operation.model';
+export * from './models/list-action.model';
 
 // Dialogs
 export * from './dialogs/dialog-component.directive';

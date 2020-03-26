@@ -1,20 +1,22 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {ListOperationModel} from "../models/list-operation.model";
+import {ListActionModel} from "../models/list-action.model";
 
 @Component({
   selector: 'oswis-api-entity-list-action-button',
   template: `
-    <button (click)="clicked.emit()"
-            [attr.mat-menu-item]="isMenuItem ? '' : null"
-            [attr.mat-icon-button]="isMenuItem ? null : ''"
-            [matTooltip]="isMenuItem ? null : operation.name">
-      <mat-icon>{{ operation.icon }}</mat-icon>
-      <span *ngIf="isMenuItem">{{ operation.name }}</span>
+    <!-- Button in submenu. -->
+    <button mat-menu-item *ngIf="isMenuItem" (click)="clicked.emit()">
+      <mat-icon>{{ action.icon }}</mat-icon>
+      <span *ngIf="isMenuItem">{{ action.name }}</span>
+    </button>
+    <!-- Button in main menu. -->
+    <button *ngIf="!isMenuItem" (click)="clicked.emit()" mat-icon-button [matTooltip]="action.name">
+      <mat-icon>{{ action.icon }}</mat-icon>
     </button>
   `,
 })
 export class ListActionButtons {
-  @Input() operation: ListOperationModel = new ListOperationModel();
+  @Input() action: ListActionModel = new ListActionModel();
   @Input() isMenuItem: boolean = true;
   @Output() clicked: EventEmitter<void>;
 }

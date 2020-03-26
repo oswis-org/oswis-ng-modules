@@ -15,9 +15,9 @@ import {ApiEntityInterfaceService} from '../api-entity-interface.service';
 import {fromEvent} from 'rxjs';
 import {ApiEntityListTypeEnum} from '../enums/api-entity-list-type.enum';
 import {ApiEntityListAlignEnum} from '../enums/api-entity-list-align.enum';
-import {ListOperationModel} from '../models/list-operation.model';
+import {ListActionModel} from '../models/list-action.model';
 import {ColumnDefinitionModel} from '../models/column-definition.model';
-import {MatDialog} from "@angular/material/dialog";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 
 type Type = any;
 
@@ -34,10 +34,10 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
 
   @Input() searchValue: string;
   @Input() public apiEntityService: ApiEntityInterfaceService;
-  @Input() operationsSingle: ListOperationModel[] = [];
-  @Input() operationsMultiple: ListOperationModel[] = [];
-  @Input() operationsGlobal: ListOperationModel[] = [];
-  @Input() operationsStatic: ListOperationModel[] = [
+  @Input() operationsSingle: ListActionModel[] = [];
+  @Input() operationsMultiple: ListActionModel[] = [];
+  @Input() operationsGlobal: ListActionModel[] = [];
+  @Input() operationsStatic: ListActionModel[] = [
     {name: 'Filtry', icon: 'filter_list', action: this.toggleShowFilterWrapper()}
   ];
   @Input() pageSize = 10;
@@ -257,7 +257,7 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
     return Array.isArray(item);
   }
 
-  public getDownloadLink(x, fileName, mimeType: string = 'application/pdf') {
+  public static getDownloadLink(x, fileName, mimeType: string = 'application/pdf') {
     const blob = new Blob([ApiEntityListComponent.convertBase64toArrayBuffer(x.data)], {type: mimeType});
     const link = document.createElement('a');
     link.href = window.URL.createObjectURL(blob);
@@ -270,35 +270,41 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
       .pipe(
         tap(x => {
           console.log(x);
-          this.getDownloadLink(x, fileName, 'application/pdf').click();
+          ApiEntityListComponent.getDownloadLink(x, fileName, 'application/pdf').click();
         })
       ).subscribe();
   }
 
-  getDialogActionForSelected(action: ListOperationModel): () => void {
-    const that = this;
-    return () => that.openDialogForSelected(action.extraData, action);
+  getAction(action: ListActionModel, extraData: object = null, items: object[] = null): () => void {
+    return () => action.dialog ? this.openDialog(action, extraData, items) : action.action(items ? this.selection.selected : items);
   }
 
-  openDialogForSelected(extraData: object, action: ListOperationModel): void {
-    const that = this;
-    const dialogRef = that.dialog.open(action.componentType, {
-      data: {items: this.selection.selected, dateTime: (new Date()).toISOString(), extraData: extraData},
-    });
-    dialogRef.afterClosed().subscribe(data => {
-      action.action(data, () => that.unselectAll());
-    });
+  getDialogConfig(action: ListActionModel, extraData: object = null, items: object[] = null): MatDialogConfig {
+    return {
+      data: {
+        items: null === items ? this.selection.selected : items,
+        action: action,
+        extraData: extraData,
+      }
+    };
   }
 
-  getDialogActionSingle(action: ListOperationModel) {
-    const that = this;
-    return () => that.openDialogSingle({}, action);
+  processDialogResult(context, action: ListActionModel, dialogResult, dialogRef): void {
+    dialogRef.disableClose = true;
+    action.action(
+      dialogResult,
+      () => {
+        context.unselectAll();
+        dialogRef.disableClose = false;
+        dialogRef.close();
+      }
+    );
   }
 
-  openDialogSingle(data?: any, action?: ListOperationModel): void {
+  openDialog(action: ListActionModel, extraData: object = null, items: object[] = null): void {
     const that = this;
-    const dialogRef = that.dialog.open(action.componentType, {data: data});
-    dialogRef.afterClosed().subscribe(data => action.action(data));
+    const dialogRef = that.dialog.open(action.dialog, this.getDialogConfig(action, extraData, items));
+    dialogRef.beforeClosed().subscribe(dialogResult => this.processDialogResult(that, action, dialogResult, dialogRef));
   }
 
 }

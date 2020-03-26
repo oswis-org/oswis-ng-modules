@@ -11,8 +11,7 @@
           </mat-form-field>
         </div>
 
-        <oswis-api-entity-list-action-button *ngFor="let action of operationsStatic" [operation]="action" [isMenuItem]="false"
-                                             (clicked)="action.isDialog ? getDialogActionForSelected(action)() : action.action()">
+        <oswis-api-entity-list-action-button *ngFor="let action of operationsStatic" [action]="action" [isMenuItem]="false" (clicked)="getAction(action)()">
         </oswis-api-entity-list-action-button>
 
         <button [matMenuTriggerFor]="globalItemsOperationsMenu" mat-icon-button matTooltip="Obecné akce">
@@ -20,8 +19,7 @@
         </button>
 
         <mat-menu #globalItemsOperationsMenu="matMenu" xPosition="before" yPosition="below">
-          <oswis-api-entity-list-action-button *ngFor="let action of operationsGlobal" [operation]="action"
-                                               (clicked)="action.isDialog ? getDialogActionForSelected(action)() : action.action()">
+          <oswis-api-entity-list-action-button *ngFor="let action of operationsGlobal" [action]="action" (clicked)="getAction(action)()">
           </oswis-api-entity-list-action-button>
         </mat-menu>
 
@@ -34,8 +32,7 @@
         </button>
 
         <mat-menu #selectedItemsOperationsMenu="matMenu" xPosition="before" yPosition="below">
-          <oswis-api-entity-list-action-button *ngFor="let action of operationsStatic" [operation]="action" [isMenuItem]="false"
-                                               (clicked)="action.isDialog ? getDialogActionForSelected(action)() : action.action()">
+          <oswis-api-entity-list-action-button *ngFor="let action of operationsStatic" [action]="action" [isMenuItem]="false" (clicked)="getAction(action)()">
           </oswis-api-entity-list-action-button>
         </mat-menu>
 
@@ -66,8 +63,7 @@
         </ng-container>
 
         <ng-container *ngFor="let col of columnDefs" [matColumnDef]="col.name" [sticky]="col.sticky">
-          <th *matHeaderCellDef [disabled]="!col.getSortableName()" [mat-sort-header]="col.getSortableName()"
-              [ngClass]="col.getAlign()" mat-header-cell>
+          <th *matHeaderCellDef [disabled]="!col.getSortableName()" [mat-sort-header]="col.getSortableName()" [ngClass]="col.getAlign()" mat-header-cell>
             {{ col.title }}
           </th>
           <td *matCellDef="let row" [ngClass]="col.getAlign()" mat-cell>
@@ -99,22 +95,14 @@
               </div>
               <div *ngSwitchCase="ApiEntityListTypeEnum.DATE">
                 <span *ngIf="!isArray(getProperty(row, col.name)) || !col.child" style="text-align:right;">
-                {{
-                  col.getPrepend() + (getProperty(row, col.name)|date:'d.M.y' || '') + col.getAppend()
-                  }}
+                {{ col.getPrepend() + (getProperty(row, col.name)|date:'d.M.y' || '') + col.getAppend() }}
                 </span>
               </div>
               <div *ngSwitchCase="ApiEntityListTypeEnum.DATETIME">
-                {{
-                col.getPrepend() + (getProperty(row, col.name)|date:'d.M.y HH:mm' || '') + col.getAppend()
-                }}
+                {{ col.getPrepend() + (getProperty(row, col.name)|date:'d.M.y HH:mm' || '') + col.getAppend() }}
               </div>
               <div *ngSwitchCase="ApiEntityListTypeEnum.PERCENT">
-                {{
-                col.getPrepend() +
-                (+getProperty(row, col.name) >= 0 ? (+getProperty(row, col.name) * 100) + ' %' : '') + ' ' +
-                col.getAppend()
-                }}
+                {{ col.getPrepend() + (+getProperty(row, col.name) >= 0 ? (+getProperty(row, col.name) * 100) + ' %' : '') + ' ' + col.getAppend() }}
               </div>
               <div *ngSwitchCase="ApiEntityListTypeEnum.BOOLEAN">
                 {{ col.getPrepend() }}
@@ -161,11 +149,8 @@
         </ng-container>
 
         <ng-container [stickyEnd]="true" matColumnDef="actions">
-          <th *matHeaderCellDef [ngStyle]="{'justifyContent': 'flex-start'}" mat-header-cell mat-sort-header>
-            Akce
-          </th>
-          <td *matCellDef="let row" class="left" mat-cell>
-          </td>
+          <th *matHeaderCellDef [ngStyle]="{'justifyContent': 'flex-start'}" mat-header-cell mat-sort-header>Akce</th>
+          <td *matCellDef="let row" class="left" mat-cell></td>
         </ng-container>
 
         <tr *matHeaderRowDef="displayedColumns; sticky: true" mat-header-row></tr>
