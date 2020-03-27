@@ -3,7 +3,7 @@ import {ListOperationActionType} from "./list-operation-action.type";
 
 export class ListActionModel {
   name: string = null; // Name of action ("delete items").
-  icon: string = null; // Name of icon of action ("trash").
+  icon: string = 'fiber_manual_record'; // Name of icon of action ("delete_forever").
 
   data?: object = {}; // Extra data passed to dialog or action.
   dialog?: ComponentType<any> = null; // Dialog component type. Action is called after dialog confirmation when not null.

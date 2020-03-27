@@ -81,6 +81,14 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
     return bytes.buffer;
   }
 
+  public static getDownloadLink(x, fileName, mimeType: string = 'application/pdf') {
+    const blob = new Blob([ApiEntityListComponent.convertBase64toArrayBuffer(x.data)], {type: mimeType});
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = fileName;
+    return link;
+  }
+
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.filteredData.length;
@@ -255,14 +263,6 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
 
   isArray(item: any): boolean {
     return Array.isArray(item);
-  }
-
-  public static getDownloadLink(x, fileName, mimeType: string = 'application/pdf') {
-    const blob = new Blob([ApiEntityListComponent.convertBase64toArrayBuffer(x.data)], {type: mimeType});
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.download = fileName;
-    return link;
   }
 
   public downloadPdfList(urlPath: string, type: string = 'get-list-pdf', fileName: string = 'oswis-download-file.pdf',) {
