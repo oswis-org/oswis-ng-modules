@@ -4,7 +4,8 @@ import {Observable} from 'rxjs/Observable';
 import {ApiEntityInterfaceService} from '../api-entity-interface.service';
 import {catchError, tap} from 'rxjs/operators';
 import {RemoveEntitySingleComponent} from '../dialogs/remove-entity-single.component';
-import {MatDialog} from '@angular/material/dialog';
+import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {ListActionModel} from "../models/list-action.model";
 
 type Type = any;
 
@@ -126,6 +127,41 @@ export class ApiEntityShowComponent implements OnInit {
 
   getApiUrl(): string {
     return this.apiEntityService.getApiUrl();
+  }
+
+  getAction(action: ListActionModel, extraData: object = null, items: object[] = null): () => void {
+    const that = this;
+    return () => {
+      if (items && items.length > 0) {
+        return action.dialog ? this.openDialog(action, extraData, items) : action.action(items);
+      }
+
+      return this.apiEntityService.getSelected().subscribe(
+        (item: any) => {
+          return action.dialog ? this.openDialog(action, extraData, [item]) : action.action([item]);
+        }
+      );
+    };
+  }
+
+  getDialogConfig(action: ListActionModel, extraData: object = null, items: object[] = null): MatDialogConfig {
+    return {data: {items: items, action: action, extraData: extraData}};
+  }
+
+  processDialogResult(context: ApiEntityShowComponent, action: ListActionModel, dialogResult, dialogRef): void {
+    action.action(
+      dialogResult,
+      () => {
+        context.loadEntity();
+        dialogRef.close();
+      }
+    );
+  }
+
+  openDialog(action: ListActionModel, extraData: object = null, items: object[] = null): void {
+    const that = this;
+    const dialogRef = that.dialog.open(action.dialog, this.getDialogConfig(action, extraData, items));
+    dialogRef.beforeClosed().subscribe(dialogResult => this.processDialogResult(that, action, dialogResult, dialogRef));
   }
 }
 

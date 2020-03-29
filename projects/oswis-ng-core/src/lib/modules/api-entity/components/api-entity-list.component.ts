@@ -289,13 +289,11 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
     };
   }
 
-  processDialogResult(context, action: ListActionModel, dialogResult, dialogRef): void {
-    dialogRef.disableClose = true;
+  processDialogResult(context: ApiEntityListComponent, action: ListActionModel, dialogResult, dialogRef): void {
     action.action(
       dialogResult,
       () => {
         context.unselectAll();
-        dialogRef.disableClose = false;
         dialogRef.close();
       }
     );
