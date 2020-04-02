@@ -1,53 +1,53 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {BreakpointObserver, BreakpointState} from '@angular/cdk/layout';
-import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ApiEntityInterfaceService} from '../api-entity-interface.service';
 import {SidebarShowService} from "../../../services/sidebar-show.service";
-import {ApiEntityListTypeEnum} from "../enums/api-entity-list-type.enum";
-import {ApiEntityListAlignEnum} from "../enums/api-entity-list-align.enum";
-
-type Type = any;
+import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
+import {MatDialog} from "@angular/material/dialog";
+import {ListActionModel} from "../models/list-action.model";
 
 @Component({
   selector: 'oswis-api-entity',
   template: 'Component is not properly implemented.',
 })
-export class ApiEntityComponent implements OnInit, OnDestroy {
-  ApiEntityListTypeEnum = ApiEntityListTypeEnum;
-  ApiEntityListAlignEnum = ApiEntityListAlignEnum;
-
+export class ApiEntityComponent extends ApiEntityAbstractComponent {
   protected isNewEntity = false;
   protected isBig = false;
   protected isBigWithPanel = false;
 
   constructor(
-    protected route: ActivatedRoute,
-    protected router: Router,
+    route: ActivatedRoute,
+    router: Router,
+    apiEntityService: ApiEntityInterfaceService,
+    dialog: MatDialog,
     protected menuService: SidebarShowService,
-    protected apiEntityService: ApiEntityInterfaceService,
     protected breakpointObserver: BreakpointObserver,
   ) {
+    super(route, router, apiEntityService, dialog);
+    this.mobileBreakpointObserver();
+    this.wideBreakpointObserver();
+    this.isNewEntity = this.router.url.indexOf('new') > 0;
+  }
+
+  processDialogResult(context: ApiEntityAbstractComponent, action: ListActionModel, dialogResult, dialogRef): void {
+    console.error('Dialog processing is not implemented in ApiEntityComponent.');
+  }
+
+  mobileBreakpointObserver(): void {
     this.breakpointObserver
       .observe(['(min-width: 900px)'])
       .subscribe((state: BreakpointState) => {
         this.isBig = state.matches;
       });
+  }
 
+  wideBreakpointObserver(): void {
     this.breakpointObserver
       .observe(['(min-width: 1000px)'])
       .subscribe((state: BreakpointState) => {
         this.isBigWithPanel = state.matches;
       });
-
-    this.isNewEntity = this.router.url.indexOf('new') > 0;
-  }
-
-  ngOnInit() {
-    this.selectEntityByRoute();
-  }
-
-  ngOnDestroy(): void {
-    this.selectEntity(null);
   }
 
   forceShowList() {
@@ -62,28 +62,7 @@ export class ApiEntityComponent implements OnInit, OnDestroy {
     return this.isNewEntity;
   }
 
-  selectEntityByRoute() {
-    this.route.params.subscribe((params: ParamMap) => {
-      this.apiEntityService.setSelectedId(params['id'] ? +params['id'] : null);
-      const entityName = this.apiEntityService.getEntityName(1, true);
-      console.log('ApiEntity ' + entityName + ' ' + params['id'] ? +params['id'] : 'not' + ' selected.');
-    });
-  }
-
-  selectEntityById(newId?: number) {
-    this.apiEntityService.setSelectedId(newId);
-  }
-
-  selectEntity(newEntity?: Type): void {
-    this.apiEntityService.setSelectedId(newEntity ? newEntity.id : null);
-  }
-
-  isSelectedEntity(): boolean {
-    return this.apiEntityService.isSelected();
-  }
-
-  newItemRoute(): string {
-    return '/' + this.apiEntityService.getFrontendPath() + '/new';
+  refresh(): void {
   }
 }
 

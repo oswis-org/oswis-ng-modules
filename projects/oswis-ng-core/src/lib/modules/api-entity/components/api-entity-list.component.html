@@ -11,7 +11,7 @@
           </mat-form-field>
         </div>
 
-        <oswis-api-entity-list-action-button (clicked)="getAction(action)()" *ngFor="let action of operationsStatic" [action]="action" [isMenuItem]="false">
+        <oswis-api-entity-list-action-button (clicked)="getAction(action)()" *ngFor="let action of actionStaticButtons" [action]="action" [isMenuItem]="false">
         </oswis-api-entity-list-action-button>
 
         <button [matMenuTriggerFor]="globalItemsOperationsMenu" mat-icon-button matTooltip="Obecné akce">
@@ -19,20 +19,19 @@
         </button>
 
         <mat-menu #globalItemsOperationsMenu="matMenu" xPosition="before" yPosition="below">
-          <oswis-api-entity-list-action-button (clicked)="getAction(action)()" *ngFor="let action of operationsGlobal" [action]="action">
+          <oswis-api-entity-list-action-button (clicked)="getAction(action)()" *ngFor="let action of actionGlobalButtons" [action]="action">
           </oswis-api-entity-list-action-button>
         </mat-menu>
 
-        <oswis-api-entity-loading-show></oswis-api-entity-loading-show>
-
-        <button [matBadgeHidden]="selectedCount()===0" [matMenuTriggerFor]="selectedItemsOperationsMenu" mat-icon-button
+        <button [matBadgeHidden]="!!selectedCount()" [matMenuTriggerFor]="selectedItemsOperationsMenu" mat-icon-button
                 matBadge="{{ selectedCount() }}" matBadgeColor="warn" matBadgeDescription="Počet vybraných {{ getEntityName(2, false) }}"
                 matTooltip="Akce s vybranými {{ getEntityName(17, false) }}">
           <mat-icon>playlist_add_check</mat-icon>
         </button>
 
         <mat-menu #selectedItemsOperationsMenu="matMenu" xPosition="before" yPosition="below">
-          <oswis-api-entity-list-action-button (clicked)="getAction(action)()" *ngFor="let action of operationsStatic" [action]="action" [isMenuItem]="false">
+          <oswis-api-entity-list-action-button (clicked)="getAction(action)()" *ngFor="let action of actionStaticButtons" [action]="action"
+                                               [isMenuItem]="false">
           </oswis-api-entity-list-action-button>
         </mat-menu>
 
@@ -140,9 +139,7 @@
                 </a>
                 {{ col.getAppend() }}
               </div>
-              <div *ngSwitchDefault>
-                {{ col.getPrepend() + (getProperty(row, col.name) || '') + col.getAppend() }}
-              </div>
+              <div *ngSwitchDefault>{{ col.getPrepend() + (getProperty(row, col.name) || '') + col.getAppend() }}</div>
             </div>
           </td>
         </ng-container>

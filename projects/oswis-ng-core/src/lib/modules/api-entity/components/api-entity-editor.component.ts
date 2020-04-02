@@ -1,36 +1,27 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {Component, Input} from '@angular/core';
+import {FormGroup} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {catchError, tap} from 'rxjs/operators';
-import {Router} from '@angular/router';
 import {ApiEntityInterfaceService} from '../api-entity-interface.service';
-import {MatDialog} from '@angular/material/dialog';
-import {RemoveEntitySingleComponent} from '../dialogs/remove-entity-single.component';
 import {FormlyFieldConfig} from '@ngx-formly/core';
-
-// type Type = any;
+import {ApiEntitySingleAbstractComponent} from "./api-entity-single.abstract.component";
 
 @Component({
   selector: 'oswis-api-entity-editor',
   templateUrl: './api-entity-editor.component.html',
 })
-export class ApiEntityEditorComponent implements OnInit {
-  public selectedEntityEmpty = false;
-  public selectedEntity$: Observable<object>;
+export class ApiEntityEditorComponent extends ApiEntitySingleAbstractComponent {
   @Input() public model: object = {};
   @Input() public fields: FormlyFieldConfig[];
-  public form: FormGroup;
+  public form: FormGroup = new FormGroup({});
   public errorMessage = '';
   @Input() public help = null;
-  @Input() public transform: (object) => object;
+
   @Input() public apiEntityService: ApiEntityInterfaceService;
 
-  constructor(public fb: FormBuilder, public router: Router, public dialog: MatDialog) {
-    this.form = new FormGroup({});
-    this.apiEntityService.addSelectedChangedCallback(this.refresh, this);
-  }
+  @Input() public transform: (item: object) => object = item => item;
 
-  public loadEntity(): Observable<object> {
+  public loadData(): Observable<object> {
     this.selectedEntityEmpty = false;
     if (!this.creatingNew()) {
       return this.selectedEntity$ = this.apiEntityService.getSelected().pipe(
@@ -48,25 +39,16 @@ export class ApiEntityEditorComponent implements OnInit {
     return this.selectedEntity$ = new Observable<object>();
   }
 
-  ngOnInit() {
-    this.loadEntity();
-  }
-
   creatingNew(): boolean {
     return this.router.url.indexOf('new') > 0;
   }
 
   onSubmit() {
-    // console.log('onSubmit()');
-    return this.submitForm(this.form.value);
+    return this.submitForm(this.form.value); // console.log('onSubmit()');
   }
 
   submit(model) {
-    // console.log('onSubmit()');
-    // console.log(model);
-    const transformedModel = this.transform(model);
-    // console.log(model);
-    return this.submitForm(model);
+    return this.submitForm(this.transform(model)); // console.log('onSubmit()', model);
   }
 
   submitForm(formValue) {
@@ -92,54 +74,10 @@ export class ApiEntityEditorComponent implements OnInit {
     }
   }
 
-  refresh() {
-    this.loadEntity();
-  }
-
-  public backToList(): void {
-    this.apiEntityService.setSelectedId();
-    this.router.navigate(['/' + this.apiEntityService.getFrontendPath()]).then();
-  }
-
-  backToShow() {
-    this.router
-      .navigate(['/' + this.apiEntityService.getFrontendPath() + '/' + this.apiEntityService.getSelectedId()])
-      .then();
-  }
-
-  public deleteEntity(id: number, name: string): void {
-    this.dialog
-      .open(RemoveEntitySingleComponent, {data: {id: id, name: name}})
-      .afterClosed()
-      .subscribe(result => {
-        if (result) {
-          this.apiEntityService.deleteById(id).subscribe(
-            (data: any) => {
-              this.apiEntityService.setSelectedId();
-              this.router.navigate(['/' + this.apiEntityService.getFrontendPath()]).then();
-            }
-          );
-        }
-      });
-  }
-
-  public getEntityName(grCase: number = 1, capitalize: boolean = true): string {
-    return this.apiEntityService.getEntityName(grCase, capitalize);
-  }
-
-  public getPreSuffix(): string {
-    return this.apiEntityService.getPreSuffix();
-  }
-
   public getH1Prefix(): string {
     if (this.creatingNew() || this.selectedEntityEmpty) {
       return 'Nov' + this.getPreSuffix() + ' ' + this.getEntityName(1, false);
     }
     return 'Úprava ' + this.getEntityName(2, false);
   }
-
-  // protected transform(model) {
-  //   return model;
-  // }
-
 }

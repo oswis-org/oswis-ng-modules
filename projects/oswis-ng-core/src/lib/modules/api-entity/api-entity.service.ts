@@ -4,9 +4,10 @@ import {Observable} from 'rxjs/Observable';
 import {ApiEntityInterfaceService} from './api-entity-interface.service';
 import {NotificationsService} from 'angular2-notifications';
 import {catchError, retry, tap} from 'rxjs/operators';
-import {throwError} from 'rxjs';
 import {OswisCoreConfig} from "../../config/oswis-core.config";
 import {OSWIS_CORE_CONFIG} from "../../config/oswis-core.config.token";
+import {AuthenticationService} from "../auth/services/authentication.service";
+import {ActivatedRoute, ParamMap} from "@angular/router";
 
 type Type = any;
 
@@ -34,13 +35,13 @@ export class ApiEntityService implements ApiEntityInterfaceService {
   // protected retryDelay = 300;
   protected retryCount = 2;
   protected selectedEntityId = -1;
-  protected callbacksSelectedChanged = [];
+  protected callbacksSelectedChanged: { callback: any; context: any }[] = [];
   protected callbacksRefresh = [];
 
   constructor(
     protected http: HttpClient,
     protected notificationService: NotificationsService,
-    @Inject(OSWIS_CORE_CONFIG) private oswisCoreConfig: OswisCoreConfig,
+    @Inject(OSWIS_CORE_CONFIG) protected oswisCoreConfig: OswisCoreConfig,
   ) {
     this.baseUrl = oswisCoreConfig.backendApiUrl;
   }
@@ -50,11 +51,7 @@ export class ApiEntityService implements ApiEntityInterfaceService {
   }
 
   public static handleError(text: string, err: HttpErrorResponse) {
-    const errorEvent = err.error instanceof ErrorEvent;
-    const typeMessage = errorEvent ? 'Chyba na serveru:' : 'Chyba:';
-    const message = errorEvent ? err.error.message : (typeof err.error.detail === 'string') ? err.error.detail : err.name;
-    console.error(typeMessage, message);
-    return throwError({status: err.status, title: text, message: message});
+    return AuthenticationService.handleError(text, err);
   }
 
   public getPath(): string {
@@ -241,9 +238,11 @@ export class ApiEntityService implements ApiEntityInterfaceService {
   }
 
   addSelectedChangedCallback(callback: any, context: any): void {
-    console.log('ApiEntityService: Add SelectedChangedCallback.');
-    console.log(callback);
-    this.callbacksSelectedChanged.push({callback: callback, context: context});
+    const callbackItem = {callback: callback, context: context};
+    console.log('ApiEntityService (' + typeof this + '): Add SelectedChangedCallback.', callbackItem);
+    if (!this.callbacksSelectedChanged.includes(callbackItem)) {
+      this.callbacksSelectedChanged.push(callbackItem);
+    }
   }
 
   callSelectedChangedCallbacks(): void {
@@ -288,7 +287,7 @@ export class ApiEntityService implements ApiEntityInterfaceService {
     req['type'] = type;
     return this.http.post<any>(this.baseUrl + '/' + urlPath, req)
       .pipe(
-        tap(x => {
+        tap(() => {
           // window.open(this.baseUrl + '/' + x.download);
           const title = 'Stahování...';
           const message = 'Pokus o stažení souboru do zařízení.';
@@ -300,6 +299,15 @@ export class ApiEntityService implements ApiEntityInterfaceService {
           return new Observable();
         })
       );
+  }
+
+  setSelectedByRoute(route: ActivatedRoute): void {
+    if (route) {
+      route.params.subscribe((params: ParamMap) => {
+        this.setSelectedId(params['id'] ? +params['id'] : null);
+        console.log('ApiEntity ' + this.getEntityName(1, true) + ' ' + params['id'] ? +params['id'] : 'not' + ' selected.');
+      });
+    }
   }
 
 

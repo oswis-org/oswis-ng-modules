@@ -15,7 +15,7 @@ import {ListActionModel} from "../models/list-action.model";
     </button>
   `,
 })
-export class ListActionButtons {
+export class CustomListActionButton {
   @Input() action: ListActionModel = new ListActionModel();
   @Input() isMenuItem: boolean = true;
   @Output() clicked: EventEmitter<void>;

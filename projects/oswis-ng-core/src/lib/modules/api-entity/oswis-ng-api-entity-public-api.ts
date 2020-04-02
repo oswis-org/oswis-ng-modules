@@ -54,6 +54,7 @@ export * from './chunks/loading-show.component';
 export * from './chunks/new-entity-button.component';
 export * from './chunks/refresh-action.component';
 
-
+// Types
+export * from './models/list-operation-action.type';
 
 

@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+import {ActivatedRoute} from "@angular/router";
 
 type Type = any;
 
@@ -16,7 +17,7 @@ export abstract class ApiEntityInterfaceService {
 
   abstract isSelected(): boolean;
 
-  abstract addSelectedChangedCallback(callback: any, context: any): void;
+  abstract addSelectedChangedCallback(callback: () => void, context: object): void;
 
   abstract callSelectedChangedCallbacks(): void;
 
@@ -56,4 +57,5 @@ export abstract class ApiEntityInterfaceService {
 
   abstract downloadPdfList(urlPath: string, type: string): Observable<any>;
 
+  abstract setSelectedByRoute(route: ActivatedRoute): void;
 }

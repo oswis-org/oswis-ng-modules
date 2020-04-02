@@ -1,9 +1,9 @@
-import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
-import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {merge} from 'rxjs/observable/merge';
 import {of as observableOf} from 'rxjs/observable/of';
 import {catchError} from 'rxjs/operators/catchError';
@@ -13,33 +13,30 @@ import {switchMap} from 'rxjs/operators/switchMap';
 import {SelectionModel} from '@angular/cdk/collections';
 import {ApiEntityInterfaceService} from '../api-entity-interface.service';
 import {fromEvent} from 'rxjs';
-import {ApiEntityListTypeEnum} from '../enums/api-entity-list-type.enum';
-import {ApiEntityListAlignEnum} from '../enums/api-entity-list-align.enum';
 import {ListActionModel} from '../models/list-action.model';
 import {ColumnDefinitionModel} from '../models/column-definition.model';
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
 
-type Type = any;
+type Type = object | any;
 
 @Component({
   selector: 'oswis-api-entity-list',
   templateUrl: './api-entity-list.component.html',
 })
-export class ApiEntityListComponent implements OnInit, AfterViewInit {
-  ApiEntityListTypeEnum = ApiEntityListTypeEnum;
-  ApiEntityListAlignEnum = ApiEntityListAlignEnum;
+export class ApiEntityListComponent extends ApiEntityAbstractComponent implements AfterViewInit {
+
+  @Input() public apiEntityService: ApiEntityInterfaceService;
 
   @Input() displayedColumns: string[];
   @Input() columnDefs: ColumnDefinitionModel[];
 
   @Input() searchValue: string;
-  @Input() public apiEntityService: ApiEntityInterfaceService;
-  @Input() operationsSingle: ListActionModel[] = [];
-  @Input() operationsMultiple: ListActionModel[] = [];
-  @Input() operationsGlobal: ListActionModel[] = [];
-  @Input() operationsStatic: ListActionModel[] = [
-    {name: 'Filtry', icon: 'filter_list', action: this.toggleShowFilterWrapper()}
-  ];
+  @Input() actionSingleButtons: ListActionModel[] = [];
+  @Input() actionSingleLinks: ListActionModel[] = [];
+  @Input() actionMultipleMenuItems: ListActionModel[] = [];
+  @Input() actionGlobalButtons: ListActionModel[] = [];
+  @Input() actionStaticButtons: ListActionModel[] = [{name: 'Filtry', icon: 'filter_list', action: this.toggleShowFilterWrapper()}];
   @Input() pageSize = 10;
   resultsLength = 0;
   isLoadingResults = true;
@@ -57,11 +54,13 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
   // @ViewChild('filter', {read: ElementRef, static: true}) filter: ElementRef;
 
   constructor(
-    protected http: HttpClient,
-    protected router: Router,
-    protected route: ActivatedRoute,
-    protected dialog: MatDialog,
+    public http: HttpClient,
+    route: ActivatedRoute,
+    router: Router,
+    apiEntityService: ApiEntityInterfaceService,
+    dialog: MatDialog,
   ) {
+    super(route, router, apiEntityService, dialog);
   }
 
   static searchFilterPredicate(data, filter) {
@@ -152,11 +151,8 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.route.params.subscribe((params: ParamMap) => {
-      this.apiEntityService.setSelectedId(params['id'] ? +params['id'] : null);
-      console.log('Entity ' + params['id'] ? +params['id'] : 'not' + ' selected.');
-    });
     this.apiEntityService.addRefreshCallback(this.loadData, this);
+    this.apiEntityService.setSelectedByRoute(this.route);
   }
 
   loadData() {
@@ -224,8 +220,7 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
       )
       .subscribe();
     this.loadData();
-    // this.dataSource.paginator = this.paginator;
-    // this.dataSource.sort = this.sort;
+    // this.dataSource.paginator = this.paginator; this.dataSource.sort = this.sort;
   }
 
   applyFilter(filterValue: string) {
@@ -289,7 +284,7 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
     };
   }
 
-  processDialogResult(context: ApiEntityListComponent, action: ListActionModel, dialogResult, dialogRef): void {
+  processDialogResult(context: ApiEntityAbstractComponent, action: ListActionModel, dialogResult, dialogRef): void {
     action.action(
       dialogResult,
       () => {
@@ -297,12 +292,6 @@ export class ApiEntityListComponent implements OnInit, AfterViewInit {
         dialogRef.close();
       }
     );
-  }
-
-  openDialog(action: ListActionModel, extraData: object = null, items: object[] = null): void {
-    const that = this;
-    const dialogRef = that.dialog.open(action.dialog, this.getDialogConfig(action, extraData, items));
-    dialogRef.beforeClosed().subscribe(dialogResult => this.processDialogResult(that, action, dialogResult, dialogRef));
   }
 
 }

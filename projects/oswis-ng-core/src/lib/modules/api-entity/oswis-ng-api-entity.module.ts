@@ -35,7 +35,9 @@ import {NewEntityButtonComponent} from './chunks/new-entity-button.component';
 import {BackToShowActionComponent} from './chunks/back-to-show-action.component';
 import {RefreshActionComponent} from './chunks/refresh-action.component';
 import {OswisNgMaterialModule} from 'oswis-ng-material';
-import {ListActionButtons} from "./chunks/list-action-buttons.component";
+import {CustomListActionButton} from "./chunks/list-action-buttons.component";
+import {CustomActionComponent} from "./chunks/custom-action.component";
+import {WithLoadingPipe} from "./pipes/with-loading.pipe";
 
 @NgModule({
   exports: [
@@ -62,7 +64,9 @@ import {ListActionButtons} from "./chunks/list-action-buttons.component";
     BasicShowActionsComponent,
     NewEntityButtonComponent,
     RefreshActionComponent,
-    ListActionButtons,
+    CustomListActionButton,
+    CustomActionComponent,
+    WithLoadingPipe,
   ],
   imports: [
     FormsModule,
@@ -128,10 +132,13 @@ import {ListActionButtons} from "./chunks/list-action-buttons.component";
     BasicShowActionsComponent,
     NewEntityButtonComponent,
     RefreshActionComponent,
-    ListActionButtons,
+    CustomListActionButton,
+    CustomActionComponent,
+    WithLoadingPipe,
   ],
   providers: [
     ApiEntityService,
+    WithLoadingPipe,
   ],
   entryComponents: [
     RemoveEntitySingleComponent,

@@ -10,6 +10,11 @@ import {ApiEntityEditorComponent} from '../components/api-entity-editor.componen
     <oswis-api-entity-back-to-list-show-action [component]="component"></oswis-api-entity-back-to-list-show-action>
     <oswis-api-entity-edit-show-action *ngIf="!empty && !edit" [show]="component"></oswis-api-entity-edit-show-action>
     <oswis-api-entity-delete-show-action *ngIf="!empty" [component]="component"></oswis-api-entity-delete-show-action>
+    <ng-container *ngFor="let action of component.actionButtons">
+      <oswis-api-entity-custom-action *ngIf="!empty" [component]="component" [action]="action" [isLink]="false">
+      </oswis-api-entity-custom-action>
+      // TODO: Refactor: Empty.
+    </ng-container>
   `,
 })
 export class BasicShowActionsComponent {
