@@ -10,4 +10,8 @@ export abstract class DialogComponentDirective {
     public dialogRef: MatDialogRef<Type>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
   }
+
+  onCancel(): void {
+    this.dialogRef.close();
+  }
 }

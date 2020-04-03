@@ -5,6 +5,7 @@
 // Module and config
 export * from './oswis-ng-core.module';
 export * from './config/oswis-core.config';
+export * from './config/oswis-core.config.token';
 
 // Models
 export * from './models/abstract-image.model';

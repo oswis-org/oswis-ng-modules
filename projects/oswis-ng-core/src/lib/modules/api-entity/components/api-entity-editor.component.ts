@@ -5,6 +5,8 @@ import {catchError, tap} from 'rxjs/operators';
 import {ApiEntityInterfaceService} from '../api-entity-interface.service';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {ApiEntitySingleAbstractComponent} from "./api-entity-single.abstract.component";
+import {ActivatedRoute, Router} from "@angular/router";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'oswis-api-entity-editor',
@@ -18,6 +20,10 @@ export class ApiEntityEditorComponent extends ApiEntitySingleAbstractComponent {
   @Input() public help = null;
 
   @Input() public apiEntityService: ApiEntityInterfaceService;
+
+  constructor(route: ActivatedRoute, router: Router, apiEntityService: ApiEntityInterfaceService, dialog: MatDialog) {
+    super(route, router, apiEntityService, dialog);
+  }
 
   @Input() public transform: (item: object) => object = item => item;
 

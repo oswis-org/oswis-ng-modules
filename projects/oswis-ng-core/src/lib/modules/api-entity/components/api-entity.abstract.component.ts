@@ -1,4 +1,4 @@
-import {OnDestroy, OnInit} from '@angular/core';
+import {Directive, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ApiEntityInterfaceService} from '../api-entity-interface.service';
 import {ApiEntityListTypeEnum} from "../enums/api-entity-list-type.enum";
@@ -8,10 +8,12 @@ import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 
 type Type = object | any;
 
+@Directive()
 export abstract class ApiEntityAbstractComponent implements OnInit, OnDestroy {
   ApiEntityListTypeEnum = ApiEntityListTypeEnum;
   ApiEntityListAlignEnum = ApiEntityListAlignEnum;
 
+  // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
   constructor(public route: ActivatedRoute, public router: Router, public apiEntityService: ApiEntityInterfaceService, public dialog: MatDialog) {
     this.apiEntityService.addSelectedChangedCallback(this.refresh, this);
   }

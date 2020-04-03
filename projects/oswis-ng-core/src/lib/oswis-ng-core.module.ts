@@ -13,6 +13,7 @@ import {OswisNgMaterialModule} from "oswis-ng-material";
 import {OswisNgAuthModule} from "./modules/auth/oswis-ng-auth.module";
 import {OswisCoreConfig} from "./config/oswis-core.config";
 import {OSWIS_CORE_CONFIG} from "./config/oswis-core.config.token";
+import {OswisNgApiEntityModule} from "./modules/api-entity/oswis-ng-api-entity.module";
 
 @NgModule({
   imports: [
@@ -20,7 +21,6 @@ import {OSWIS_CORE_CONFIG} from "./config/oswis-core.config.token";
     OswisNgMaterialModule,
     RouterModule,
     OswisNgAuthModule,
-
   ],
   providers: [
     MenuService,
@@ -35,7 +35,9 @@ import {OSWIS_CORE_CONFIG} from "./config/oswis-core.config.token";
     SidenavShowDirective,
   ],
   exports: [
+    OswisNgApiEntityModule,
     OswisNgAuthModule,
+    OswisNgMaterialModule,
     HomeComponent,
     HeaderComponent,
     PrimarySidebarComponent,

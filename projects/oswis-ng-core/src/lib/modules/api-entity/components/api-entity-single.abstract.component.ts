@@ -3,9 +3,14 @@ import {catchError, tap} from 'rxjs/operators';
 import {RemoveEntitySingleComponent} from '../dialogs/remove-entity-single.component';
 import {ListActionModel} from "../models/list-action.model";
 import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
+import {ActivatedRoute, Router} from "@angular/router";
+import {ApiEntityInterfaceService} from "../api-entity-interface.service";
+import {MatDialog} from "@angular/material/dialog";
+import {Directive} from "@angular/core";
 
 type Type = object | any;
 
+@Directive()
 export abstract class ApiEntitySingleAbstractComponent extends ApiEntityAbstractComponent {
 
   public selectedEntity$: Observable<Type>;
@@ -13,6 +18,11 @@ export abstract class ApiEntitySingleAbstractComponent extends ApiEntityAbstract
 
   public actionButtons: ListActionModel[] = [];
   public actionLinks: ListActionModel[] = [];
+
+  // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
+  constructor(route: ActivatedRoute, router: Router, apiEntityService: ApiEntityInterfaceService, dialog: MatDialog) {
+    super(route, router, apiEntityService, dialog);
+  }
 
   public refresh(): void {
     this.loadData();
