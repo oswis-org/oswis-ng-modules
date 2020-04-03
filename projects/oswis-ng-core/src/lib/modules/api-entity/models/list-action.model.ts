@@ -1,5 +1,6 @@
-import {ComponentType} from "@angular/cdk/overlay";
 import {ListOperationActionType} from "./list-operation-action.type";
+import {Type} from "@angular/core";
+import {ComponentType} from "@angular/cdk/overlay";
 
 export class ListActionModel {
   name: string = null; // Name of action ("delete items").
