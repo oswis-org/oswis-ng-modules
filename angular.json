@@ -3,38 +3,38 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "oswis-ng-core": {
+    "oswis-core": {
       "projectType": "library",
-      "root": "projects/oswis-ng-core",
-      "sourceRoot": "projects/oswis-ng-core/src",
+      "root": "projects/oswis-core",
+      "sourceRoot": "projects/oswis-core/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/oswis-ng-core/tsconfig.lib.json",
-            "project": "projects/oswis-ng-core/ng-package.json"
+            "tsConfig": "projects/oswis-core/tsconfig.lib.json",
+            "project": "projects/oswis-core/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "projects/oswis-ng-core/tsconfig.lib.prod.json"
+              "tsConfig": "projects/oswis-core/tsconfig.lib.prod.json"
             }
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/oswis-ng-core/src/test.ts",
-            "tsConfig": "projects/oswis-ng-core/tsconfig.spec.json",
-            "karmaConfig": "projects/oswis-ng-core/karma.conf.js"
+            "main": "projects/oswis-core/src/test.ts",
+            "tsConfig": "projects/oswis-core/tsconfig.spec.json",
+            "karmaConfig": "projects/oswis-core/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/oswis-ng-core/tsconfig.lib.json",
-              "projects/oswis-ng-core/tsconfig.spec.json"
+              "projects/oswis-core/tsconfig.lib.json",
+              "projects/oswis-core/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -43,118 +43,38 @@
         }
       }
     },
-    "oswis-ng-material": {
+    "oswis-shared": {
       "projectType": "library",
-      "root": "projects/oswis-ng-material",
-      "sourceRoot": "projects/oswis-ng-material/src",
+      "root": "projects/oswis-shared",
+      "sourceRoot": "projects/oswis-shared/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/oswis-ng-material/tsconfig.lib.json",
-            "project": "projects/oswis-ng-material/ng-package.json"
+            "tsConfig": "projects/oswis-shared/tsconfig.lib.json",
+            "project": "projects/oswis-shared/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "projects/oswis-ng-material/tsconfig.lib.prod.json"
+              "tsConfig": "projects/oswis-shared/tsconfig.lib.prod.json"
             }
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/oswis-ng-material/src/test.ts",
-            "tsConfig": "projects/oswis-ng-material/tsconfig.spec.json",
-            "karmaConfig": "projects/oswis-ng-material/karma.conf.js"
+            "main": "projects/oswis-shared/src/test.ts",
+            "tsConfig": "projects/oswis-shared/tsconfig.spec.json",
+            "karmaConfig": "projects/oswis-shared/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/oswis-ng-material/tsconfig.lib.json",
-              "projects/oswis-ng-material/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
-        }
-      }
-    },
-    "oswis-ng-auth": {
-      "projectType": "library",
-      "root": "projects/oswis-ng-auth",
-      "sourceRoot": "projects/oswis-ng-auth/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
-          "options": {
-            "tsConfig": "projects/oswis-ng-auth/tsconfig.lib.json",
-            "project": "projects/oswis-ng-auth/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "projects/oswis-ng-auth/tsconfig.lib.prod.json"
-            }
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "projects/oswis-ng-auth/src/test.ts",
-            "tsConfig": "projects/oswis-ng-auth/tsconfig.spec.json",
-            "karmaConfig": "projects/oswis-ng-auth/karma.conf.js"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/oswis-ng-auth/tsconfig.lib.json",
-              "projects/oswis-ng-auth/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
-        }
-      }
-    },
-    "oswis-ng-address-book": {
-      "projectType": "library",
-      "root": "projects/oswis-ng-address-book",
-      "sourceRoot": "projects/oswis-ng-address-book/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
-          "options": {
-            "tsConfig": "projects/oswis-ng-address-book/tsconfig.lib.json",
-            "project": "projects/oswis-ng-address-book/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "projects/oswis-ng-address-book/tsconfig.lib.prod.json"
-            }
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "projects/oswis-ng-address-book/src/test.ts",
-            "tsConfig": "projects/oswis-ng-address-book/tsconfig.spec.json",
-            "karmaConfig": "projects/oswis-ng-address-book/karma.conf.js"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/oswis-ng-address-book/tsconfig.lib.json",
-              "projects/oswis-ng-address-book/tsconfig.spec.json"
+              "projects/oswis-shared/tsconfig.lib.json",
+              "projects/oswis-shared/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -167,5 +87,5 @@
   "cli": {
     "analytics": "0e8fd8b9-ec83-4ed8-b85d-f009f9a49b69"
   },
-  "defaultProject": "oswis-ng-core"
+  "defaultProject": "oswis-shared"
 }

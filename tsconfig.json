@@ -34,6 +34,10 @@
       "oswis-ng-address-book": [
         "dist/oswis-ng-address-book/oswis-ng-address-book",
         "dist/oswis-ng-address-book"
+      ],
+      "oswis-shared": [
+        "dist/oswis-shared/oswis-shared",
+        "dist/oswis-shared"
       ]
     }
   },

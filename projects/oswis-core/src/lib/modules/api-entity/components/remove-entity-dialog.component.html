@@ -1,0 +1,25 @@
+<!--suppress TypeScriptUnresolvedVariable -->
+<h1 mat-dialog-title style="color: red;">
+  Odstranění {{ (data?.items?.length || 0) + ' ' + data?.apiEntityService?.getEntityName(2, false) || 'položek' }}
+</h1>
+<div mat-dialog-content>
+  <div>
+    <h2>Opravdu odstranit položky?</h2>
+    <ul>
+      <li *ngFor="let item of data?.items" class="small">
+        <small>
+          {{ item?.id }},
+          <ng-container *ngIf="item?.name || item?.contact?.name"><strong>{{ item?.name || item?.contact?.name }}</strong>,</ng-container>
+          <ng-container *ngIf="item?.phone || item?.contact?.phone">{{ item?.phone || item?.contact?.phone }},</ng-container>
+          <ng-container *ngIf="item?.price !== null">cena {{ item?.price || 0 }},-&nbsp;Kč</ng-container>
+          <ng-container *ngIf="item?.priceRest !== null">({{ (item?.priceRest || 0) }},-&nbsp;Kč&nbsp;zbývá)</ng-container>
+        </small>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div mat-dialog-actions>
+  <button (click)="cancel()" mat-button>Ponechat</button>
+  <button [mat-dialog-close]="true" mat-button>Smazat</button>
+</div>
