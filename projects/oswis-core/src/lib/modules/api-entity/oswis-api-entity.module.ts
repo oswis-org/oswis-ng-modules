@@ -5,7 +5,6 @@ import {ApiEntityEditComponent} from './components/api-entity-edit.component';
 import {ApiEntityEditorComponent} from './components/api-entity-editor.component';
 import {ApiEntityService} from './services/api-entity.service';
 import {ApiEntityListComponent} from './components/api-entity-list.component';
-import {RouterModule} from '@angular/router';
 import {BasicInfoShowComponent} from './chunks/basic-info-show.component';
 import {LoadingShowComponent} from './chunks/loading-show.component';
 import {BackToListShowActionComponent} from './chunks/back-to-list-show-action.component';
@@ -18,6 +17,8 @@ import {RefreshActionComponent} from './chunks/refresh-action.component';
 import {CustomListActionButton} from "./chunks/custom-list-action-button.component";
 import {CustomActionComponent} from "./chunks/custom-action.component";
 import {RemoveEntityDialog} from "./components/remove-entity-dialog.component";
+import {OswisSharedModule} from "oswis-shared";
+import {RouterModule} from "@angular/router";
 
 @NgModule({
   exports: [
@@ -40,6 +41,7 @@ import {RemoveEntityDialog} from "./components/remove-entity-dialog.component";
     RemoveEntityDialog,
   ],
   imports: [
+    OswisSharedModule,
     RouterModule,
   ],
   declarations: [

@@ -7,6 +7,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {Directive} from "@angular/core";
 import {ApiEntityService} from "../services/api-entity.service";
+import {RemoveEntityDialog} from "./remove-entity-dialog.component";
 
 type Type = object | any;
 

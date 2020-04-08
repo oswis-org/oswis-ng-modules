@@ -5,6 +5,7 @@ import {ApiEntityServiceInterface} from '../interfaces/api-entity.service.interf
 import {NotificationsService} from 'angular2-notifications';
 import {catchError, retry, tap} from 'rxjs/operators';
 import {ActivatedRoute, ParamMap} from "@angular/router";
+import {AuthenticationService, OSWIS_CONFIG, OswisConfig} from "oswis-shared";
 
 type Type = any;
 

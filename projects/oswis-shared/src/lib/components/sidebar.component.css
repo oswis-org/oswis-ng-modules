@@ -25,6 +25,7 @@
   max-height: 0;
 }
 
+/*noinspection CssUnusedSymbol*/
 .active {
   color: red;
   font-weight: bold;

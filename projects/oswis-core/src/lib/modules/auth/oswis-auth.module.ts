@@ -7,12 +7,14 @@ import {AppUserLogoutComponent} from "./components/app-user-logout.component";
 import {AppUserPasswordChangeRequestComponent} from "./components/app-user-password-change-request.component";
 import {AppUserPasswordChangeComponent} from "./components/app-user-password-change.component";
 import {OswisAuthComponent} from "./oswis-auth.component";
+import {OswisSharedModule} from "oswis-shared";
 
 @NgModule({
   imports: [
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
+    OswisSharedModule,
     OswisAuthRoutingModule
   ],
   declarations: [

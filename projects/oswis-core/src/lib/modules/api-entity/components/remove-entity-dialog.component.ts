@@ -1,13 +1,11 @@
-import {Component} from '@angular/core';
-import {DialogComponent} from "../../../../../../oswis-shared/src/lib/components/dialog.component";
-import {MatDialogRef} from "@angular/material/dialog";
-import {BasicModel} from "../../../../../../oswis-shared/src/lib/models/basic.model";
-import {ApiEntityService} from "../services/api-entity.service";
-import {DialogDataInterface} from "../../../../../../oswis-shared/src/lib/components/dialog-data.inteface";
+import {Component, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {BasicModel, DialogComponent, DialogDataInterface} from "oswis-shared";
+import {ApiEntityServiceInterface} from "../interfaces/api-entity.service.interface";
 
 interface EntityDialogDataInterface extends DialogDataInterface {
   items: BasicModel[];
-  apiEntityService?: ApiEntityService;
+  apiEntityService: ApiEntityServiceInterface;
 }
 
 @Component({
@@ -15,7 +13,7 @@ interface EntityDialogDataInterface extends DialogDataInterface {
   templateUrl: './remove-entity-dialog.component.html',
 })
 export class RemoveEntityDialog extends DialogComponent {
-  constructor(dialogRef: MatDialogRef<any>, data: EntityDialogDataInterface) {
+  constructor(public dialogRef: MatDialogRef<RemoveEntityDialog>, @Inject(MAT_DIALOG_DATA) public data: EntityDialogDataInterface) {
     super(dialogRef, data);
   }
 }

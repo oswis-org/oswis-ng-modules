@@ -1,11 +1,11 @@
 import {Component} from '@angular/core';
 import {BreakpointObserver, BreakpointState} from '@angular/cdk/layout';
 import {ActivatedRoute, Router} from '@angular/router';
-
 import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ListActionModel} from "../models/list-action.model";
 import {ApiEntityService} from "../services/api-entity.service";
+import {SidebarShowService} from "oswis-shared";
 
 @Component({
   selector: 'oswis-api-entity',

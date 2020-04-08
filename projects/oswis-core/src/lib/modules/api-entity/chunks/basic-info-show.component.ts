@@ -1,6 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-
-
+import {AppUserModel, BasicModel, NameableModel} from "oswis-shared";
 
 
 @Component({

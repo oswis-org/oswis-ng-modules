@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
-
 import {AppUserActionAbstractComponent} from "./app-user-action.abstract.component";
+import {AppUserActionModel} from "oswis-shared";
 
 @Component({
   selector: 'oswis-app-user-password-change-request',

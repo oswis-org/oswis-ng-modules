@@ -31,7 +31,7 @@
     "ngx-img-cropper": "^9.0.1",
     "ngx-logger": "^4.1.2",
     "ngx-mat-select-search": "^2.1.2",
-    "oswis-ng-material": "0.0.5",
+    "oswis-shared": "0.0.1",
     "rxjs": "^6.5.4",
     "rxjs-compat": "^6.5.4",
     "screenfull": "^5.0.2",

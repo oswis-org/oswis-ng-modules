@@ -1,12 +1,11 @@
 import {ModuleWithProviders, NgModule} from '@angular/core';
-import {OswisConfig} from "../../../oswis-shared/src/lib/config/oswis.config";
-import {OSWIS_CONFIG} from "../../../oswis-shared/src/lib/config/oswis.config.token";
+import {OSWIS_CONFIG, OswisConfig, OswisSharedModule} from "oswis-shared";
 
 @NgModule({
-  imports: [],
+  imports: [OswisSharedModule],
+  exports: [OswisSharedModule],
   providers: [],
   declarations: [],
-  exports: [],
 })
 export class OswisCoreModule {
   // noinspection JSUnusedGlobalSymbols
