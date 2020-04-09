@@ -46,10 +46,6 @@ export * from './config/oswis.config';
 export * from './config/oswis.config.token';
 export * from './config/oswis-default.config';
 
-// Error handler
-export * from './error-handler/app-error-handler';
-export * from './error-handler/http-status-codes';
-
 // Services
 export * from './services/sidebar-show.service';
 export * from './services/token-storage.service';
@@ -58,3 +54,18 @@ export * from './services/authentication.service';
 // Menu items
 export * from './config/primary-menu-items';
 export * from './config/secondary-menu-items';
+
+// Error handler
+export * from './error-handler/app-error-handler';
+export * from './error-handler/http-status-codes';
+
+// Material
+export * from './material/czech-paginator-intl';
+export * from './material/my-moment-date-adapter.service';
+
+// Guards
+export * from './guards/auth.guard';
+
+// Interceptors
+export * from './interceptors/refresh-token-interceptor';
+

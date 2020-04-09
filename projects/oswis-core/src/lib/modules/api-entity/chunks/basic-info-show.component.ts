@@ -1,83 +1,106 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {AppUserModel, BasicModel, NameableModel} from "oswis-shared";
 
-
 @Component({
   selector: 'oswis-api-entity-basic-info-show',
   templateUrl: './basic-info-show.component.html',
 })
 export class BasicInfoShowComponent implements OnInit {
-  @Input() title?: string;
+  @Input() boxTitle?: string;
 
-  @Input() basic?: BasicModel;
-  @Input() nameable?: NameableModel;
+  @Input() basicItem?: BasicModel;
+  @Input() nameableItem?: NameableModel;
 
   @Input() type?: string;
+  @Input() deleted?: string;
+  @Input() active?: boolean;
+
   @Input() appUser?: AppUserModel;
+  @Input() username?: string;
 
   @Input() dateTime?: string;
   @Input() startDateTime?: string;
   @Input() endDateTime?: string;
 
-  @Input() username?: string;
   @Input() fullName?: string;
   @Input() url?: string;
   @Input() email?: string;
   @Input() phone?: string;
-  @Input() deleted?: string;
-  @Input() active?: boolean;
 
   ngOnInit(): void {
-    if (!this.basic) {
-      this.basic = this.nameable;
+    this.fillProperties();
+  }
+
+  fillProperties() {
+    this.basicItem = this.basicItem ? this.basicItem : this.nameableItem;
+    if (!this.basicItem) {
+      return;
     }
-    if ('appUser' in this.basic) {
+    this.fillCommonProperties();
+    this.fillContactProperties();
+    this.fillAppUserProperties();
+    this.fillDateTimeProperties();
+  }
+
+  fillContactProperties(): void {
+    if ('fullName' in this.basicItem) {
       // @ts-ignore
-      this.appUser = this.basic.appUser;
+      this.fullName = this.basicItem.fullName;
     }
-    if ('type' in this.basic) {
+    if ('url' in this.basicItem) {
       // @ts-ignore
-      this.type = this.basic.type;
+      this.url = this.basicItem.url;
     }
-    if ('dateTime' in this.basic) {
+    if ('email' in this.basicItem) {
       // @ts-ignore
-      this.dateTime = this.basic.dateTime;
+      this.email = this.basicItem.email;
     }
-    if ('startDateTime' in this.basic) {
+    if ('phone' in this.basicItem) {
       // @ts-ignore
-      this.startDateTime = this.basic.startDateTime;
-    }
-    if ('endDateTime' in this.basic) {
-      // @ts-ignore
-      this.endDateTime = this.basic.endDateTime;
-    }
-    if ('username' in this.basic) {
-      // @ts-ignore
-      this.username = this.basic.username;
-    }
-    if ('fullName' in this.basic) {
-      // @ts-ignore
-      this.fullName = this.basic.fullName;
-    }
-    if ('url' in this.basic) {
-      // @ts-ignore
-      this.url = this.basic.url;
-    }
-    if ('email' in this.basic) {
-      // @ts-ignore
-      this.email = this.basic.email;
-    }
-    if ('phone' in this.basic) {
-      // @ts-ignore
-      this.phone = this.basic.phone;
-    }
-    if ('deleted' in this.basic) {
-      // @ts-ignore
-      this.deleted = this.basic.deleted;
-    }
-    if ('active' in this.basic) {
-      // @ts-ignore
-      this.active = this.basic.active;
+      this.phone = this.basicItem.phone;
     }
   }
+
+  fillCommonProperties(): void {
+    if ('type' in this.basicItem) {
+      // @ts-ignore
+      this.type = this.basicItem.type;
+    }
+    if ('deleted' in this.basicItem) {
+      // @ts-ignore
+      this.deleted = this.basicItem.deleted;
+    }
+    if ('active' in this.basicItem) {
+      // @ts-ignore
+      this.active = this.basicItem.active;
+    }
+  }
+
+  fillDateTimeProperties(): void {
+    if ('dateTime' in this.basicItem) {
+      // @ts-ignore
+      this.dateTime = this.basicItem.dateTime;
+    }
+    if ('startDateTime' in this.basicItem) {
+      // @ts-ignore
+      this.startDateTime = this.basicItem.startDateTime;
+    }
+    if ('endDateTime' in this.basicItem) {
+      // @ts-ignore
+      this.endDateTime = this.basicItem.endDateTime;
+    }
+  }
+
+
+  fillAppUserProperties(): void {
+    if ('appUser' in this.basicItem) {
+      // @ts-ignore
+      this.appUser = this.basicItem.appUser;
+    }
+    if ('username' in this.basicItem) {
+      // @ts-ignore
+      this.username = this.basicItem.username;
+    }
+  }
+
 }

@@ -2,11 +2,12 @@ import {ErrorHandler, Inject, Injectable, Injector} from '@angular/core';
 import {NotificationsService} from 'angular2-notifications';
 import {getHttpStatusCode} from './http-status-codes';
 import {NGXLogger} from 'ngx-logger';
+import {OSWIS_CONFIG} from "../config/oswis.config.token";
 import {OswisConfig} from "../config/oswis.config";
 
 @Injectable()
 export class AppErrorHandler implements ErrorHandler {
-  constructor(private injector: Injector, private logger: NGXLogger, @Inject('oswisConfig') public oswisConfig: OswisConfig,) {
+  constructor(private injector: Injector, private logger: NGXLogger, @Inject(OSWIS_CONFIG) public oswisConfig: OswisConfig,) {
   }
 
   handleError(error: any) {
