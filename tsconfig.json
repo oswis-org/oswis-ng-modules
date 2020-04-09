@@ -20,20 +20,8 @@
     ],
     "paths": {
       "oswis-ng-core": [
-        "dist/oswis-ng-core/oswis-ng-core",
-        "dist/oswis-ng-core"
-      ],
-      "oswis-ng-material": [
-        "dist/oswis-ng-material/oswis-ng-material",
-        "dist/oswis-ng-material"
-      ],
-      "oswis-ng-auth": [
-        "dist/oswis-ng-auth/oswis-ng-auth",
-        "dist/oswis-ng-auth"
-      ],
-      "oswis-ng-address-book": [
-        "dist/oswis-ng-address-book/oswis-ng-address-book",
-        "dist/oswis-ng-address-book"
+        "dist/oswis-core/oswis-core",
+        "dist/oswis-core"
       ],
       "oswis-shared": [
         "dist/oswis-shared/oswis-shared",

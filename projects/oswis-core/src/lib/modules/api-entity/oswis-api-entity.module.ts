@@ -39,6 +39,7 @@ import {RouterModule} from "@angular/router";
     CustomListActionButton,
     CustomActionComponent,
     RemoveEntityDialog,
+    OswisSharedModule,
   ],
   imports: [
     OswisSharedModule,

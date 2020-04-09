@@ -87,5 +87,5 @@
   "cli": {
     "analytics": "0e8fd8b9-ec83-4ed8-b85d-f009f9a49b69"
   },
-  "defaultProject": "oswis-shared"
+  "defaultProject": "oswis-core"
 }

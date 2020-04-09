@@ -1,6 +1,6 @@
 {
   "name": "oswis-shared",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Jakub Zak <mail@jakubzak.eu> (https://jakubzak.cz)",
   "description": "Core module for OSWIS (One Simple Web IS).",
   "homepage": "http://oswis.org",
@@ -33,7 +33,6 @@
     "rxjs-compat": "^6.5.4",
     "screenfull": "^5.0.2",
     "tslib": "^1.10.0",
-    "zone.js": "~0.10.2",
-    "oswis-shared": "*"
+    "zone.js": "~0.10.2"
   }
 }

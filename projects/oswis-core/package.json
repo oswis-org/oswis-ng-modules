@@ -1,6 +1,6 @@
 {
   "name": "oswis-core",
-  "version": "0.0.55",
+  "version": "0.0.57",
   "author": "Jakub Zak <mail@jakubzak.eu> (https://jakubzak.cz)",
   "description": "Core module for OSWIS (One Simple Web IS).",
   "homepage": "http://oswis.org",
@@ -34,6 +34,6 @@
     "screenfull": "^5.0.2",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2",
-    "oswis-shared": "^0.0.1"
+    "oswis-shared": "^0.0.2"
   }
 }
