@@ -5,8 +5,7 @@ import {ApiEntityListAlignEnum} from "../enums/api-entity-list-align.enum";
 import {ListActionModel} from "../models/list-action.model";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {ApiEntityService} from "../services/api-entity.service";
-
-type Type = object | any;
+import {BasicModel} from "oswis-shared";
 
 @Directive()
 export abstract class ApiEntityAbstractComponent implements OnInit, OnDestroy {
@@ -40,7 +39,7 @@ export abstract class ApiEntityAbstractComponent implements OnInit, OnDestroy {
     this.apiEntityService.setSelectedId(newId);
   }
 
-  selectEntity(newEntity?: Type): void {
+  selectEntity(newEntity?: BasicModel): void {
     this.apiEntityService.setSelectedId(newEntity ? newEntity.id : null);
   }
 

@@ -19,6 +19,7 @@ import {CustomActionComponent} from "./chunks/custom-action.component";
 import {RemoveEntityDialog} from "./components/remove-entity-dialog.component";
 import {OswisSharedModule} from "oswis-shared";
 import {RouterModule} from "@angular/router";
+import {CommonModule} from "@angular/common";
 
 @NgModule({
   exports: [
@@ -42,6 +43,7 @@ import {RouterModule} from "@angular/router";
     OswisSharedModule,
   ],
   imports: [
+    CommonModule,
     OswisSharedModule,
     RouterModule,
   ],

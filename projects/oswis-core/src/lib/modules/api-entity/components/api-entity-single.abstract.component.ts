@@ -1,6 +1,5 @@
 import {Observable} from 'rxjs/Observable';
 import {catchError, tap} from 'rxjs/operators';
-
 import {ListActionModel} from "../models/list-action.model";
 import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -8,8 +7,9 @@ import {MatDialog} from "@angular/material/dialog";
 import {Directive} from "@angular/core";
 import {ApiEntityService} from "../services/api-entity.service";
 import {RemoveEntityDialog} from "./remove-entity-dialog.component";
+import {BasicModel} from "oswis-shared";
 
-type Type = object | any;
+type Type = BasicModel;
 
 @Directive()
 export abstract class ApiEntitySingleAbstractComponent extends ApiEntityAbstractComponent {
@@ -35,7 +35,8 @@ export abstract class ApiEntitySingleAbstractComponent extends ApiEntityAbstract
     console.log('ApiEntitySingle: Loading entity...');
     this.selectedEntity$ = this.apiEntityService.getSelected().pipe(
       tap(x => {
-        this.selectedEntityEmpty = (x.length === 0);
+        // @ts-ignore
+        this.selectedEntityEmpty = (!x || x.length === 0);
         console.log('ApiEntitySingle: isEmpty?' + this.selectedEntityEmpty);
       }),
       catchError((err, caught) => {

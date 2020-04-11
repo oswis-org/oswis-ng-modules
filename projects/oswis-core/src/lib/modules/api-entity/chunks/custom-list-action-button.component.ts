@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {ListActionModel} from "../models/list-action.model";
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
   selector: 'oswis-api-entity-list-action-button',

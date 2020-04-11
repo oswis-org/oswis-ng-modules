@@ -1,20 +1,21 @@
+<!--suppress TypeScriptUnresolvedVariable -->
 <div>
   <h3>{{ boxTitle || 'Základní informace' }}</h3>
   <table class="entity-show-simple-table">
-    <tbody *ngIf="nameableItem" class="info-nameable">
+    <tbody *ngIf="nameable()" class="info-nameable">
     <tr>
       <td>Název</td>
-      <td>{{ nameableItem?.name }}</td>
+      <td>{{ nameable()?.name }}</td>
     </tr>
     <tr>
       <td>Zkrácený název</td>
-      <td>{{ nameableItem?.shortName }}</td>
+      <td>{{ nameable()?.shortName }}</td>
     </tr>
     <tr>
       <td matTooltip="Identifikátor do URL, tzv. „slug“">Identifikátor</td>
       <td>
-        <div>{{ nameableItem?.slug }}</div>
-        <div *ngIf="nameableItem.forcedSlug"><small>(nastaveno ručně)</small></div>
+        <div>{{ nameable()?.slug }}</div>
+        <div *ngIf="nameable()?.forcedSlug"><small>(nastaveno ručně)</small></div>
       </td>
     </tr>
     </tbody>
@@ -51,21 +52,30 @@
     <tbody *ngIf="email" class="info-email">
     <tr>
       <td>E-mail</td>
-      <td><a href="mailto:{{ email }}">{{ email }}</a></td>
+      <td>
+        <a href="mailto:{{ email }}" target="_blank">{{ email }}</a>
+        <a [cdkCopyToClipboard]="email" matTooltip="📋 Kopírovat do schránky" style="cursor:pointer;">📋</a>
+      </td>
     </tr>
     </tbody>
 
     <tbody *ngIf="url" class="info-url">
     <tr>
       <td>URL</td>
-      <td><a href="{{ url }}">{{ url }}</a></td>
+      <td>
+        <a href="{{ url }}" target="_blank">{{ url }}</a>
+        <a [cdkCopyToClipboard]="email" matTooltip="📋 Kopírovat do schránky" style="cursor:pointer;">📋</a>
+      </td>
     </tr>
     </tbody>
 
     <tbody *ngIf="phone" class="info-phone">
     <tr>
       <td>Telefon</td>
-      <td><a href="tel:{{ phone }}">{{ phone }}</a></td>
+      <td>
+        <a href="tel:{{ phone }}" target="_blank">{{ phone }}</a>
+        <a [cdkCopyToClipboard]="email" matTooltip="📋 Kopírovat do schránky" style="cursor:pointer;">📋</a>
+      </td>
     </tr>
     </tbody>
 
@@ -77,30 +87,30 @@
     </tbody>
 
 
-    <tbody *ngIf="basicItem" class="info-basic">
+    <tbody *ngIf="item" class="info-basic">
     <tr>
       <td>ID</td>
-      <td>{{ basicItem?.id }}</td>
+      <td>{{ item?.id }}</td>
     </tr>
     <tr>
       <td>Vytvořeno</td>
       <td>
-        <small *ngIf="basicItem?.createdDateTime" style="display:block;">
-          {{ basicItem?.createdDateTime|date:'d. M. y H:mm' }}
+        <small *ngIf="item?.createdDateTime" style="display:block;">
+          {{ item?.createdDateTime|date:'d. M. y H:mm' }}
         </small>
-        <small *ngIf="basicItem?.createdAuthor" style="display:block;">
-          {{ basicItem?.createdAuthor ? (basicItem?.createdAuthor?.fullName || basicItem?.createdAuthor?.username) : null }}
+        <small *ngIf="item?.createdAuthor" style="display:block;">
+          {{ item?.createdAuthor ? (item?.createdAuthor?.fullName || item?.createdAuthor?.username) : null }}
         </small>
       </td>
     </tr>
     <tr>
       <td>Upraveno</td>
       <td>
-        <small *ngIf="basicItem?.updatedDateTime" style="display:block;">
-          {{ basicItem?.updatedDateTime|date:'d. M. y H:mm' }}
+        <small *ngIf="item?.updatedDateTime" style="display:block;">
+          {{ item?.updatedDateTime|date:'d. M. y H:mm' }}
         </small>
-        <small *ngIf="basicItem?.updatedAuthor" style="display:block;">
-          {{ basicItem?.updatedAuthor ? (basicItem?.updatedAuthor?.fullName || basicItem?.updatedAuthor?.username) : null }}
+        <small *ngIf="item?.updatedAuthor" style="display:block;">
+          {{ item?.updatedAuthor ? (item?.updatedAuthor?.fullName || item?.updatedAuthor?.username) : null }}
         </small>
       </td>
     </tr>
@@ -115,7 +125,7 @@
     </tbody>
 
   </table>
-  <p *ngIf="nameableItem?.description"><strong>Popis: </strong> {{ nameableItem?.description }}</p>
-  <p *ngIf="nameableItem?.note"><strong>Poznámka: </strong> {{ nameableItem?.note }}</p>
-  <p *ngIf="nameableItem?.internalNote"><strong>Interní poznámka: </strong> {{ nameableItem?.internalNote }}</p>
+  <p *ngIf="nameable()?.description"><strong>Popis: </strong> {{ nameable()?.description }}</p>
+  <p *ngIf="nameable()?.note"><strong>Poznámka: </strong> {{ nameable()?.note }}</p>
+  <p *ngIf="nameable()?.internalNote"><strong>Interní poznámka: </strong> {{ nameable()?.internalNote }}</p>
 </div>

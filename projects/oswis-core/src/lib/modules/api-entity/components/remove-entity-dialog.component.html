@@ -12,6 +12,7 @@
           <ng-container *ngIf="item?.name || item?.contact?.name"><strong>{{ item?.name || item?.contact?.name }}</strong>,</ng-container>
           <ng-container *ngIf="item?.phone || item?.contact?.phone">{{ item?.phone || item?.contact?.phone }},</ng-container>
           <ng-container *ngIf="item?.price !== null">cena {{ item?.price || 0 }},-&nbsp;Kč</ng-container>
+          <ng-container *ngIf="item?.pricePaid !== null">({{ (item?.pricePaid || 0) }},-&nbsp;Kč&nbsp;zaplaceno)</ng-container>
           <ng-container *ngIf="item?.priceRest !== null">({{ (item?.priceRest || 0) }},-&nbsp;Kč&nbsp;zbývá)</ng-container>
         </small>
       </li>

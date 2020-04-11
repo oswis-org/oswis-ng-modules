@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {ApiEntityShowComponent} from '../components/api-entity-show.component';
-import {ApiEntityEditorComponent} from '../components/api-entity-editor.component';
+import {AbstractActionComponent} from "./abstract-action.component";
+import {ApiEntitySingleAbstractComponent} from "../components/api-entity-single.abstract.component";
 
 @Component({
   selector: 'oswis-api-entity-delete-show-action',
@@ -11,7 +11,7 @@ import {ApiEntityEditorComponent} from '../components/api-entity-editor.componen
     </button>
   `,
 })
-export class DeleteShowActionComponent {
-  @Input() component: ApiEntityShowComponent | ApiEntityEditorComponent;
+export class DeleteShowActionComponent extends AbstractActionComponent {
+  @Input() component: ApiEntitySingleAbstractComponent;
   @Input() entity: { id?: number, name?: string };
 }

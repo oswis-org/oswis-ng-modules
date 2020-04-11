@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {BasicModel, DialogComponent, DialogDataInterface} from "oswis-shared";
-import {ApiEntityServiceInterface} from "../interfaces/api-entity.service.interface";
+import {ApiEntityServiceInterface} from "../services/api-entity.service.interface";
 
 interface EntityDialogDataInterface extends DialogDataInterface {
   items: BasicModel[];

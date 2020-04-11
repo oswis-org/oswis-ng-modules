@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
-import {ApiEntitySingleAbstractComponent} from "./api-entity-single.abstract.component";
-import {ActivatedRoute, Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
+import {ActivatedRoute, Router} from "@angular/router";
 import {ApiEntityService} from "../services/api-entity.service";
+import {ApiEntitySingleAbstractComponent} from "./api-entity-single.abstract.component";
 
 @Component({
   selector: 'oswis-api-entity-show',
@@ -18,9 +18,7 @@ export class ApiEntityShowComponent extends ApiEntitySingleAbstractComponent {
   }
 
   static downloadVCard(data: any) {
-    const blob = new Blob([data], {type: 'text/vcard'});
-    const url = window.URL.createObjectURL(blob);
-    window.open(url, '_blank');
+    window.open(window.URL.createObjectURL(new Blob([data], {type: 'text/vcard'})), '_blank');
   }
 }
 

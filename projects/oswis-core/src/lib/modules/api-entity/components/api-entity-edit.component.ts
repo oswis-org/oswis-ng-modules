@@ -8,7 +8,7 @@ import {ApiEntityService} from "../services/api-entity.service";
 @Component({
   selector: 'oswis-api-entity-edit',
   template: `
-    <oswis-api-entity-editor [apiEntityService]="apiEntityService" [fields]="fields" [help]="help" [transform]="transform" class="entity-card-container">
+    <oswis-api-entity-editor [entityService]="apiEntityService" [fields]="fields" [help]="help" [transform]="transform" class="entity-card-container">
     </oswis-api-entity-editor>
   `,
 })

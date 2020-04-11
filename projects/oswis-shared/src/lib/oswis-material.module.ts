@@ -27,6 +27,7 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule, MomentDateAdapter} from '@angular/material-moment-adapter';
 import {LayoutModule} from "@angular/cdk/layout";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {ClipboardModule} from '@angular/cdk/clipboard';
 
 @NgModule({
   imports: [
@@ -59,6 +60,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,
+    ClipboardModule,
   ],
   exports: [
     MatButtonModule,
@@ -92,6 +94,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,
+    ClipboardModule,
   ],
   providers: [
     {provide: MAT_DATE_LOCALE, useValue: 'cs'},

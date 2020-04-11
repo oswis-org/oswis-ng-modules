@@ -6,7 +6,7 @@
 export * from './oswis-api-entity.module'
 
 // Interfaces
-export * from './interfaces/api-entity.service.interface';
+export * from './services/api-entity.service.interface';
 
 // Services
 export * from './services/api-entity.service';

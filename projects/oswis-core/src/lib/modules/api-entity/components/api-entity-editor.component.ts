@@ -7,6 +7,7 @@ import {ApiEntitySingleAbstractComponent} from "./api-entity-single.abstract.com
 import {ActivatedRoute, Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {ApiEntityService} from "../services/api-entity.service";
+import {BasicModel} from "oswis-shared";
 
 @Component({
   selector: 'oswis-api-entity-editor',
@@ -19,20 +20,27 @@ export class ApiEntityEditorComponent extends ApiEntitySingleAbstractComponent {
   public errorMessage = '';
   @Input() public help = null;
 
-  @Input() public apiEntityService: ApiEntityService;
+  @Input() public entityService: ApiEntityService;
 
   constructor(route: ActivatedRoute, router: Router, apiEntityService: ApiEntityService, dialog: MatDialog) {
     super(route, router, apiEntityService, dialog);
+    this.apiEntityService = this.entityService;
+    this.loadData();
+  }
+
+  ngOnInit() {
+    super.ngOnInit();
   }
 
   @Input() public transform: (item: object) => object = item => item;
 
-  public loadData(): Observable<object> {
+  public loadData(): Observable<BasicModel> {
     this.selectedEntityEmpty = false;
     if (!this.creatingNew()) {
       return this.selectedEntity$ = this.apiEntityService.getSelected().pipe(
         tap(x => {
-          this.selectedEntityEmpty = (x.length === 0);
+          // @ts-ignore
+          this.selectedEntityEmpty = (!x || x.length === 0);
           this.form.patchValue(x);
           this.model = x;
         }),
@@ -42,7 +50,7 @@ export class ApiEntityEditorComponent extends ApiEntitySingleAbstractComponent {
         })
       );
     }
-    return this.selectedEntity$ = new Observable<object>();
+    return this.selectedEntity$ = new Observable<BasicModel>();
   }
 
   creatingNew(): boolean {

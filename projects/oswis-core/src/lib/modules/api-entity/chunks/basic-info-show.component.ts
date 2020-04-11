@@ -1,6 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {AppUserModel, BasicModel, NameableModel} from "oswis-shared";
 
+type Nameable = NameableModel;
+
 @Component({
   selector: 'oswis-api-entity-basic-info-show',
   templateUrl: './basic-info-show.component.html',
@@ -8,8 +10,7 @@ import {AppUserModel, BasicModel, NameableModel} from "oswis-shared";
 export class BasicInfoShowComponent implements OnInit {
   @Input() boxTitle?: string;
 
-  @Input() basicItem?: BasicModel;
-  @Input() nameableItem?: NameableModel;
+  @Input() item?: BasicModel | NameableModel;
 
   @Input() type?: string;
   @Input() deleted?: string;
@@ -31,9 +32,16 @@ export class BasicInfoShowComponent implements OnInit {
     this.fillProperties();
   }
 
+  nameable(): NameableModel {
+    return this.item instanceof NameableModel || typeof this.item === typeof NameableModel ? <NameableModel>this.item : null;
+  }
+
+  isNameable(): boolean {
+    return this.item instanceof NameableModel || typeof this.item === typeof NameableModel;
+  }
+
   fillProperties() {
-    this.basicItem = this.basicItem ? this.basicItem : this.nameableItem;
-    if (!this.basicItem) {
+    if (!this.item) {
       return;
     }
     this.fillCommonProperties();
@@ -43,63 +51,62 @@ export class BasicInfoShowComponent implements OnInit {
   }
 
   fillContactProperties(): void {
-    if ('fullName' in this.basicItem) {
+    if ('fullName' in this.item) {
       // @ts-ignore
-      this.fullName = this.basicItem.fullName;
+      this.fullName = this.item.fullName;
     }
-    if ('url' in this.basicItem) {
+    if ('url' in this.item) {
       // @ts-ignore
-      this.url = this.basicItem.url;
+      this.url = this.item.url;
     }
-    if ('email' in this.basicItem) {
+    if ('email' in this.item) {
       // @ts-ignore
-      this.email = this.basicItem.email;
+      this.email = this.item.email;
     }
-    if ('phone' in this.basicItem) {
+    if ('phone' in this.item) {
       // @ts-ignore
-      this.phone = this.basicItem.phone;
+      this.phone = this.item.phone;
     }
   }
 
   fillCommonProperties(): void {
-    if ('type' in this.basicItem) {
+    if ('type' in this.item) {
       // @ts-ignore
-      this.type = this.basicItem.type;
+      this.type = this.item.type;
     }
-    if ('deleted' in this.basicItem) {
+    if ('deleted' in this.item) {
       // @ts-ignore
-      this.deleted = this.basicItem.deleted;
+      this.deleted = this.item.deleted;
     }
-    if ('active' in this.basicItem) {
+    if ('active' in this.item) {
       // @ts-ignore
-      this.active = this.basicItem.active;
+      this.active = this.item.active;
     }
   }
 
   fillDateTimeProperties(): void {
-    if ('dateTime' in this.basicItem) {
+    if ('dateTime' in this.item) {
       // @ts-ignore
-      this.dateTime = this.basicItem.dateTime;
+      this.dateTime = this.item.dateTime;
     }
-    if ('startDateTime' in this.basicItem) {
+    if ('startDateTime' in this.item) {
       // @ts-ignore
-      this.startDateTime = this.basicItem.startDateTime;
+      this.startDateTime = this.item.startDateTime;
     }
-    if ('endDateTime' in this.basicItem) {
+    if ('endDateTime' in this.item) {
       // @ts-ignore
-      this.endDateTime = this.basicItem.endDateTime;
+      this.endDateTime = this.item.endDateTime;
     }
   }
 
-
   fillAppUserProperties(): void {
-    if ('appUser' in this.basicItem) {
+    if ('appUser' in this.item) {
       // @ts-ignore
-      this.appUser = this.basicItem.appUser;
+      this.appUser = this.item.appUser;
     }
-    if ('username' in this.basicItem) {
+    if ('username' in this.item) {
       // @ts-ignore
-      this.username = this.basicItem.username;
+      this.username = this.item.username;
     }
   }
 

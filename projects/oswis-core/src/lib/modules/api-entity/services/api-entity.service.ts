@@ -1,18 +1,17 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
-import {ApiEntityServiceInterface} from '../interfaces/api-entity.service.interface';
+import {ApiEntityServiceInterface} from './api-entity.service.interface';
 import {NotificationsService} from 'angular2-notifications';
 import {catchError, retry, tap} from 'rxjs/operators';
 import {ActivatedRoute, ParamMap} from "@angular/router";
-import {AuthenticationService, OSWIS_CONFIG, OswisConfig} from "oswis-shared";
-
-type Type = any;
+import {AuthenticationService, BasicModel, OSWIS_CONFIG, OswisConfig} from "oswis-shared";
+import {JsonLdListResponse} from "../models/json-ld-list.response";
 
 @Injectable({
   providedIn: 'root'
 })
-export class ApiEntityService implements ApiEntityServiceInterface {
+export class ApiEntityService<Type extends BasicModel = BasicModel> implements ApiEntityServiceInterface<Type> {
   protected baseUrl: string;
   protected path: string;
   protected frontendPath: string;
@@ -77,7 +76,7 @@ export class ApiEntityService implements ApiEntityServiceInterface {
     sort: { column: string, order: string }[] = [],
     filters: { column: string, value: string }[] = [],
     searchParamString: string = ''
-  ): Observable<Type[]> {
+  ): Observable<JsonLdListResponse<Type>> {
     const searchParamUrlString = searchParamString ? '&' + searchParamString : '';
     let urlParams = `?pagination=true&itemsPerPage=${perPage}&page=${page}&${searchParamUrlString}`;
     sort.forEach(
@@ -96,7 +95,7 @@ export class ApiEntityService implements ApiEntityServiceInterface {
       }
     );
     console.log('Get some items from API (' + this.path + ').');
-    return this.http.get<Type[]>(this.getApiUrl() + '.jsonld' + urlParams)
+    return this.http.get<JsonLdListResponse<Type>>(this.getApiUrl() + '.jsonld' + urlParams)
       .pipe(
         retry(this.retryCount),
         catchError((err) => {
@@ -132,7 +131,7 @@ export class ApiEntityService implements ApiEntityServiceInterface {
   }
 
   post(newEntity: Type, callback?: any): Observable<Type> {
-    return this.http.post<Type[]>(this.getApiUrl(), newEntity)
+    return this.http.post<Type>(this.getApiUrl(), newEntity)
       .pipe(
         tap(x => {
           const title = this.getEntityName() + ' vytvořen' + this.getA() + '.';
@@ -147,7 +146,7 @@ export class ApiEntityService implements ApiEntityServiceInterface {
         catchError((err) => {
           const errorMessage = 'Nelze vytvořit ' + this.getEntityName(4, false) + ' ' + newEntity.id + '.';
           ApiEntityService.handleError(errorMessage, err);
-          return new Observable();
+          return new Observable<Type>();
         })
       );
   }
@@ -155,7 +154,7 @@ export class ApiEntityService implements ApiEntityServiceInterface {
   put(updatedEntity: Type, callback?: any): Observable<Type> {
     console.log('Will put: ');
     console.log(updatedEntity);
-    return this.http.put<Type[]>(this.getApiUrl() + '/' + updatedEntity.id, updatedEntity)
+    return this.http.put<Type>(this.getApiUrl() + '/' + updatedEntity.id, updatedEntity)
       .pipe(
         tap(() => {
           const title = this.getEntityName() + ' upraven' + this.getA() + '.';
@@ -169,7 +168,7 @@ export class ApiEntityService implements ApiEntityServiceInterface {
         catchError((err) => {
           const errorMessage = 'Nelze vytvořit ' + this.getEntityName(4, false) + ' ' + updatedEntity.id + '.';
           ApiEntityService.handleError(errorMessage, err);
-          return new Observable();
+          return new Observable<Type>();
         })
       );
   }
@@ -187,9 +186,9 @@ export class ApiEntityService implements ApiEntityServiceInterface {
     return entity && entity.id > 0 ? this.deleteById(entity.id, callback) : new Observable<Type>();
   }
 
-  deleteById(id: Type, callback?: any): Observable<Type> {
+  deleteById(id: number, callback?: any): Observable<Type> {
     if (id && id > 0) {
-      return this.http.delete<Type[]>(this.getApiUrl() + '/' + id)
+      return this.http.delete<Type>(this.getApiUrl() + '/' + id)
         .pipe(
           tap(() => {
             const title = this.getEntityName() + ' smazán' + this.getA() + '.';
@@ -204,7 +203,7 @@ export class ApiEntityService implements ApiEntityServiceInterface {
           catchError((err) => {
             const errorMessage = 'Nelze smazat ' + this.getEntityName(4, false) + ' ' + id + '.';
             ApiEntityService.handleError(errorMessage, err);
-            return new Observable();
+            return new Observable<Type>();
           })
         );
     }
@@ -270,7 +269,7 @@ export class ApiEntityService implements ApiEntityServiceInterface {
   }
 
   downloadPdfList(urlPath: string, type: string = 'get-list-pdf'): Observable<any> {
-    console.log('Download resource as PDF.');
+    console.log('Downloading resource as PDF...');
     const req = {};
     req['type'] = type;
     return this.http.post<any>(this.baseUrl + '/' + urlPath, req)
@@ -290,13 +289,12 @@ export class ApiEntityService implements ApiEntityServiceInterface {
   }
 
   setSelectedByRoute(route: ActivatedRoute): void {
-    if (route) {
-      route.params.subscribe((params: ParamMap) => {
-        this.setSelectedId(params['id'] ? +params['id'] : null);
-        console.log('ApiEntity ' + this.getEntityName(1, true) + ' ' + params['id'] ? +params['id'] : 'not' + ' selected.');
-      });
+    if (!route) {
+      return;
     }
+    route.params.subscribe((params: ParamMap) => {
+      this.setSelectedId(params['id'] ? +params['id'] : null);
+      console.log('ApiEntity ' + this.getEntityName(1, true) + ' ' + params['id'] ? +params['id'] : 'not' + ' selected.');
+    });
   }
-
-
 }

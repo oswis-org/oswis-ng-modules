@@ -1,12 +1,11 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {ActivatedRoute} from "@angular/router";
-
-type Type = any;
+import {BasicModel} from "oswis-shared";
+import {JsonLdListResponse} from "../models/json-ld-list.response";
 
 @Injectable()
-export abstract class ApiEntityServiceInterface {
-
+export abstract class ApiEntityServiceInterface<Type extends BasicModel = BasicModel> {
   abstract getAll(): Observable<Type[]>;
 
   abstract getSelected(): Observable<Type>;
@@ -53,7 +52,7 @@ export abstract class ApiEntityServiceInterface {
     sort?: { column: string, order: string }[],
     filters?: { column: string, value: string }[],
     searchParamsString?: string
-  ): Observable<Type[]>;
+  ): Observable<JsonLdListResponse<Type>>;
 
   abstract downloadPdfList(urlPath: string, type: string): Observable<any>;
 

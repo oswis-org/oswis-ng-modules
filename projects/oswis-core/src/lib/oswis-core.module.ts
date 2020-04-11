@@ -14,11 +14,13 @@ import {JwtInterceptor} from "@auth0/angular-jwt";
 import {MatPaginatorIntl} from "@angular/material/paginator";
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from "@angular/material/core";
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from "@angular/material-moment-adapter";
+import {CommonModule} from "@angular/common";
 
 @NgModule({
   imports: [
+    CommonModule,
     HttpClientModule,
-    OswisSharedModule
+    OswisSharedModule,
   ],
   exports: [OswisSharedModule],
   providers: [

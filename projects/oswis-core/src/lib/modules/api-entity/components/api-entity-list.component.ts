@@ -1,65 +1,56 @@
-import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatSort} from '@angular/material/sort';
-import {MatTableDataSource} from '@angular/material/table';
-import {ActivatedRoute, Router} from '@angular/router';
+import {fromEvent} from 'rxjs';
 import {merge} from 'rxjs/observable/merge';
-import {of as observableOf} from 'rxjs/observable/of';
-import {catchError} from 'rxjs/operators/catchError';
-import {debounceTime, distinctUntilChanged, map, tap} from 'rxjs/operators';
+import {MatSort} from '@angular/material/sort';
+import {HttpClient} from '@angular/common/http';
 import {startWith} from 'rxjs/operators/startWith';
 import {switchMap} from 'rxjs/operators/switchMap';
+import {catchError} from 'rxjs/operators/catchError';
+import {of as observableOf} from 'rxjs/observable/of';
+import {ActivatedRoute, Router} from '@angular/router';
 import {SelectionModel} from '@angular/cdk/collections';
-import {fromEvent} from 'rxjs';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatTableDataSource} from '@angular/material/table';
 import {ListActionModel} from '../models/list-action.model';
-import {ColumnDefinitionModel} from '../models/column-definition.model';
-import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
-import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
 import {ApiEntityService} from "../services/api-entity.service";
-
-type Type = object | any;
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import {ColumnDefinitionModel} from '../models/column-definition.model';
+import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
+import {debounceTime, distinctUntilChanged, map, tap} from 'rxjs/operators';
+import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {JsonLdListResponse} from "../models/json-ld-list.response";
+import {BasicModel} from "oswis-shared";
 
 @Component({
   selector: 'oswis-api-entity-list',
   templateUrl: './api-entity-list.component.html',
 })
 export class ApiEntityListComponent extends ApiEntityAbstractComponent implements AfterViewInit {
-
   @Input() public apiEntityService: ApiEntityService;
-
   @Input() displayedColumns: string[];
   @Input() columnDefs: ColumnDefinitionModel[];
-
   @Input() searchValue: string;
   @Input() actionSingleButtons: ListActionModel[] = [];
   @Input() actionSingleLinks: ListActionModel[] = [];
   @Input() actionMultipleMenuItems: ListActionModel[] = [];
   @Input() actionGlobalButtons: ListActionModel[] = [];
   @Input() actionStaticButtons: ListActionModel[] = [{name: 'Filtry', icon: 'filter_list', action: this.toggleShowFilterWrapper()}];
+  @Input() defaultSearchColumn = 'search';
   @Input() pageSize = 10;
+  @Input() searchColumns: string[];
+  @Input() searchParamsString = '';
+
   resultsLength = 0;
   isLoadingResults = true;
   isRateLimitReached = false;
   public showFilter = false;
-  dataSource = new MatTableDataSource<object>();
-  selection = new SelectionModel<Type>(true, []);
+  dataSource = new MatTableDataSource<BasicModel>();
+  selection = new SelectionModel<BasicModel>(true, []);
+
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   @ViewChild('searchInput', {read: ElementRef, static: true}) searchInput: ElementRef;
-  @Input() protected defaultSearchColumn = 'search';
-  @Input() protected searchColumns: string[];
-  @Input() protected searchParamsString = '';
 
-  // @ViewChild('filter', {read: ElementRef, static: true}) filter: ElementRef;
-
-  constructor(
-    public http: HttpClient,
-    route: ActivatedRoute,
-    router: Router,
-    apiEntityService: ApiEntityService,
-    dialog: MatDialog,
-  ) {
+  constructor(public http: HttpClient, route: ActivatedRoute, router: Router, apiEntityService: ApiEntityService, dialog: MatDialog) {
     super(route, router, apiEntityService, dialog);
   }
 
@@ -113,7 +104,8 @@ export class ApiEntityListComponent extends ApiEntityAbstractComponent implement
   masterToggle() {
     if (this.isAllSelected()) {
       this.selection.clear();
-    } else {
+    }
+    if (!this.isAllSelected()) {
       this.dataSource.filteredData.forEach(row => this.selection.select(row));
       this.apiEntityService.get(
         1,
@@ -132,7 +124,8 @@ export class ApiEntityListComponent extends ApiEntityAbstractComponent implement
               if (indexedData[selectedEntity.id]) {
                 this.selection.deselect(selectedEntity);
                 this.selection.select(indexedData[selectedEntity.id]);
-              } else {
+              }
+              if (!indexedData[selectedEntity.id]) {
                 this.selection.select(selectedEntity);
               }
             });
@@ -177,24 +170,22 @@ export class ApiEntityListComponent extends ApiEntityAbstractComponent implement
         );
       }),
       map(data => {
-        // Flip flag to show that loading has finished.
-        this.isLoadingResults = false;
-        this.isRateLimitReached = false;
-        // console.log(data['hydra:totalItems'] + ', ' + data.length);
+        this.isLoadingResults = false;   // Flip flag to show that loading has finished.
+        this.isRateLimitReached = false; // console.log(data['hydra:totalItems'] + ', ' + data.length);
+        // @ts-ignore
         this.resultsLength = data['hydra:totalItems'] || data.length;
         return data['hydra:member'] || data;
       }),
       catchError(() => {
         console.log('Catch error.');
         this.isLoadingResults = false;
-        // Catch if the GitHub API has reached its rate limit. Return empty data.
-        this.isRateLimitReached = true;
+        this.isRateLimitReached = true;  // Catch if the GitHub API has reached its rate limit. Return empty data.
         return observableOf([]);
       })
     ).subscribe(data => {
-      this.dataSource.data = data;
+      this.dataSource.data = this.getDataFromResponse(data);
       const indexedData = [];
-      data.forEach(entity => {
+      this.dataSource.data.forEach((entity: BasicModel) => {
         indexedData[entity.id] = entity;
       });
       this.selection.selected.forEach(selectedEntity => {
@@ -206,9 +197,15 @@ export class ApiEntityListComponent extends ApiEntityAbstractComponent implement
     });
   }
 
+  protected getDataFromResponse(data: any[] | JsonLdListResponse<BasicModel> | BasicModel[]): BasicModel[] {
+    if (data instanceof JsonLdListResponse) {
+      return data["hydra:member"];
+    }
+    return data;
+  }
+
   ngAfterViewInit() {
-    console.log('Search input: ');
-    console.log(this.searchInput);
+    console.log('Search input: ', this.searchInput);
     fromEvent(this.searchInput.nativeElement, 'keyup')
       .pipe(
         debounceTime(800),
@@ -219,21 +216,20 @@ export class ApiEntityListComponent extends ApiEntityAbstractComponent implement
         })
       )
       .subscribe();
-    this.loadData();
-    // this.dataSource.paginator = this.paginator; this.dataSource.sort = this.sort;
+    this.loadData(); // this.dataSource.paginator = this.paginator; this.dataSource.sort = this.sort;
   }
 
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
-  selectEntity(newEntity: Type) {
+  selectEntity(newEntity: BasicModel) {
     this.apiEntityService.setSelectedId(newEntity.id);
   }
 
   selectEntityByRow(entityId: number, event) {
-    const redirectPath = '/' + this.getFrontPath() + '/' + entityId; // console.log('Router: ' + redirectPath);
-    this.router.navigate([redirectPath]).then(); // console.log('Selected Entity: ' + entityId + ', ' + event);
+    const redirectPath = '/' + this.getFrontPath() + '/' + entityId;
+    this.router.navigate([redirectPath]).then();
   }
 
   getFrontPath(): string {
@@ -260,7 +256,7 @@ export class ApiEntityListComponent extends ApiEntityAbstractComponent implement
     return Array.isArray(item);
   }
 
-  public downloadPdfList(urlPath: string, type: string = 'get-list-pdf', fileName: string = 'oswis-download-file.pdf',) {
+  public downloadPdfList(urlPath: string, type: string = 'get-list-pdf', fileName: string = 'oswis-download-file.pdf') {
     this.apiEntityService.downloadPdfList(urlPath, type)
       .pipe(
         tap(x => {
@@ -293,5 +289,4 @@ export class ApiEntityListComponent extends ApiEntityAbstractComponent implement
       }
     );
   }
-
 }

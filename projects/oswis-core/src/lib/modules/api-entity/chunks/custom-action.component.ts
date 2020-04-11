@@ -1,7 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {ApiEntityShowComponent} from '../components/api-entity-show.component';
-import {ApiEntityEditorComponent} from '../components/api-entity-editor.component';
 import {ListActionModel} from "../models/list-action.model";
+import {AbstractActionComponent} from "./abstract-action.component";
 
 @Component({
   selector: 'oswis-api-entity-custom-action',
@@ -12,8 +11,7 @@ import {ListActionModel} from "../models/list-action.model";
     </button>
   `,
 })
-export class CustomActionComponent {
-  @Input() component: ApiEntityShowComponent | ApiEntityEditorComponent;
+export class CustomActionComponent extends AbstractActionComponent {
   @Input() action: ListActionModel = new ListActionModel();
   @Input() isLink: boolean = true;
 }

@@ -12,9 +12,9 @@
     <oswis-api-entity-loading-show [empty]="selectedEntityEmpty"></oswis-api-entity-loading-show>
   </ng-template>
   <mat-card-actions *ngIf="selectedEntityEmpty || (selectedEntity$ | async) as entity; else loadingActions" class="entity-actions-buttons">
-    <oswis-api-entity-basic-show-actions [component]="this" [edit]="true"></oswis-api-entity-basic-show-actions>
+    <oswis-api-entity-basic-show-actions [component]="this"></oswis-api-entity-basic-show-actions>
   </mat-card-actions>
   <ng-template #loadingActions>
-    <oswis-api-entity-basic-show-actions [component]="this" [edit]="true" [empty]="true"></oswis-api-entity-basic-show-actions>
+    <oswis-api-entity-basic-show-actions [component]="this" [empty]="true"></oswis-api-entity-basic-show-actions>
   </ng-template>
 </mat-card>
