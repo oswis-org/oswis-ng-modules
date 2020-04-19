@@ -17,7 +17,7 @@ import {RefreshActionComponent} from './chunks/refresh-action.component';
 import {CustomListActionButton} from "./chunks/custom-list-action-button.component";
 import {CustomActionComponent} from "./chunks/custom-action.component";
 import {RemoveEntityDialog} from "./components/remove-entity-dialog.component";
-import {OswisSharedModule} from "oswis-shared";
+import {OswisSharedModule} from "@oswis-org/oswis-shared";
 import {RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
 

@@ -8,7 +8,7 @@ import {
   OswisConfig,
   OswisSharedModule,
   RefreshTokenInterceptor
-} from "oswis-shared";
+} from "@oswis-org/oswis-shared";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {JwtInterceptor} from "@auth0/angular-jwt";
 import {MatPaginatorIntl} from "@angular/material/paginator";

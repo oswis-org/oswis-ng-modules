@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {BasicModel, NameableModel} from "oswis-shared";
+import {BasicModel, NameableModel} from "@oswis-org/oswis-shared";
 
 @Component({
   selector: 'oswis-api-entity-basic-info-show',

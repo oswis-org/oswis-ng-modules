@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {AuthenticationService} from "oswis-shared";
+import {AuthenticationService} from "@oswis-org/oswis-shared";
 
 @Component({
   selector: 'oswis-app-user-logout',

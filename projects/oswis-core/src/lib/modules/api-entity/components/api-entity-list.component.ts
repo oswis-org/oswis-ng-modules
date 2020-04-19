@@ -18,7 +18,7 @@ import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
 import {debounceTime, distinctUntilChanged, map, tap} from 'rxjs/operators';
 import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {JsonLdListResponse} from "../models/json-ld-list.response";
-import {BasicModel} from "oswis-shared";
+import {BasicModel} from "@oswis-org/oswis-shared";
 
 @Component({
   selector: 'oswis-api-entity-list',

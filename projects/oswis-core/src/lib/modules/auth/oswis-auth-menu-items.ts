@@ -1,4 +1,4 @@
-import {MenuItemModel} from "oswis-shared";
+import {MenuItemModel} from "@oswis-org/oswis-shared";
 
 export const OSWIS_AUTH_MENU_ITEMS: MenuItemModel[] = [
   new MenuItemModel(

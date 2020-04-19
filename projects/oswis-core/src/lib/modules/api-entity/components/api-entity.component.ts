@@ -5,7 +5,7 @@ import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ListActionModel} from "../models/list-action.model";
 import {ApiEntityService} from "../services/api-entity.service";
-import {BasicModel, SidebarShowService} from "oswis-shared";
+import {BasicModel, SidebarShowService} from "@oswis-org/oswis-shared";
 
 @Component({
   selector: 'oswis-api-entity',

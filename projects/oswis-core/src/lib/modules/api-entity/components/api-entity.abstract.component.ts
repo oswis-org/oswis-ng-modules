@@ -5,7 +5,7 @@ import {ApiEntityListAlignEnum} from "../enums/api-entity-list-align.enum";
 import {ListActionModel} from "../models/list-action.model";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {ApiEntityService} from "../services/api-entity.service";
-import {BasicModel} from "oswis-shared";
+import {BasicModel} from "@oswis-org/oswis-shared";
 
 @Directive()
 export abstract class ApiEntityAbstractComponent<Type extends BasicModel = BasicModel> implements OnInit, OnDestroy {

@@ -5,7 +5,7 @@ import {ApiEntityServiceInterface} from './api-entity.service.interface';
 import {NotificationsService} from 'angular2-notifications';
 import {catchError, retry, tap} from 'rxjs/operators';
 import {ActivatedRoute, ParamMap} from "@angular/router";
-import {AuthenticationService, BasicModel, OSWIS_CONFIG, OswisConfig} from "oswis-shared";
+import {AuthenticationService, BasicModel, OSWIS_CONFIG, OswisConfig} from "@oswis-org/oswis-shared";
 import {JsonLdListResponse} from "../models/json-ld-list.response";
 
 @Injectable({

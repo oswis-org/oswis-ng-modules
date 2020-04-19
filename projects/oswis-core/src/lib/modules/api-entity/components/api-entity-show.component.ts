@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {BasicModel} from "oswis-shared";
+import {BasicModel} from "@oswis-org/oswis-shared";
 import {MatDialog} from "@angular/material/dialog";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ApiEntityService} from "../services/api-entity.service";

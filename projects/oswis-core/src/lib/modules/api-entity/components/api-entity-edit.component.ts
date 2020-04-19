@@ -4,7 +4,7 @@ import {ApiEntitySingleAbstractComponent} from "./api-entity-single.abstract.com
 import {ActivatedRoute, Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {ApiEntityService} from "../services/api-entity.service";
-import {BasicModel} from "oswis-shared";
+import {BasicModel} from "@oswis-org/oswis-shared";
 
 @Component({
   selector: 'oswis-api-entity-edit',

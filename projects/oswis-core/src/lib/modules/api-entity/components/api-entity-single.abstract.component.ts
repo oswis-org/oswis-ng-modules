@@ -1,5 +1,5 @@
 import {Directive} from "@angular/core";
-import {BasicModel} from "oswis-shared";
+import {BasicModel} from "@oswis-org/oswis-shared";
 import {Observable} from 'rxjs/Observable';
 import {catchError, tap} from 'rxjs/operators';
 import {MatDialog} from "@angular/material/dialog";

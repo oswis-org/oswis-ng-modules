@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {ActivatedRoute} from "@angular/router";
-import {BasicModel} from "oswis-shared";
+import {BasicModel} from "@oswis-org/oswis-shared";
 import {JsonLdListResponse} from "../models/json-ld-list.response";
 
 @Injectable()

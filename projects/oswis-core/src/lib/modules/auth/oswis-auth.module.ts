@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from "@angular/common";
-import {OswisSharedModule} from "oswis-shared";
+import {OswisSharedModule} from "@oswis-org/oswis-shared";
 import {OswisAuthComponent} from "./oswis-auth.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {OswisAuthRoutingModule} from "./oswis-auth-routing.module";
