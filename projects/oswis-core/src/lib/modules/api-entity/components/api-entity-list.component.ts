@@ -24,8 +24,8 @@ import {BasicModel} from "oswis-shared";
   selector: 'oswis-api-entity-list',
   templateUrl: './api-entity-list.component.html',
 })
-export class ApiEntityListComponent extends ApiEntityAbstractComponent implements AfterViewInit {
-  @Input() public apiEntityService: ApiEntityService;
+export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extends ApiEntityAbstractComponent<Type> implements AfterViewInit {
+  @Input() public apiEntityService: ApiEntityService<Type>;
   @Input() displayedColumns: string[];
   @Input() columnDefs: ColumnDefinitionModel[];
   @Input() searchValue: string;
@@ -50,7 +50,7 @@ export class ApiEntityListComponent extends ApiEntityAbstractComponent implement
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   @ViewChild('searchInput', {read: ElementRef, static: true}) searchInput: ElementRef;
 
-  constructor(public http: HttpClient, route: ActivatedRoute, router: Router, apiEntityService: ApiEntityService, dialog: MatDialog) {
+  constructor(public http: HttpClient, route: ActivatedRoute, router: Router, apiEntityService: ApiEntityService<Type>, dialog: MatDialog) {
     super(route, router, apiEntityService, dialog);
   }
 
@@ -197,13 +197,6 @@ export class ApiEntityListComponent extends ApiEntityAbstractComponent implement
     });
   }
 
-  protected getDataFromResponse(data: any[] | JsonLdListResponse<BasicModel> | BasicModel[]): BasicModel[] {
-    if (data instanceof JsonLdListResponse) {
-      return data["hydra:member"];
-    }
-    return data;
-  }
-
   ngAfterViewInit() {
     console.log('Search input: ', this.searchInput);
     fromEvent(this.searchInput.nativeElement, 'keyup')
@@ -288,5 +281,12 @@ export class ApiEntityListComponent extends ApiEntityAbstractComponent implement
         dialogRef.close();
       }
     );
+  }
+
+  protected getDataFromResponse(data: any[] | JsonLdListResponse<BasicModel> | BasicModel[]): BasicModel[] {
+    if (data instanceof JsonLdListResponse) {
+      return data["hydra:member"];
+    }
+    return data;
   }
 }

@@ -1,97 +1,82 @@
-<!--suppress TypeScriptUnresolvedVariable -->
 <div>
   <h3>{{ boxTitle || 'Základní informace' }}</h3>
   <table class="entity-show-simple-table">
-    <tbody *ngIf="nameable()" class="info-nameable">
-    <tr>
+
+    <tr *ngIf="exist('name')">
       <td>Název</td>
-      <td>{{ nameable()?.name }}</td>
+      <td>{{ get('name') }}</td>
     </tr>
-    <tr>
+
+    <tr *ngIf="exist('shortName')">
       <td>Zkrácený název</td>
-      <td>{{ nameable()?.shortName }}</td>
+      <td>{{ get('shortName') }}</td>
     </tr>
-    <tr>
+
+    <tr *ngIf="exist('slug')">
       <td matTooltip="Identifikátor do URL, tzv. „slug“">Identifikátor</td>
       <td>
-        <div>{{ nameable()?.slug }}</div>
-        <div *ngIf="nameable()?.forcedSlug"><small>(nastaveno ručně)</small></div>
+        <div>{{ get('slug') }}</div>
+        <div *ngIf="get('forcedSlug')"><small>(nastaveno ručně)</small></div>
       </td>
     </tr>
-    </tbody>
-    <tbody *ngIf="type" class="info-type">
-    <tr>
+
+    <tr *ngIf="exist('type')">
       <td>Typ</td>
-      <td><em>{{ type }}</em></td>
+      <td><em>{{ get('type') }}</em></td>
     </tr>
-    </tbody>
-    <tbody *ngIf="appUser" class="info-app-user">
-    <tr *ngIf="appUser">
+
+    <tr *ngIf="exist('appUser')">
       <td>Uživatel</td>
       <td>
-        <div>{{ appUser?.username }}</div>
-        <div *ngIf="appUser.fullName"><small>{{ appUser?.fullName }}</small></div>
+        <div>{{ get('appUser')?.username }}</div>
+        <div *ngIf="get('appUser')?.fullName"><small>{{ get('appUser')?.fullName }}</small></div>
       </td>
     </tr>
-    </tbody>
 
-    <tbody *ngIf="username" class="info-username">
-    <tr>
+    <tr *ngIf="exist('username')">
       <td>Uživatelské jméno</td>
-      <td>{{ username }}</td>
+      <td>{{ get('username') }}</td>
     </tr>
-    </tbody>
 
-    <tbody *ngIf="fullName" class="info-full-name">
-    <tr>
+    <tr *ngIf="exist('fullName')">
       <td>Celé jméno</td>
-      <td>{{ fullName }}</td>
+      <td>{{ get('fullName') }}</td>
     </tr>
-    </tbody>
 
-    <tbody *ngIf="email" class="info-email">
-    <tr>
+    <tr *ngIf="exist('email')">
       <td>E-mail</td>
       <td>
-        <a href="mailto:{{ email }}" target="_blank">{{ email }}</a>
-        <a [cdkCopyToClipboard]="email" matTooltip="📋 Kopírovat do schránky" style="cursor:pointer;">📋</a>
+        <a href="mailto:{{ get('email') }}" target="_blank">{{ get('email') }}</a>
+        <a [cdkCopyToClipboard]="get('email')" matTooltip="📋 Kopírovat do schránky" style="cursor:pointer;">📋</a>
       </td>
     </tr>
-    </tbody>
 
-    <tbody *ngIf="url" class="info-url">
-    <tr>
+    <tr *ngIf="exist('url')">
       <td>URL</td>
       <td>
-        <a href="{{ url }}" target="_blank">{{ url }}</a>
-        <a [cdkCopyToClipboard]="email" matTooltip="📋 Kopírovat do schránky" style="cursor:pointer;">📋</a>
+        <a href="{{ get('url') }}" target="_blank">{{ get('url') }}</a>
+        <a [cdkCopyToClipboard]="get('url')" matTooltip="📋 Kopírovat do schránky" style="cursor:pointer;">📋</a>
       </td>
     </tr>
-    </tbody>
 
-    <tbody *ngIf="phone" class="info-phone">
-    <tr>
+    <tr *ngIf="exist('phone')">
       <td>Telefon</td>
       <td>
-        <a href="tel:{{ phone }}" target="_blank">{{ phone }}</a>
-        <a [cdkCopyToClipboard]="email" matTooltip="📋 Kopírovat do schránky" style="cursor:pointer;">📋</a>
+        <a href="tel:{{ get('phone') }}" target="_blank">{{ get('phone') }}</a>
+        <a [cdkCopyToClipboard]="get('phone')" matTooltip="📋 Kopírovat do schránky" style="cursor:pointer;">📋</a>
       </td>
     </tr>
-    </tbody>
 
-    <tbody *ngIf="active === true || active === false">
-    <tr>
+    <tr *ngIf="exist('active') && (get('active') === true || get('active') === false)">
       <td>Aktivní</td>
-      <td>{{ active ? 'Ano' : 'Ne' }}</td>
+      <td>{{ get('active') ? 'Ano' : 'Ne' }}</td>
     </tr>
-    </tbody>
 
-
-    <tbody *ngIf="item" class="info-basic">
     <tr>
       <td>ID</td>
       <td>{{ item?.id }}</td>
     </tr>
+
     <tr>
       <td>Vytvořeno</td>
       <td>
@@ -103,6 +88,7 @@
         </small>
       </td>
     </tr>
+
     <tr>
       <td>Upraveno</td>
       <td>
@@ -114,18 +100,17 @@
         </small>
       </td>
     </tr>
-    </tbody>
 
-    <tbody>
-    <tr>
+    <tr *ngIf="exist('deleted')">
       <td>Smazáno</td>
-      <td *ngIf="deleted"><strong>deleted|date:'d. M. y'</strong></td>
-      <td *ngIf="!deleted">Ne</td>
+      <td *ngIf="get('deleted')"><strong>{{get('deleted')|date:'d. M. y'}}</strong></td>
+      <td *ngIf="!get('deleted')">Ne</td>
     </tr>
-    </tbody>
+
+    <!-- TODO: Fix missing startDateTime..... -->
 
   </table>
-  <p *ngIf="nameable()?.description"><strong>Popis: </strong> {{ nameable()?.description }}</p>
-  <p *ngIf="nameable()?.note"><strong>Poznámka: </strong> {{ nameable()?.note }}</p>
-  <p *ngIf="nameable()?.internalNote"><strong>Interní poznámka: </strong> {{ nameable()?.internalNote }}</p>
+  <p *ngIf="get('description')"><strong>Popis: </strong> {{ get('description') }}</p>
+  <p *ngIf="get('note')"><strong>Poznámka: </strong> {{ get('note') }}</p>
+  <p *ngIf="get('internalNote')"><strong>Interní poznámka: </strong> {{ get('internalNote') }}</p>
 </div>

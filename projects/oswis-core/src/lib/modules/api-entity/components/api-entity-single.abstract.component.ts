@@ -1,19 +1,16 @@
+import {Directive} from "@angular/core";
+import {BasicModel} from "oswis-shared";
 import {Observable} from 'rxjs/Observable';
 import {catchError, tap} from 'rxjs/operators';
-import {ListActionModel} from "../models/list-action.model";
-import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
-import {ActivatedRoute, Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
-import {Directive} from "@angular/core";
+import {ActivatedRoute, Router} from "@angular/router";
+import {ListActionModel} from "../models/list-action.model";
 import {ApiEntityService} from "../services/api-entity.service";
 import {RemoveEntityDialog} from "./remove-entity-dialog.component";
-import {BasicModel} from "oswis-shared";
-
-type Type = BasicModel;
+import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
 
 @Directive()
-export abstract class ApiEntitySingleAbstractComponent extends ApiEntityAbstractComponent {
-
+export abstract class ApiEntitySingleAbstractComponent<Type extends BasicModel = BasicModel> extends ApiEntityAbstractComponent<Type> {
   public selectedEntity$: Observable<Type>;
   public selectedEntityEmpty = false;
 
@@ -21,7 +18,7 @@ export abstract class ApiEntitySingleAbstractComponent extends ApiEntityAbstract
   public actionLinks: ListActionModel[] = [];
 
   // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
-  constructor(route: ActivatedRoute, router: Router, apiEntityService: ApiEntityService, dialog: MatDialog) {
+  constructor(route: ActivatedRoute, router: Router, apiEntityService: ApiEntityService<Type>, dialog: MatDialog) {
     super(route, router, apiEntityService, dialog);
   }
 
@@ -33,28 +30,27 @@ export abstract class ApiEntitySingleAbstractComponent extends ApiEntityAbstract
     this.selectedEntityEmpty = false;
     console.log(this.selectedEntityEmpty);
     console.log('ApiEntitySingle: Loading entity...');
-    this.selectedEntity$ = this.apiEntityService.getSelected().pipe(
-      tap(x => {
+    this.selectedEntity$ = <Observable<Type>>this.apiEntityService.getSelected().pipe<Type>(
+      tap((x: Type) => {
         // @ts-ignore
         this.selectedEntityEmpty = (!x || x.length === 0);
         console.log('ApiEntitySingle: isEmpty?' + this.selectedEntityEmpty);
       }),
+      /*
       catchError((err, caught) => {
         this.selectedEntityEmpty = true;
         console.log('ApiEntitySingle: isEmpty?' + this.selectedEntityEmpty);
-        return new Observable();
-      })
+        return new Observable<Type>();
+      })*/
     );
   }
 
   public getEntity(): Observable<Type> {
-    return this.selectedEntity$;
+    return <Observable<Type>>this.selectedEntity$;
   }
 
   public deleteEntity(id: number, name: string): void {
-    const dialogRef = this.dialog.open(RemoveEntityDialog, {
-      data: {id: id, name: name}
-    });
+    const dialogRef = this.dialog.open(RemoveEntityDialog, {data: {id: id, name: name}});
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.apiEntityService.deleteById(id).subscribe(

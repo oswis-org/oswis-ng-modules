@@ -5,13 +5,13 @@ import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ListActionModel} from "../models/list-action.model";
 import {ApiEntityService} from "../services/api-entity.service";
-import {SidebarShowService} from "oswis-shared";
+import {BasicModel, SidebarShowService} from "oswis-shared";
 
 @Component({
   selector: 'oswis-api-entity',
   template: 'Component is not properly implemented.',
 })
-export class ApiEntityComponent extends ApiEntityAbstractComponent {
+export class ApiEntityComponent<Type extends BasicModel = BasicModel> extends ApiEntityAbstractComponent<Type> {
   protected isNewEntity = false;
   protected isBig = false;
   protected isBigWithPanel = false;
@@ -19,7 +19,7 @@ export class ApiEntityComponent extends ApiEntityAbstractComponent {
   constructor(
     route: ActivatedRoute,
     router: Router,
-    apiEntityService: ApiEntityService,
+    apiEntityService: ApiEntityService<Type>,
     dialog: MatDialog,
     protected menuService: SidebarShowService,
     protected breakpointObserver: BreakpointObserver,

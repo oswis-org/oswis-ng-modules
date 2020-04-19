@@ -108,7 +108,7 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
     if (this.selectedEntityId === null || this.selectedEntityId < 0) {
       return new Observable<Type>();
     }
-    return this.http.get<Type>(this.getApiUrl() + '/' + this.selectedEntityId)
+    return <Observable<Type>>this.http.get<Type>(this.getApiUrl() + '/' + this.selectedEntityId)
       .pipe(
         retry(this.retryCount),
         catchError((err) => {

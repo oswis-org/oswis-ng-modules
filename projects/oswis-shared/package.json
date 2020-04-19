@@ -1,10 +1,17 @@
 {
-  "name": "oswis-shared",
-  "version": "0.0.13",
+  "name": "@oswis-org/oswis-shared",
+  "version": "0.0.14",
   "author": "Jakub Zak <mail@jakubzak.eu> (https://jakubzak.cz)",
   "description": "Shared module for OSWIS (One Simple Web IS).",
   "homepage": "http://oswis.org",
   "license": "MIT",
+  "keywords": [
+    "angular",
+    "oswis",
+    "typescript",
+    "is",
+    "zakjakub"
+  ],
   "bugs": {
     "url": "https://github.com/zakjakub/oswis-ng-modules/issues",
     "email": "mail@jakubzak.eu"

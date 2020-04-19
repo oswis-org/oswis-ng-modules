@@ -1,10 +1,17 @@
 {
-  "name": "oswis-core",
-  "version": "0.0.75",
+  "name": "@oswis-org/oswis-core",
+  "version": "0.0.92",
   "author": "Jakub Zak <mail@jakubzak.eu> (https://jakubzak.cz)",
   "description": "Core module for OSWIS (One Simple Web IS).",
   "homepage": "http://oswis.org",
   "license": "MIT",
+  "keywords": [
+    "angular",
+    "oswis",
+    "typescript",
+    "is",
+    "zakjakub"
+  ],
   "bugs": {
     "url": "https://github.com/zakjakub/oswis-ng-modules/issues",
     "email": "mail@jakubzak.eu"
@@ -42,6 +49,6 @@
     "screenfull": "^5.0.2",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2",
-    "oswis-shared": "^0.0"
+    "@oswis-org/oswis-shared": "^0.0"
   }
 }

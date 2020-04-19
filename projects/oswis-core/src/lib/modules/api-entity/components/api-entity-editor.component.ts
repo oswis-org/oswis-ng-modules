@@ -4,37 +4,31 @@ import {Observable} from 'rxjs/Observable';
 import {catchError, tap} from 'rxjs/operators';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {ApiEntitySingleAbstractComponent} from "./api-entity-single.abstract.component";
-import {ActivatedRoute, Router} from "@angular/router";
-import {MatDialog} from "@angular/material/dialog";
 import {ApiEntityService} from "../services/api-entity.service";
 import {BasicModel} from "oswis-shared";
+import {ActivatedRoute, Router} from "@angular/router";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'oswis-api-entity-editor',
   templateUrl: './api-entity-editor.component.html',
 })
-export class ApiEntityEditorComponent extends ApiEntitySingleAbstractComponent {
+export class ApiEntityEditorComponent<Type extends BasicModel = BasicModel> extends ApiEntitySingleAbstractComponent<Type> {
   @Input() public model: object = {};
   @Input() public fields: FormlyFieldConfig[];
   public form: FormGroup = new FormGroup({});
   public errorMessage = '';
   @Input() public help = null;
 
-  @Input() public entityService: ApiEntityService;
+  @Input() public apiEntityService: ApiEntityService<Type>;
 
-  constructor(route: ActivatedRoute, router: Router, apiEntityService: ApiEntityService, dialog: MatDialog) {
+  constructor(route: ActivatedRoute, router: Router, apiEntityService: ApiEntityService<Type>, dialog: MatDialog) {
     super(route, router, apiEntityService, dialog);
-    this.apiEntityService = this.entityService;
-    this.loadData();
-  }
-
-  ngOnInit() {
-    super.ngOnInit();
   }
 
   @Input() public transform: (item: object) => object = item => item;
 
-  public loadData(): Observable<BasicModel> {
+  public loadData(): Observable<Type> {
     this.selectedEntityEmpty = false;
     if (!this.creatingNew()) {
       return this.selectedEntity$ = this.apiEntityService.getSelected().pipe(
@@ -46,11 +40,11 @@ export class ApiEntityEditorComponent extends ApiEntitySingleAbstractComponent {
         }),
         catchError((err, caught) => {
           this.selectedEntityEmpty = true;
-          return new Observable();
+          return new Observable<Type>();
         })
       );
     }
-    return this.selectedEntity$ = new Observable<BasicModel>();
+    return this.selectedEntity$ = new Observable<Type>();
   }
 
   creatingNew(): boolean {
@@ -93,5 +87,9 @@ export class ApiEntityEditorComponent extends ApiEntitySingleAbstractComponent {
       return 'Nov' + this.getPreSuffix() + ' ' + this.getEntityName(1, false);
     }
     return 'Úprava ' + this.getEntityName(2, false);
+  }
+
+  ngOnInit() {
+    this.loadData();
   }
 }
