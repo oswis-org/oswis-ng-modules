@@ -14,16 +14,16 @@ export class ApiEntityShowComponent<Type extends BasicModel = BasicModel> extend
     super(route, router, apiEntityService, dialog);
   }
 
-  asType(item): Type {
-    return <Type>item;
-  }
-
   public static textParagraphOrNullField(title ?: string, value?: string): string {
     return value ? ('<p *ngIf="value"><strong>' + (title ? title + ': ' : null) + '</strong> value </p>') : null;
   }
 
   static downloadVCard(data: any) {
     window.open(window.URL.createObjectURL(new Blob([data], {type: 'text/vcard'})), '_blank');
+  }
+
+  asType(item): Type {
+    return <Type>item;
   }
 }
 
