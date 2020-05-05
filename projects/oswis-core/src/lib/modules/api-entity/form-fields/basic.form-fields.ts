@@ -61,6 +61,7 @@ export class BasicFormFields {
   }
 
   static number(config: FormlyFieldConfig = {}): FormlyFieldConfig {
+    config.key = undefined === config.key ? 'numericValue' : config.key;
     config.templateOptions = undefined === config.templateOptions ? {} : config.templateOptions;
     config.templateOptions.type = undefined === config.templateOptions.type ? 'number' : config.templateOptions.type;
 
@@ -140,13 +141,13 @@ export class BasicFormFields {
   // noinspection JSUnusedGlobalSymbols
   static oldOldSimpleTypeaheadWrapper(
     key: string,
-    apiEntityService: ApiEntityService,
+    service: ApiEntityService,
     subKey: string = 'id',
     required: boolean = false,
     entityName: string = null,
     className: string = 'wid-100-small'
   ): FormlyFieldConfig {
-    entityName = entityName || apiEntityService.getEntityName(1, true);
+    entityName = entityName || service.getEntityName(1, true);
     return {
       key: key,
       className: className,
@@ -160,9 +161,9 @@ export class BasicFormFields {
             placeholder: entityName,
             search$: (term, id: number = -1) => {
               if (id < 0) {
-                return apiEntityService.get(1, 5, [], [{column: 'search', value: term}]);
+                return service.get(1, 5, [], [{column: 'search', value: term}]);
               }
-              return apiEntityService.getById(id);
+              return service.getById(id);
             },
           },
         },
@@ -192,13 +193,13 @@ export class BasicFormFields {
   static oldOldSingleRepeatTypeaheadWrapper(
     key: string,
     subKey: string,
-    apiEntityService: ApiEntityService,
+    service: ApiEntityService,
     subSubKey: string = 'id',
     nameColumnName: string = 'name',
     className: string = 'wid-90-small',
   ): FormlyFieldConfig {
-    const entityName = apiEntityService.getEntityName(1, true);
-    const entitiesName = apiEntityService.getEntityName(11, true);
+    const entityName = service.getEntityName(1, true);
+    const entitiesName = service.getEntityName(11, true);
     return {
       key: subKey,
       type: 'repeat',
@@ -222,9 +223,9 @@ export class BasicFormFields {
                 placeholder: entityName,
                 search$: (term, id: number = -1) => {
                   if (id < 0) {
-                    return apiEntityService.get(1, 5, [], [{column: nameColumnName ?? 'name', value: term}]);
+                    return service.get(1, 5, [], [{column: nameColumnName ?? 'name', value: term}]);
                   }
-                  return apiEntityService.getById(id);
+                  return service.getById(id);
                 },
               },
             }],

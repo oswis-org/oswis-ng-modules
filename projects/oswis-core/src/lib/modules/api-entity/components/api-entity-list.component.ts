@@ -25,7 +25,7 @@ import {BasicModel} from "@oswis-org/oswis-shared";
   templateUrl: './api-entity-list.component.html',
 })
 export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extends ApiEntityAbstractComponent<Type> implements AfterViewInit {
-  @Input() public apiEntityService: ApiEntityService<Type>;
+  @Input() public service: ApiEntityService<Type>;
   @Input() displayedColumns: string[];
   @Input() columnDefs: ColumnDefinitionModel[];
   @Input() searchValue: string;
@@ -50,8 +50,8 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   @ViewChild('searchInput', {read: ElementRef, static: true}) searchInput: ElementRef;
 
-  constructor(public http: HttpClient, route: ActivatedRoute, router: Router, apiEntityService: ApiEntityService<Type>, dialog: MatDialog) {
-    super(route, router, apiEntityService, dialog);
+  constructor(public http: HttpClient, route: ActivatedRoute, router: Router, service: ApiEntityService<Type>, dialog: MatDialog) {
+    super(route, router, service, dialog);
   }
 
   static searchFilterPredicate(data, filter) {
@@ -107,7 +107,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     }
     if (!this.isAllSelected()) {
       this.dataSource.filteredData.forEach(row => this.selection.select(row));
-      this.apiEntityService.get(
+      this.service.get(
         1,
         10000, // TODO: Infinity? (MAX_VALUE)
         [{column: this.sort.active, order: this.sort.direction.toString()}],
@@ -144,14 +144,14 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   ngOnInit() {
-    this.apiEntityService.addRefreshCallback(this.loadData, this);
-    this.apiEntityService.setSelectedByRoute(this.route);
+    this.service.addRefreshCallback(this.loadData, this);
+    this.service.setSelectedByRoute(this.route);
   }
 
   loadData() {
     console.log('Will load data.');
     const apiSearchColumns = this.searchColumns && this.searchColumns.length > 0 ? this.searchColumns : this.defaultSearchColumn;
-    // this.dataSourceMyNew = new ApiEntityDataSource(this.apiEntityService);
+    // this.dataSourceMyNew = new ApiEntityDataSource(this.service);
     // this.dataSourceMyNew.loadItems(1);
     // If the app-user changes the sort order, reset back to the first page.
     this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);
@@ -161,7 +161,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
       startWith({}),
       switchMap(() => {
         this.isLoadingResults = true;
-        return this.apiEntityService.get(
+        return this.service.get(
           this.paginator.pageIndex + 1,
           this.paginator.pageSize || this.pageSize,
           [{column: this.sort.active, order: this.sort.direction.toString()}],
@@ -217,7 +217,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   selectEntity(newEntity: BasicModel) {
-    this.apiEntityService.setSelectedId(newEntity.id);
+    this.service.setSelectedId(newEntity.id);
   }
 
   selectEntityByRow(entityId: number, event) {
@@ -226,7 +226,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   getFrontPath(): string {
-    return this.apiEntityService.getFrontendPath();
+    return this.service.getFrontendPath();
   }
 
   refresh(): void {
@@ -234,11 +234,11 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   public getEntityName(grCase: number = 1, capitalize: boolean = true): string {
-    return this.apiEntityService.getEntityName(grCase, capitalize);
+    return this.service.getEntityName(grCase, capitalize);
   }
 
   public getPreSuffix(): string {
-    return this.apiEntityService.getPreSuffix();
+    return this.service.getPreSuffix();
   }
 
   public getBooleanColor(row, col): string {
@@ -250,7 +250,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   public downloadPdfList(urlPath: string, type: string = 'get-list-pdf', fileName: string = 'oswis-download-file.pdf') {
-    this.apiEntityService.downloadPdfList(urlPath, type)
+    this.service.downloadPdfList(urlPath, type)
       .pipe(
         tap(x => {
           console.log(x);

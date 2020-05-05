@@ -10,8 +10,8 @@ import {ApiEntitySingleAbstractComponent} from "./api-entity-single.abstract.com
   templateUrl: './api-entity-show.component.html',
 })
 export class ApiEntityShowComponent<Type extends BasicModel = BasicModel> extends ApiEntitySingleAbstractComponent<Type> {
-  constructor(route: ActivatedRoute, router: Router, apiEntityService: ApiEntityService<Type>, dialog: MatDialog) {
-    super(route, router, apiEntityService, dialog);
+  constructor(route: ActivatedRoute, router: Router, service: ApiEntityService<Type>, dialog: MatDialog) {
+    super(route, router, service, dialog);
   }
 
   public static textParagraphOrNullField(title ?: string, value?: string): string {

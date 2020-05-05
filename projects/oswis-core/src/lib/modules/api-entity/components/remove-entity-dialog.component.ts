@@ -5,7 +5,7 @@ import {ApiEntityServiceInterface} from "../services/api-entity.service.interfac
 
 interface EntityDialogDataInterface extends DialogDataInterface {
   items: BasicModel[];
-  apiEntityService: ApiEntityServiceInterface;
+  service: ApiEntityServiceInterface;
 }
 
 @Component({

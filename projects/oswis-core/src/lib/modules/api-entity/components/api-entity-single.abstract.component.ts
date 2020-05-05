@@ -18,8 +18,8 @@ export abstract class ApiEntitySingleAbstractComponent<Type extends BasicModel =
   public actionLinks: ListActionModel[] = [];
 
   // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
-  constructor(route: ActivatedRoute, router: Router, apiEntityService: ApiEntityService<Type>, dialog: MatDialog) {
-    super(route, router, apiEntityService, dialog);
+  constructor(route: ActivatedRoute, router: Router, service: ApiEntityService<Type>, dialog: MatDialog) {
+    super(route, router, service, dialog);
   }
 
   public refresh(): void {
@@ -30,7 +30,7 @@ export abstract class ApiEntitySingleAbstractComponent<Type extends BasicModel =
     this.selectedEntityEmpty = false;
     console.log(this.selectedEntityEmpty);
     console.log('ApiEntitySingle: Loading entity...');
-    this.selectedEntity$ = <Observable<Type>>this.apiEntityService.getSelected().pipe<Type>(
+    this.selectedEntity$ = <Observable<Type>>this.service.getSelected().pipe<Type>(
       tap((x: Type) => {
         // @ts-ignore
         this.selectedEntityEmpty = (!x || x.length === 0);
@@ -53,10 +53,10 @@ export abstract class ApiEntitySingleAbstractComponent<Type extends BasicModel =
     const dialogRef = this.dialog.open(RemoveEntityDialog, {data: {id: id, name: name}});
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.apiEntityService.deleteById(id).subscribe(
+        this.service.deleteById(id).subscribe(
           (data: any) => {
-            this.apiEntityService.setSelectedId();
-            this.router.navigate(['/' + this.apiEntityService.getFrontendPath()]).then();
+            this.service.setSelectedId();
+            this.router.navigate(['/' + this.service.getFrontendPath()]).then();
           }
         );
       }
@@ -70,7 +70,7 @@ export abstract class ApiEntitySingleAbstractComponent<Type extends BasicModel =
         return action.dialog ? this.openDialog(action, extraData, items) : action.action(items);
       }
 
-      return this.apiEntityService.getSelected().subscribe(
+      return this.service.getSelected().subscribe(
         (item: any) => {
           return action.dialog ? this.openDialog(action, extraData, [item]) : action.action([item]);
         }

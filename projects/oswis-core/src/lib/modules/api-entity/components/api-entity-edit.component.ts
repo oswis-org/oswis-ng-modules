@@ -9,7 +9,7 @@ import {BasicModel} from "@oswis-org/oswis-shared";
 @Component({
   selector: 'oswis-api-entity-edit',
   template: `
-    <oswis-api-entity-editor [apiEntityService]="apiEntityService" [fields]="fields" [help]="help" [transform]="transform" class="entity-card-container">
+    <oswis-api-entity-editor [service]="service" [fields]="fields" [help]="help" [transform]="transform" class="entity-card-container">
     </oswis-api-entity-editor>
   `,
 })
@@ -18,7 +18,7 @@ export class ApiEntityEditComponent<Type extends BasicModel = BasicModel> extend
   public help?: string;
   public transform?: (object) => object;
 
-  constructor(route: ActivatedRoute, router: Router, apiEntityService: ApiEntityService<Type>, dialog: MatDialog) {
-    super(route, router, apiEntityService, dialog);
+  constructor(route: ActivatedRoute, router: Router, service: ApiEntityService<Type>, dialog: MatDialog) {
+    super(route, router, service, dialog);
   }
 }

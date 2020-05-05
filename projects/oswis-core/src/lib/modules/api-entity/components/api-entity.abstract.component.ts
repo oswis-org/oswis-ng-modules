@@ -13,8 +13,8 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
   ApiEntityListAlignEnum = ApiEntityListAlignEnum;
 
   // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
-  constructor(public route: ActivatedRoute, public router: Router, public apiEntityService: ApiEntityService<Type>, public dialog: MatDialog) {
-    this.apiEntityService.addSelectedChangedCallback(this.refresh, this);
+  constructor(public route: ActivatedRoute, public router: Router, public service: ApiEntityService<Type>, public dialog: MatDialog) {
+    this.service.addSelectedChangedCallback(this.refresh, this);
   }
 
   public static notEmptyNotes(input: any[]): any[] {
@@ -27,7 +27,7 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
   abstract refresh(): void;
 
   ngOnInit() {
-    this.apiEntityService.setSelectedByRoute(this.route);
+    this.service.setSelectedByRoute(this.route);
   }
 
   ngOnDestroy(): void {
@@ -36,11 +36,11 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
 
   selectEntityById(newId?: number) {
     // console.log('selectEntityById() newId: ', newId, 'class', this.toString());
-    this.apiEntityService.setSelectedId(newId);
+    this.service.setSelectedId(newId);
   }
 
   selectEntity(newEntity?: BasicModel): void {
-    this.apiEntityService.setSelectedId(newEntity ? newEntity.id : null);
+    this.service.setSelectedId(newEntity ? newEntity.id : null);
   }
 
   unselectAll(): void {
@@ -49,7 +49,7 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
   }
 
   isSelectedEntity(): boolean {
-    return this.apiEntityService.isSelected();
+    return this.service.isSelected();
   }
 
   public getUnnamedTitle(): string { // noinspection SpellCheckingInspection
@@ -61,13 +61,13 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
   }
 
   public backToList(): void {
-    this.apiEntityService.setSelectedId();
-    this.router.navigate(['/' + this.apiEntityService.getFrontendPath()]).then();
+    this.service.setSelectedId();
+    this.router.navigate(['/' + this.service.getFrontendPath()]).then();
   }
 
   backToShow() {
     this.router
-      .navigate(['/' + this.apiEntityService.getFrontendPath() + '/' + this.apiEntityService.getSelectedId()])
+      .navigate(['/' + this.service.getFrontendPath() + '/' + this.service.getSelectedId()])
       .then();
   }
 
@@ -76,7 +76,7 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
   }
 
   getApiUrl(): string {
-    return this.apiEntityService.getApiUrl();
+    return this.service.getApiUrl();
   }
 
   public notEmptyNotes(input: any[]): any[] {
@@ -84,15 +84,15 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
   }
 
   public getEntityName(grCase: number = 1, capitalize: boolean = true): string {
-    return this.apiEntityService.getEntityName(grCase, capitalize);
+    return this.service.getEntityName(grCase, capitalize);
   }
 
   public getPreSuffix(): string {
-    return this.apiEntityService.getPreSuffix();
+    return this.service.getPreSuffix();
   }
 
   newItemRoute(): string {
-    return '/' + this.apiEntityService.getFrontendPath() + '/new';
+    return '/' + this.service.getFrontendPath() + '/new';
   }
 
   abstract processDialogResult(context: ApiEntityAbstractComponent, action: ListActionModel, dialogResult, dialogRef): void;

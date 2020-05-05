@@ -19,12 +19,12 @@ export class ApiEntityComponent<Type extends BasicModel = BasicModel> extends Ap
   constructor(
     route: ActivatedRoute,
     router: Router,
-    apiEntityService: ApiEntityService<Type>,
+    service: ApiEntityService<Type>,
     dialog: MatDialog,
     protected menuService: SidebarShowService,
     protected breakpointObserver: BreakpointObserver,
   ) {
-    super(route, router, apiEntityService, dialog);
+    super(route, router, service, dialog);
     this.mobileBreakpointObserver();
     this.wideBreakpointObserver();
     this.isNewEntity = this.router.url.indexOf('new') > 0;

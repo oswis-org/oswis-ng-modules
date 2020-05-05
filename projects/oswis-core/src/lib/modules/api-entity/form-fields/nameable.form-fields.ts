@@ -1,8 +1,6 @@
 import {BasicFormFields} from './basic.form-fields';
 import {FormlyFieldConfig} from "@ngx-formly/core";
-import {ApiEntityService} from "../services/api-entity.service";
-import {ImageUploadServiceInterface} from "../services/image-upload.service.interface";
-import {Observable} from "rxjs/Observable";
+import {ImageAbstractService} from "../services/image.abstract.service";
 
 // noinspection JSUnusedGlobalSymbols
 export class NameableFormFields {
@@ -64,7 +62,7 @@ export class NameableFormFields {
     config.templateOptions.description = undefined === config.templateOptions.description ? 'Textová poznámka.' : config.templateOptions.description;
     config.templateOptions.placeholder = undefined === config.templateOptions.placeholder ? 'Josef Novák je uživatel systému.' : config.templateOptions.placeholder;
 
-    return BasicFormFields.input(config);
+    return BasicFormFields.textArea(config);
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -158,7 +156,7 @@ export class NameableFormFields {
     return BasicFormFields.number(config);
   }
 
-  public static imageCropper(config: FormlyFieldConfig = {}, imageService: ImageUploadServiceInterface): FormlyFieldConfig {
+  public static imageCropper(config: FormlyFieldConfig = {}, imageService: ImageAbstractService): FormlyFieldConfig {
     config.key = undefined === config.key ? 'image' : config.key;
     config.type = undefined === config.type ? 'image-cropper' : config.type;
     config.templateOptions = undefined === config.templateOptions ? {} : config.templateOptions;
@@ -175,12 +173,23 @@ export class NameableFormFields {
 
 
   // noinspection JSUnusedGlobalSymbols
-  static idNameDescription(shortName: boolean = false, slug: boolean = false, config: FormlyFieldConfig = {}): FormlyFieldConfig {
+  static idNameDescription(shortName: boolean = true, slug: boolean = true, config: FormlyFieldConfig = {}): FormlyFieldConfig {
     config.className = undefined === config.className ? 'wid-100' : config.className;
     config.fieldGroup = [BasicFormFields.id(), this.oldOldSimpleName()];
     shortName ? config.fieldGroup.push(this.shortName()) : null;
     slug ? config.fieldGroup.push(this.slug()) : null;
     config.fieldGroup.push(this.description());
+
+    return BasicFormFields.simpleWrapper(config);
+  }
+
+  // noinspection JSUnusedGlobalSymbols
+  static dateTimeRange(config: FormlyFieldConfig = {}): FormlyFieldConfig {
+    config.className = undefined === config.className ? 'wid-100' : config.className;
+    config.fieldGroup = config.fieldGroup ?? [
+      this.startDateTime({className: 'wid-50'}),
+      this.endDateTime({className: 'wid-50'})
+    ];
 
     return BasicFormFields.simpleWrapper(config);
   }

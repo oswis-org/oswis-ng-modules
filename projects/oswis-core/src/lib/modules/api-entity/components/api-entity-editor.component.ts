@@ -20,10 +20,10 @@ export class ApiEntityEditorComponent<Type extends BasicModel = BasicModel> exte
   public errorMessage = '';
   @Input() public help = null;
 
-  @Input() public apiEntityService: ApiEntityService<Type>;
+  @Input() public service: ApiEntityService<Type>;
 
-  constructor(route: ActivatedRoute, router: Router, apiEntityService: ApiEntityService<Type>, dialog: MatDialog) {
-    super(route, router, apiEntityService, dialog);
+  constructor(route: ActivatedRoute, router: Router, service: ApiEntityService<Type>, dialog: MatDialog) {
+    super(route, router, service, dialog);
   }
 
   @Input() public transform: (item: object) => object = item => item;
@@ -31,7 +31,7 @@ export class ApiEntityEditorComponent<Type extends BasicModel = BasicModel> exte
   public loadData(): Observable<Type> {
     this.selectedEntityEmpty = false;
     if (!this.creatingNew()) {
-      return this.selectedEntity$ = this.apiEntityService.getSelected().pipe(
+      return this.selectedEntity$ = this.service.getSelected().pipe(
         tap(x => {
           // @ts-ignore
           this.selectedEntityEmpty = (!x || x.length === 0);
@@ -65,10 +65,10 @@ export class ApiEntityEditorComponent<Type extends BasicModel = BasicModel> exte
     if (formValue) {
       // console.log('Will put/patch on server.');
       // console.log(formValue);
-      this.apiEntityService.postOrPut(formValue).pipe(
+      this.service.postOrPut(formValue).pipe(
         tap(newEntity => {
           if (newEntity && newEntity.id && newEntity.id > 0) {
-            this.apiEntityService.setSelectedId(newEntity.id);
+            this.service.setSelectedId(newEntity.id);
             this.backToShow();
           }
         }),
