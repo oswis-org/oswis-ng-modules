@@ -6,6 +6,8 @@ export enum ApiEntityListTypeEnum {
   PERCENT = 'percent',
   BOOLEAN = 'boolean',
   DATETIME_BOOLEAN = 'datetime-boolean',
+  DATETIME_RANGE = 'datetime-range',
+  DATETIME_RANGE_BOOLEAN = 'datetime-range-boolean',
   URL = 'url',
   EMAIL = 'email',
   PHONE = 'phone',

@@ -283,10 +283,26 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     );
   }
 
+  public isInDateRange(row, col, start?: string, end?: string, dateTime?: string): boolean {
+    const date = dateTime ? new Date(dateTime) : new Date();
+    const startDate = new Date(start ?? this.getProperty(row, 'startDateTime'));
+    const endDate = new Date(end ?? this.getProperty(row, 'endDateTime'));
+    if (null !== startDate && date < startDate) {
+      return false;
+    }
+    return !(null !== endDate && date > endDate);
+  }
+
+  public getDateRangeColor(row, col, start?: string, end?: string, dateTime?: string): string {
+    const isTrue = this.isInDateRange(row, col, start, end, dateTime);
+    return (col.subtype === 'reversed') ? (!isTrue ? 'green' : 'red') : (isTrue ? 'green' : 'red');
+  }
+
   protected getDataFromResponse(data: any[] | JsonLdListResponse<BasicModel> | BasicModel[]): BasicModel[] {
     if (data instanceof JsonLdListResponse) {
       return data["hydra:member"];
     }
     return data;
   }
+
 }
