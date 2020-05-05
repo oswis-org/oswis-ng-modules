@@ -115,7 +115,7 @@ export class FormlyImageCropperInputComponent extends FieldType implements OnIni
   }
 
   ngAfterViewInit() {
-    console.log('Inited.');
+    console.log('ngAfterViewInit()');
     this.data.image = this.formControl.value;
   }
 

@@ -198,7 +198,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   ngAfterViewInit() {
-    console.log('Search input: ', this.searchInput);
+    console.log('Search oldOldInput: ', this.searchInput);
     fromEvent(this.searchInput.nativeElement, 'keyup')
       .pipe(
         debounceTime(800),
