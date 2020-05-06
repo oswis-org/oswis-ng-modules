@@ -25,6 +25,9 @@ import {BasicModel} from "@oswis-org/oswis-shared";
   templateUrl: './api-entity-list.component.html',
 })
 export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extends ApiEntityAbstractComponent<Type> implements AfterViewInit {
+  public readonly F_DATE = 'd.M.y';
+  public readonly F_DATE_TIME = 'd.M.y HH:mm';
+
   @Input() public service: ApiEntityService<Type>;
   @Input() displayedColumns: string[];
   @Input() columnDefs: ColumnDefinitionModel[];

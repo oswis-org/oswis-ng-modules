@@ -1,6 +1,7 @@
 import {Component, ViewChild} from '@angular/core';
 import {FieldType} from '@ngx-formly/core';
 import {MatInput} from '@angular/material/input';
+import {FormControl} from "@angular/forms";
 
 @Component({
   selector: 'oswis-formly-datepicker-with-type',
@@ -17,5 +18,5 @@ import {MatInput} from '@angular/material/input';
 })
 export class MatDatepickerWithTypeComponent extends FieldType {
   @ViewChild(MatInput, {read: true, static: true}) formFieldControl: MatInput;
-
+  formControl: FormControl;
 }

@@ -2,6 +2,7 @@ import {AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild} from 
 import {FieldType} from '@ngx-formly/material';
 import {CropperSettings, ImageCropperComponent} from 'ngx-img-cropper';
 import {tap} from 'rxjs/operators';
+import {FormControl} from "@angular/forms";
 
 @Component({
   selector: 'oswis-formly-image-cropper-input',
@@ -26,6 +27,7 @@ import {tap} from 'rxjs/operators';
   `,
 })
 export class FormlyImageCropperInputComponent extends FieldType implements OnInit, AfterViewInit {
+  formControl: FormControl;
 
   imageSetInCropper = false;
   uploadSuccess = false;

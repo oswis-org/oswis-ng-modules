@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {catchError, tap} from 'rxjs/operators';
@@ -20,13 +20,17 @@ export class ApiEntityEditorComponent<Type extends BasicModel = BasicModel> exte
   public errorMessage = '';
   @Input() public help = null;
 
+  @Input() public transform: (item: object) => object = item => item;
+
   @Input() public service: ApiEntityService<Type>;
 
-  constructor(route: ActivatedRoute, router: Router, service: ApiEntityService<Type>, dialog: MatDialog) {
-    super(route, router, service, dialog);
+  constructor(route: ActivatedRoute, router: Router, dialog: MatDialog) {
+    super(route, router, null, dialog);
   }
 
-  @Input() public transform: (item: object) => object = item => item;
+  public refresh(): void {
+    this.loadData();
+  }
 
   public loadData(): Observable<Type> {
     this.selectedEntityEmpty = false;
@@ -90,6 +94,8 @@ export class ApiEntityEditorComponent<Type extends BasicModel = BasicModel> exte
   }
 
   ngOnInit() {
-    this.loadData();
+    super.ngOnInit();
+    this.service.addSelectedChangedCallback(this.loadData, this);
+    this.refresh();
   }
 }

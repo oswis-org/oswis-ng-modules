@@ -69,7 +69,7 @@ import {SidebarComponent} from "./components/sidebar.component";
         {name: 'simple', component: SimpleSectionTypeComponent},
         {name: 'typeahead', component: FormlyFieldSelectSearchComponent},
         {name: 'image-cropper', component: FormlyImageCropperInputComponent},
-        {name: 'gender-oldOldInput', component: GenderInputComponent},
+        {name: 'gender-input', component: GenderInputComponent},
         {
           name: 'datepicker-with-type',
           component: MatDatepickerWithTypeComponent,

@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {FieldArrayType} from '@ngx-formly/core';
 
 @Component({
-  // tslint:disable-next-line:component-selector
   selector: 'oswis-formly-simple-section',
   template: `
     <div class="form-section">

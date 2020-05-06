@@ -14,7 +14,9 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
 
   // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
   constructor(public route: ActivatedRoute, public router: Router, public service: ApiEntityService<Type>, public dialog: MatDialog) {
-    this.service.addSelectedChangedCallback(this.refresh, this);
+    if (null !== service) {
+      this.service.addSelectedChangedCallback(this.refresh, this);
+    }
   }
 
   public static notEmptyNotes(input: any[]): any[] {
@@ -27,7 +29,9 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
   abstract refresh(): void;
 
   ngOnInit() {
-    this.service.setSelectedByRoute(this.route);
+    if (this.route) {
+      this.service.setSelectedByRoute(this.route);
+    }
   }
 
   ngOnDestroy(): void {

@@ -1,12 +1,11 @@
 import {Component} from '@angular/core';
 import {FieldType} from '@ngx-formly/core';
+import {FormControl} from "@angular/forms";
 
 @Component({
-  // tslint:disable-next-line:component-selector
   selector: 'oswis-gender-input',
   template: `
     <div>
-      <!--suppress AngularInvalidExpressionResultType -->
       <mat-radio-group [formControl]="formControl">
         <strong>Pohlaví: </strong>
         <mat-radio-button value="" matTooltip="Neuvedeno" matTooltipPosition="right" matTooltipShowDelay="200" matTooltipHideDelay="300">
@@ -25,5 +24,6 @@ import {FieldType} from '@ngx-formly/core';
   `,
 })
 export class GenderInputComponent extends FieldType {
+  formControl: FormControl;
 
 }

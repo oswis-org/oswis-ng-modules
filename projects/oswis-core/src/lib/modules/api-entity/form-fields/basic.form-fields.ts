@@ -20,6 +20,8 @@ export class BasicFormFields {
 
   static input(config: FormlyFieldConfig = {}): FormlyFieldConfig {
     config.type = undefined === config.type ? 'input' : config.type;
+    config.templateOptions = undefined === config.templateOptions ? {} : config.templateOptions;
+    config.templateOptions.attributes = undefined === config.templateOptions.attributes ? {} : config.templateOptions.attributes;
 
     return config;
   }
@@ -28,9 +30,9 @@ export class BasicFormFields {
     config.key = undefined === config.key ? 'email' : config.key;
     config.templateOptions = undefined === config.templateOptions ? {} : config.templateOptions;
     config.templateOptions.type = undefined === config.templateOptions.type ? 'email' : config.templateOptions.type;
-    config.templateOptions.label = undefined === config.templateOptions.type ? 'E-mail' : config.templateOptions.type;
-    config.templateOptions.description = undefined === config.templateOptions.type ? 'Adresa e-mailové schránky.' : config.templateOptions.type;
-    config.templateOptions.placeholder = undefined === config.templateOptions.type ? 'john.doe@example.com' : config.templateOptions.type;
+    config.templateOptions.label = undefined === config.templateOptions.label ? 'E-mail' : config.templateOptions.label;
+    config.templateOptions.description = undefined === config.templateOptions.description ? 'Adresa e-mailové schránky.' : config.templateOptions.description;
+    config.templateOptions.placeholder = undefined === config.templateOptions.placeholder ? 'john.doe@example.com' : config.templateOptions.placeholder;
 
     return this.input(config);
   }
@@ -55,7 +57,7 @@ export class BasicFormFields {
     config.type = undefined === config.type ? 'checkbox' : config.type;
     config.templateOptions = undefined === config.templateOptions ? {} : config.templateOptions;
     config.templateOptions.readonly = undefined === config.templateOptions.readonly ? true : config.templateOptions.readonly;
-    config.templateOptions.indeterminate = undefined === config.templateOptions.readonly ? false : config.templateOptions.indeterminate;
+    config.templateOptions.indeterminate = undefined === config.templateOptions.indeterminate ? false : config.templateOptions.indeterminate;
 
     return this.input(config);
   }
@@ -114,11 +116,28 @@ export class BasicFormFields {
   }
 
   static simpleWrapper(config: FormlyFieldConfig = {}): FormlyFieldConfig {
+    config.type = undefined === config.type ? null : config.type;
     config.wrappers = undefined === config.wrappers ? ['simple'] : config.wrappers;
     config.className = undefined === config.className ? 'wid-90' : config.className;
     config.fieldGroup = undefined === config.fieldGroup ? [] : config.fieldGroup;
 
     return this.input(config);
+  }
+
+  // noinspection JSUnusedGlobalSymbols
+  static oldSimpleWrapper(
+    key: string,
+    label: string,
+    fieldGroup: object[],
+    className: string = 'wid-90',
+  ): FormlyFieldConfig {
+    return {
+      key: key,
+      wrappers: ['simple'],
+      className: className,
+      templateOptions: {label: label},
+      fieldGroup: fieldGroup,
+    };
   }
 
   static simpleTypeaheadWrapper(config: FormlyFieldConfig = {}, service: ApiEntityService): FormlyFieldConfig {
@@ -318,22 +337,6 @@ export class BasicFormFields {
         placeholder: placeholder,
         required: required,
       }
-    };
-  }
-
-  // noinspection JSUnusedGlobalSymbols
-  static oldSimpleWrapper(
-    key: string,
-    label: string,
-    fieldGroup: object[],
-    className: string = 'wid-90',
-  ): FormlyFieldConfig {
-    return {
-      key: key,
-      wrappers: ['simple'],
-      className: className,
-      templateOptions: {label: label},
-      fieldGroup: fieldGroup,
     };
   }
 

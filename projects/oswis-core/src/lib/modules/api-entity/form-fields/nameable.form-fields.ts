@@ -48,7 +48,7 @@ export class NameableFormFields {
     config.key = undefined === config.key ? 'description' : config.key;
     config.templateOptions = undefined === config.templateOptions ? {} : config.templateOptions;
     config.templateOptions.label = undefined === config.templateOptions.label ? 'Popis' : config.templateOptions.label;
-    config.templateOptions.description = undefined === config.templateOptions.description ? 'Krátký textový popis (o délce maximálně jednotek řádků).' : config.templateOptions.description;
+    config.templateOptions.description = undefined === config.templateOptions.description ? 'Krátký textový popis (o délce maximálně několika řádků).' : config.templateOptions.description;
     config.templateOptions.placeholder = undefined === config.templateOptions.placeholder ? 'Josef Novák je uživatel systému.' : config.templateOptions.placeholder;
 
     return BasicFormFields.input(config);
@@ -175,7 +175,7 @@ export class NameableFormFields {
   // noinspection JSUnusedGlobalSymbols
   static idNameDescription(shortName: boolean = true, slug: boolean = true, config: FormlyFieldConfig = {}): FormlyFieldConfig {
     config.className = undefined === config.className ? 'wid-100' : config.className;
-    config.fieldGroup = [BasicFormFields.id(), this.oldOldSimpleName()];
+    config.fieldGroup = [BasicFormFields.id(), this.simpleName()];
     shortName ? config.fieldGroup.push(this.shortName()) : null;
     slug ? config.fieldGroup.push(this.slug()) : null;
     config.fieldGroup.push(this.description());

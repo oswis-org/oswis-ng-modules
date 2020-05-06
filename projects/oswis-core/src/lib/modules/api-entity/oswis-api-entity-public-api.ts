@@ -10,6 +10,7 @@ export * from './services/api-entity.service.interface';
 
 // Services
 export * from './services/api-entity.service';
+export * from './services/image.abstract.service'
 
 // Components
 export * from './components/api-entity.component';

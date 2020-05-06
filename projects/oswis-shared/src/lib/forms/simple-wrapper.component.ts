@@ -8,7 +8,5 @@ import {FieldWrapper} from '@ngx-formly/core';
     <ng-container #fieldComponent></ng-container>`,
 })
 export class SimpleWrapperComponent extends FieldWrapper {
-
   @ViewChild('fieldComponent', {read: ViewContainerRef, static: true}) fieldComponent: ViewContainerRef;
-
 }

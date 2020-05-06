@@ -40,7 +40,7 @@ export class AddressFormFields {
     config.className = undefined === config.className ? 'wid-10' : config.className;
     config.templateOptions = undefined === config.templateOptions ? {} : config.templateOptions;
     config.templateOptions.label = undefined === config.templateOptions.label ? 'Číslo dveří' : config.templateOptions.label;
-    config.templateOptions.placeholder = undefined === config.templateOptions.placeholder ? '3066' : config.templateOptions.placeholder;
+    config.templateOptions.placeholder = undefined === config.templateOptions.placeholder ? '3' : config.templateOptions.placeholder;
     config.templateOptions.min = undefined === config.templateOptions.min ? 0 : config.templateOptions.min;
 
     return BasicFormFields.input(config);

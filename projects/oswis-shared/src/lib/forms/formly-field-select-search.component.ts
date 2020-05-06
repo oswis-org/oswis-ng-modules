@@ -5,11 +5,9 @@ import {MatSelect} from '@angular/material/select';
 import {debounceTime, distinctUntilChanged, tap} from 'rxjs/operators';
 
 @Component({
-  // tslint:disable-next-line:component-selector
   selector: 'oswis-formly-field-select-search',
   template: `
     <mat-form-field>
-      <!--suppress AngularInvalidExpressionResultType -->
       <mat-select [placeholder]="to.placeholder" [formControl]="formControl" #singleSelect [required]="to.required">
         <ngx-mat-select-search
           [formControl]="bankFilterCtrl"
@@ -26,6 +24,7 @@ import {debounceTime, distinctUntilChanged, tap} from 'rxjs/operators';
   `,
 })
 export class FormlyFieldSelectSearchComponent extends FieldType implements AfterViewInit {
+  formControl: FormControl;
   public bankFilterCtrl: FormControl = new FormControl();
   @ViewChild('singleSelect', {read: MatSelect}) singleSelect: MatSelect;
 

@@ -228,17 +228,18 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
 
   addSelectedChangedCallback(callback: any, context: any): void {
     const callbackItem = {callback: callback, context: context};
-    console.log('ApiEntityService (' + typeof this + '): Add SelectedChangedCallback.', callbackItem);
     if (!this.callbacksSelectedChanged.includes(callbackItem)) {
+      console.log('ApiEntityService (' + this + '): Add SelectedChangedCallback.', callbackItem);
       this.callbacksSelectedChanged.push(callbackItem);
+      console.log('ApiEntityService (' + this + '): Has '+this.callbacksSelectedChanged.length+' SelectedChangedCallbacks now.', callbackItem);
     }
   }
 
   callSelectedChangedCallbacks(): void {
-    console.log('ApiEntityService: Call callbacks.');
+    console.log('ApiEntityService: Call SelectedChangedCallbacks (' + this.callbacksSelectedChanged.length + ').');
     this.callbacksSelectedChanged.forEach(
       callback => {
-        console.log('ApiEntityService: Callback: ');
+        console.log('ApiEntityService: SelectedChangedCallback: ');
         console.log(callback);
         callback.callback.call(callback.context);
       });

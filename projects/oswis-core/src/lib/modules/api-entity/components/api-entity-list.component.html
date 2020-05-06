@@ -64,7 +64,7 @@
           <th *matHeaderCellDef [disabled]="!col.getSortableName()" [mat-sort-header]="col.getSortableName()" [ngClass]="col.getAlign()" mat-header-cell>
             {{ col.title }}
           </th>
-          <td *matCellDef="let row" [ngClass]="col.getAlign()" mat-cell>
+          <td *matCellDef="let row" [ngClass]="col.getAlign()" mat-cell class="entity-list-data-column">
             <div [ngSwitch]="col.type">
               <div *ngSwitchCase="ApiEntityListTypeEnum.CHILD_ROWS">
                 <div *ngIf="isArray(getProperty(row, col.name)) && col.child">
@@ -93,16 +93,40 @@
               </div>
               <div *ngSwitchCase="ApiEntityListTypeEnum.DATE">
                 <span *ngIf="!isArray(getProperty(row, col.name)) || !col.child" style="text-align:right;">
-                {{ col.getPrepend() + (getProperty(row, col.name)|date:'d.M.y' || '') + col.getAppend() }}
+                {{ col.getPrepend() + (getProperty(row, col.name)|date: F_DATE) || '' + col.getAppend() }}
                 </span>
               </div>
               <div *ngSwitchCase="ApiEntityListTypeEnum.DATETIME">
-                {{ col.getPrepend() + (getProperty(row, col.name)|date:'d.M.y HH:mm' || '') + col.getAppend() }}
+                {{ col.getPrepend() + (getProperty(row, col.name)|date:F_DATE_TIME) || '' + col.getAppend() }}
               </div>
               <div *ngSwitchCase="ApiEntityListTypeEnum.DATETIME_RANGE">
                 {{ col.getPrepend() }}
-                <div>od: {{ getProperty(row, 'startDateTime')|date:'d.M.y HH:mm' || 'neomezeno' }}</div>
-                <div>do: {{ getProperty(row, 'endDateTime')|date:'d.M.y HH:mm' || 'neomezeno' }}</div>
+                <div>
+                  {{ (getProperty(row, 'startDateTime') ? 'od ' + (getProperty(row, 'startDateTime')|date:F_DATE_TIME) : '') }}
+                </div>
+                <div>
+                  {{ (getProperty(row, 'endDateTime') ? 'od ' + (getProperty(row, 'endDateTime')|date:F_DATE_TIME) : '') }}
+                </div>
+                {{ col.getAppend() }}
+              </div>
+              <div *ngSwitchCase="ApiEntityListTypeEnum.DATETIME_BOOLEAN">
+                {{ col.getPrepend() }}
+                <mat-icon [style.color]="getBooleanColor(row, col)" style="font-weight:bold;">
+                  {{ getProperty(row, col.name) ? 'done' : 'clear' }}
+                </mat-icon>
+                <span *ngIf="getProperty(row, col.name)">
+                  <br><small>{{ (getProperty(row, col.name)|date:F_DATE_TIME || '') }}</small>
+                </span>
+                {{ col.getAppend() }}
+              </div>
+              <div *ngSwitchCase="ApiEntityListTypeEnum.DATETIME_RANGE_BOOLEAN">
+                {{ col.getPrepend() }}
+                <mat-icon [style.color]="getDateRangeColor(row, col)" style="font-weight:bold;">
+                  {{ isInDateRange(row, col) ? 'done' : 'clear' }}
+                </mat-icon>
+                <span *ngIf="getProperty(row, col.name)">
+                  <br><small>{{ (getProperty(row, col.name)|date:F_DATE_TIME || '') }}</small>
+                </span>
                 {{ col.getAppend() }}
               </div>
               <div *ngSwitchCase="ApiEntityListTypeEnum.PERCENT">
@@ -113,26 +137,6 @@
                 <mat-icon [style.color]="getBooleanColor(row, col)" style="font-weight:bold;">
                   {{ getProperty(row, col.name) ? 'done' : 'clear' }}
                 </mat-icon>
-                {{ col.getAppend() }}
-              </div>
-              <div *ngSwitchCase="ApiEntityListTypeEnum.DATETIME_BOOLEAN">
-                {{ col.getPrepend() }}
-                <mat-icon [style.color]="getBooleanColor(row, col)" style="font-weight:bold;">
-                  {{ getProperty(row, col.name) ? 'done' : 'clear' }}
-                </mat-icon>
-                <span *ngIf="getProperty(row, col.name)">
-                  <br><small>{{ (getProperty(row, col.name)|date:'d.M.y HH:mm' || '') }}</small>
-                </span>
-                {{ col.getAppend() }}
-              </div>
-              <div *ngSwitchCase="ApiEntityListTypeEnum.DATETIME_RANGE_BOOLEAN">
-                {{ col.getPrepend() }}
-                <mat-icon [style.color]="getDateRangeColor(row, col)" style="font-weight:bold;">
-                  {{ isInDateRange(row, col) ? 'done' : 'clear' }}
-                </mat-icon>
-                <span *ngIf="getProperty(row, col.name)">
-                  <br><small>{{ (getProperty(row, col.name)|date:'d.M.y HH:mm' || '') }}</small>
-                </span>
                 {{ col.getAppend() }}
               </div>
               <div *ngSwitchCase="ApiEntityListTypeEnum.URL">
