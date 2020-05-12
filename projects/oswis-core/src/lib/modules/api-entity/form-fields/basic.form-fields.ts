@@ -180,7 +180,7 @@ export class BasicFormFields {
             placeholder: entityName,
             search$: (term, id: number = -1) => {
               if (id < 0) {
-                return service.get(1, 5, [], [{column: 'search', value: term}]);
+                return service.getCollection(1, 5, [], [{column: 'search', value: term}]);
               }
               return service.getById(id);
             },
@@ -242,7 +242,7 @@ export class BasicFormFields {
                 placeholder: entityName,
                 search$: (term, id: number = -1) => {
                   if (id < 0) {
-                    return service.get(1, 5, [], [{column: nameColumnName ?? 'name', value: term}]);
+                    return service.getCollection(1, 5, [], [{column: nameColumnName ?? 'name', value: term}]);
                   }
                   return service.getById(id);
                 },
@@ -365,7 +365,7 @@ export class BasicFormFields {
 
   protected static getSearchFunction(service: ApiEntityService, searchColumn: string = 'search'): (term?: string, id?: number) => Observable<BasicModel | JsonLdListResponse<BasicModel>> {
     return function (term: string = null, id: number = -1): Observable<BasicModel | JsonLdListResponse<BasicModel>> {
-      return (id < 0) ? service.get(1, 5, [], [{column: searchColumn, value: term}]) : service.getById(id);
+      return (id < 0) ? service.getCollection(1, 5, [], [{column: searchColumn, value: term}]) : service.getById(id);
     };
   }
 

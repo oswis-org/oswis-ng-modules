@@ -46,7 +46,7 @@ export abstract class ApiEntityServiceInterface<Type extends BasicModel = BasicM
 
   abstract getPreSuffix(): string;
 
-  abstract get(
+  abstract getCollection(
     page: number,
     perPage: number,
     sort?: { column: string, order: string }[],

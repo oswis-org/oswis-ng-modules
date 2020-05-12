@@ -10,7 +10,6 @@ import {BasicModel} from "@oswis-org/oswis-shared";
 @Directive()
 export abstract class ApiEntityAbstractComponent<Type extends BasicModel = BasicModel> implements OnInit, OnDestroy {
   COL_TYPE = ApiEntityListTypeEnum;
-  // noinspection JSUnusedGlobalSymbols
   COL_ALIGN = ApiEntityListAlignEnum;
 
   // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
@@ -20,7 +19,7 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
     }
   }
 
-  public static notEmptyNotes(input: any[]): any[] {
+  public static filterOnlyWithContent(input: any[]): any[] {
     const isNotEmpty = (element) => {
       return element.content && element.content.length > 0
     };
@@ -85,7 +84,7 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
   }
 
   public notEmptyNotes(input: any[]): any[] {
-    return ApiEntityAbstractComponent.notEmptyNotes(input);
+    return ApiEntityAbstractComponent.filterOnlyWithContent(input);
   }
 
   public getEntityName(grCase: number = 1, capitalize: boolean = true): string {

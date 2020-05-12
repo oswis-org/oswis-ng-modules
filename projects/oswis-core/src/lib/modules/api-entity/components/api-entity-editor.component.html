@@ -9,8 +9,8 @@
     </h2>
     <h3 *ngIf="entity?.shortName" class="mat-h3">{{entity?.shortName}}</h3>
     <form (ngSubmit)="submit(model)" [formGroup]="form">
-      <formly-form [fields]="fields" [form]="form" [model]="model">
-        <div [innerHTML]="help"></div>
+      <formly-form [fields]="formlyFields" [form]="form" [model]="model">
+        <div [innerHTML]="formHelp"></div>
         <button color="primary" mat-raised-button type="submit">Uložit</button>
       </formly-form>
     </form>

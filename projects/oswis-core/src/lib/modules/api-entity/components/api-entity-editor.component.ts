@@ -15,10 +15,10 @@ import {MatDialog} from "@angular/material/dialog";
 })
 export class ApiEntityEditorComponent<Type extends BasicModel = BasicModel> extends ApiEntitySingleAbstractComponent<Type> {
   @Input() public model: object = {};
-  @Input() public fields: FormlyFieldConfig[];
+  @Input() public formlyFields: FormlyFieldConfig[];
   public form: FormGroup = new FormGroup({});
   public errorMessage = '';
-  @Input() public help = null;
+  @Input() public formHelp = null;
   @Input() public service: ApiEntityService<Type>;
 
   constructor(route: ActivatedRoute, router: Router, dialog: MatDialog) {

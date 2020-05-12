@@ -47,6 +47,23 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
     return AuthenticationService.handleError(text, err);
   }
 
+  public static convertBase64toArrayBuffer(base64) {
+    const binary_string = window.atob(base64);
+    const len = binary_string.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binary_string.charCodeAt(i);
+    }
+    return bytes.buffer;
+  }
+
+  public static getDownloadLink(x, fileName, mimeType: string = 'application/pdf') {
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(new Blob([this.convertBase64toArrayBuffer(x.data)], {type: mimeType}));
+    link.download = fileName;
+    return link;
+  }
+
   public getPath(): string {
     return this.path;
   }
@@ -70,16 +87,16 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
       );
   }
 
-  get(
+  getCollection(
     page: number = 1,
     perPage: number = 1,
-    sort: { column: string, order: string }[] = [],
+    order: { column: string, order: string }[] = [],
     filters: { column: string, value: string }[] = [],
     searchParamString: string = ''
   ): Observable<JsonLdListResponse<Type>> {
     const searchParamUrlString = searchParamString ? '&' + searchParamString : '';
     let urlParams = `?pagination=true&itemsPerPage=${perPage}&page=${page}&${searchParamUrlString}`;
-    sort.forEach(
+    order.forEach(
       oneSort => {
         if (oneSort.column) {
           urlParams += `&order[${oneSort.column}]=`;
@@ -269,7 +286,7 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
     return this.entityName.preSuffix || '';
   }
 
-  downloadPdfList(urlPath: string, type: string = 'get-list-pdf'): Observable<any> {
+  downloadPdfList(urlPath: string, type: string = 'getCollection-list-pdf'): Observable<any> {
     console.log('Downloading resource as PDF...');
     const req = {};
     req['type'] = type;
@@ -298,4 +315,5 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
       console.log('ApiEntity ' + this.getEntityName(1, true) + ' ' + params['id'] ? +params['id'] : 'not' + ' selected.');
     });
   }
+
 }

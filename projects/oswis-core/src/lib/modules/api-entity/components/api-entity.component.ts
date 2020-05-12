@@ -13,8 +13,8 @@ import {BasicModel, SidebarShowService} from "@oswis-org/oswis-shared";
 })
 export class ApiEntityComponent<Type extends BasicModel = BasicModel> extends ApiEntityAbstractComponent<Type> {
   protected isNewEntity = false;
-  protected isBig = false;
-  protected isBigWithPanel = false;
+  protected isViewBig = false;
+  protected isViewBigWithPanel = false;
 
   constructor(
     route: ActivatedRoute,
@@ -38,7 +38,7 @@ export class ApiEntityComponent<Type extends BasicModel = BasicModel> extends Ap
     this.breakpointObserver
       .observe(['(min-width: 900px)'])
       .subscribe((state: BreakpointState) => {
-        this.isBig = state.matches;
+        this.isViewBig = state.matches;
       });
   }
 
@@ -46,12 +46,12 @@ export class ApiEntityComponent<Type extends BasicModel = BasicModel> extends Ap
     this.breakpointObserver
       .observe(['(min-width: 1000px)'])
       .subscribe((state: BreakpointState) => {
-        this.isBigWithPanel = state.matches;
+        this.isViewBigWithPanel = state.matches;
       });
   }
 
   forceShowList() {
-    return this.menuService.getSidebarStatus() ? this.isBigWithPanel : this.isBig;
+    return this.menuService.getSidebarStatus() ? this.isViewBigWithPanel : this.isViewBig;
   }
 
   isSidenavOpened() {

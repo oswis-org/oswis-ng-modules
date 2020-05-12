@@ -1,4 +1,4 @@
-import {fromEvent} from 'rxjs';
+import {fromEvent, Observable} from 'rxjs';
 import {merge} from 'rxjs/observable/merge';
 import {MatSort} from '@angular/material/sort';
 import {HttpClient} from '@angular/common/http';
@@ -19,6 +19,8 @@ import {debounceTime, distinctUntilChanged, map, tap} from 'rxjs/operators';
 import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {JsonLdListResponse} from "../models/json-ld-list.response";
 import {BasicModel} from "@oswis-org/oswis-shared";
+import {JsonLdHydraMapping} from "../models/json-ld-hydra.mapping";
+import {ListFilterModel} from "../models/list-filter.model";
 
 @Component({
   selector: 'oswis-api-entity-list',
@@ -30,26 +32,31 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
 
   @Input() public service: ApiEntityService<Type>;
   @Input() displayedColumns: string[];
-  @Input() columnDefs: ColumnDefinitionModel[];
-  @Input() searchValue: string;
+  @Input() availableColumns: ColumnDefinitionModel[];
+  @Input() fulltextSearchColumn = 'search';
+  @Input() fulltextSearchValue: string;
+  @Input() defaultPageSize = 10;
+  @Input() searchParamsString = '';
+
+  public hydraMappings: JsonLdHydraMapping[] = [];
+  public orderColumns: boolean[] = [];
+  public availableFilters: ListFilterModel<ApiEntityService<Type>>[] = [];
+  public filters: string | boolean | number[] = [];
+
+  //Buttons - START
   @Input() actionSingleButtons: ListActionModel[] = [];
   @Input() actionSingleLinks: ListActionModel[] = [];
   @Input() actionMultipleMenuItems: ListActionModel[] = [];
   @Input() actionGlobalButtons: ListActionModel[] = [];
   @Input() actionStaticButtons: ListActionModel[] = [{name: 'Filtry', icon: 'filter_list', action: this.toggleShowFilterWrapper()}];
-  @Input() defaultSearchColumn = 'search';
-  @Input() pageSize = 10;
-  @Input() searchColumns: string[];
-  @Input() searchParamsString = '';
-
-  public orderColumns: string[] = [];
+  //Buttons - END
 
   resultsLength = 0;
   isLoadingResults = true;
-  isRateLimitReached = false;
+  isApiError = false;
   public showFilter = false;
-  dataSource = new MatTableDataSource<BasicModel>();
-  selection = new SelectionModel<BasicModel>(true, []);
+  dataSource = new MatTableDataSource<Type>();
+  selection = new SelectionModel<Type>(true, []);
 
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -66,38 +73,19 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return filterData.includes(filter);
   }
 
-  static convertBase64toArrayBuffer(base64) {
-    const binary_string = window.atob(base64);
-    const len = binary_string.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binary_string.charCodeAt(i);
-    }
-    return bytes.buffer;
-  }
-
-  public static getDownloadLink(x, fileName, mimeType: string = 'application/pdf') {
-    const blob = new Blob([ApiEntityListComponent.convertBase64toArrayBuffer(x.data)], {type: mimeType});
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.download = fileName;
-    return link;
-  }
-
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.filteredData.length;
-    const numAllRows = this.resultsLength;
     return numSelected >= numRows;
   }
 
   toggleShowFilterWrapper(target: boolean = null) {
-    const that = this;
-    return () => that.toggleShowFilter(target);
+    const context = this;
+    return () => context.toggleShowFilter(target);
   }
 
   toggleShowFilter(target: boolean = null) {
-    this.showFilter = target === null ? !this.showFilter : target;
+    this.showFilter = target ?? !this.showFilter;
     console.log(this);
     console.log('toggle, new: ' + this.showFilter);
   }
@@ -107,37 +95,18 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   masterToggle() {
+    const context = this;
     if (this.isAllSelected()) {
       this.selection.clear();
+      return;
     }
-    if (!this.isAllSelected()) {
-      this.dataSource.filteredData.forEach(row => this.selection.select(row));
-      this.service.get(
-        1,
-        10000, // TODO: Infinity? (MAX_VALUE)
-        [{column: this.sort.active, order: this.sort.direction.toString()}],
-        [{column: this.defaultSearchColumn, value: this.searchInput.nativeElement.value}],
-        this.searchParamsString
-      ).pipe(
-        tap(x => {
-          if (x['hydra:member']) {
-            const indexedData = [];
-            this.selection.selected.forEach(entity => {
-              indexedData[entity.id] = entity;
-            });
-            x['hydra:member'].forEach(selectedEntity => {
-              if (indexedData[selectedEntity.id]) {
-                this.selection.deselect(selectedEntity);
-                this.selection.select(indexedData[selectedEntity.id]);
-              }
-              if (!indexedData[selectedEntity.id]) {
-                this.selection.select(selectedEntity);
-              }
-            });
-          }
-        })
-      ).subscribe();
-    }
+    this.dataSource.filteredData.forEach(row => context.selection.select(row));
+    this
+      .loadDataFromApi(1, 999999)
+      .pipe(tap((data: JsonLdListResponse<Type>) => {
+        return this.fixSelectionAfterUpdate(data);
+      }))
+      .subscribe();
   }
 
   unselectAll() {
@@ -149,7 +118,6 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   public isSortable(column: string | null): boolean {
-    // console.log('Column '+column+' is' + (result ? '' : ' NOT') + ' in array.');
     return null !== column && column.length > 0 && typeof column === 'string' && this.orderColumns[column];
   }
 
@@ -160,52 +128,31 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
 
   loadData() {
     console.log('ApiEntityList is loading data...');
-    const apiSearchColumns = this.searchColumns && this.searchColumns.length > 0 ? this.searchColumns : this.defaultSearchColumn;
-    // this.dataSourceMyNew = new ApiEntityDataSource(this.service);
-    // this.dataSourceMyNew.loadItems(1);
-    // If the app-user changes the sort order, reset back to the first page.
-    this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);
+    this.sort.sortChange.subscribe(() => this.setPageNumber());
     this.dataSource.sortingDataAccessor = (obj, property) => this.getProperty(obj, property);
     this.dataSource.filterPredicate = ApiEntityListComponent.searchFilterPredicate;
     merge(this.sort.sortChange, this.paginator.page).pipe(
       startWith({}),
-      switchMap(() => {
-        this.isLoadingResults = true;
-        return this.service.get(
-          this.paginator.pageIndex + 1,
-          this.paginator.pageSize || this.pageSize,
-          [{column: this.sort.active, order: this.sort.direction.toString()}],
-          [{column: this.defaultSearchColumn, value: this.searchInput.nativeElement.value}],
-          this.searchParamsString
-        );
-      }),
-      map(data => {
-        this.isLoadingResults = false;   // Flip flag to show that loading has finished.
-        this.isRateLimitReached = false; // console.log(data['hydra:totalItems'] + ', ' + data.length);
-        // @ts-ignore
-        this.resultsLength = data['hydra:totalItems'] || data.length;
-        this.extractOrderColumns(data);
-        return data['hydra:member'] || data;
-      }),
-      catchError(() => {
-        console.log('Catch error.');
-        this.isLoadingResults = false;
-        this.isRateLimitReached = true;  // Catch if the GitHub API has reached its rate limit. Return empty data.
-        return observableOf([]);
-      })
-    ).subscribe(data => {
-      this.dataSource.data = this.getDataFromResponse(data);
-      const indexedData = [];
-      this.dataSource.data.forEach((entity: BasicModel) => {
-        indexedData[entity.id] = entity;
-      });
-      this.selection.selected.forEach(selectedEntity => {
-        if (indexedData[selectedEntity.id]) {
-          this.selection.deselect(selectedEntity);
-          this.selection.select(indexedData[selectedEntity.id]);
-        }
-      });
-    });
+      switchMap(() => this.loadDataFromApi()),
+      map((data: JsonLdListResponse<Type>) => this.processReceivedData(data)),
+      catchError((x: any) => this.processApiError(x))
+    ).subscribe((data: Type[]) => this.fillDataSource(data))
+  }
+
+  public getPageSize(): number {
+    return this.paginator.pageSize ?? this.defaultPageSize;
+  }
+
+  public getPageNumber(): number {
+    return this.paginator.pageIndex;
+  }
+
+  public setPageNumber(newPage: number = 0): number {
+    return this.paginator.pageIndex = newPage;
+  }
+
+  public affectPageNumber(shift: number): number {
+    return this.paginator.pageIndex += shift;
   }
 
   ngAfterViewInit() {
@@ -215,7 +162,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
         debounceTime(800),
         distinctUntilChanged(),
         tap(() => {
-          this.paginator.pageIndex = 0;
+          this.setPageNumber(0)
           this.loadData();
         })
       )
@@ -227,7 +174,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     this.dataSource.filter = filterValue.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
-  selectEntity(newEntity: BasicModel) {
+  selectEntity(newEntity: Type) {
     this.service.setSelectedId(newEntity.id);
   }
 
@@ -260,12 +207,11 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return Array.isArray(item);
   }
 
-  public downloadPdfList(urlPath: string, type: string = 'get-list-pdf', fileName: string = 'oswis-download-file.pdf') {
+  public downloadPdfList(urlPath: string, type: string = 'getCollection-list-pdf', fileName: string = 'oswis-download-file.pdf') {
     this.service.downloadPdfList(urlPath, type)
       .pipe(
         tap(x => {
-          console.log(x);
-          ApiEntityListComponent.getDownloadLink(x, fileName, 'application/pdf').click();
+          ApiEntityService.getDownloadLink(x, fileName, 'application/pdf').click();
         })
       ).subscribe();
   }
@@ -309,32 +255,115 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return (col.subtype === 'reversed') ? (!isTrue ? 'green' : 'red') : (isTrue ? 'green' : 'red');
   }
 
-  public extractOrderColumns(result: JsonLdListResponse<Type>) {
-    const that = this;
-    const regex = /^order\[(\S+)]$/;
+  public extractOrderAndFilterColumns(result: JsonLdListResponse<Type>) {
+    const context = this;
     this.orderColumns = [];
-
-    result["hydra:search"]["hydra:mapping"].forEach(
-      function (row: { '@type': string; 'property': string; 'required': boolean; 'variable': string; }) {
-        if (row.variable.startsWith('order[')) {
-          const regexResult = regex.exec(row.variable);
-          if (regexResult[1].length > 0) {
-            that.orderColumns[regexResult[1]] = true;
-          }
-        }
-      }
-    );
+    result["hydra:search"]["hydra:mapping"].forEach((row) => this.extractOrderColumnsProcessRow(row));
     console.log('Order columns: ', this.orderColumns);
+    console.log('Available filter columns: ', this.availableFilters);
   }
 
-  protected getDataFromResponse(data: any[] | JsonLdListResponse<BasicModel> | BasicModel[]): BasicModel[] {
-    if (data instanceof JsonLdListResponse) {
-      return data["hydra:member"];
+  protected extractOrderColumnsProcessRow(
+    row: { '@type': string; 'property': string; 'required': boolean; 'variable': string; },
+    context: ApiEntityListComponent = this,
+  ): void {
+    const regexResult = /^([a-zA-Z.]+)(\[(\S*)])*$/.exec(row.variable);
+    const first = regexResult[1] ?? null;
+    const second = regexResult[2] ?? null;
+
+    switch (first) {
+      case 'order':
+        if (second.length > 0) {
+          context.orderColumns[second] = true;
+        }
+        break;
+      case 'exists':
+        if (second.length > 0) {
+          const title = 'Existence položky ' + (this.availableColumns
+            .filter((value: ColumnDefinitionModel) => value.title)
+            .map((value: ColumnDefinitionModel) => value.title)[0] ?? second);
+          this.addAvailableFilter({key: row.variable, type: 'exists', column: second, title: title});
+        }
+        break;
+      case this.fulltextSearchColumn:
+        // TODO
+        break;
+      default:
+        // TODO
+        break;
     }
-    return data;
   }
 
+  public addAvailableFilter(filter: ListFilterModel): void {
+    this.availableFilters[filter.key] = filter;
+  }
 
+  public addFilter(key: string = null, value: string = null): void {
+    this.filters[key] = value;
+  }
+
+  protected fillDataSource(data: JsonLdListResponse<Type> | Type[]): void {
+    this.dataSource.data = this.getDataFromResponse(data);
+    console.log('New data: ', this.dataSource.data);
+    this.fixSelectionAfterLoad();
+  }
+
+  protected fixSelection(dataArray: Type[]): void {
+    const indexedData = [];
+    this.dataSource.data.forEach((entity: Type) => {
+      indexedData[entity.id] = entity;
+    });
+    dataArray.forEach(selectedEntity => {
+      if (indexedData[selectedEntity.id]) {
+        this.selection.deselect(selectedEntity);
+        this.selection.select(indexedData[selectedEntity.id]);
+      }
+      if (!indexedData[selectedEntity.id]) {
+        this.selection.select(selectedEntity);
+      }
+    });
+  }
+
+  protected fixSelectionAfterUpdate(dataArray: JsonLdListResponse<Type>): () => void {
+    return () => {
+      return this.fixSelection(dataArray['hydra:member'])
+    };
+  }
+
+  protected fixSelectionAfterLoad(): () => void {
+    return () => {
+      return this.fixSelection(this.selection.selected)
+    };
+  }
+
+  protected processApiError(error?: any): Observable<any[]> {
+    console.error(error);
+    this.isLoadingResults = false;
+    this.isApiError = true;  // Catch if the GitHub API has reached its rate limit. Return empty data.
+    return observableOf([]);
+  }
+
+  protected processReceivedData(data: JsonLdListResponse<Type>): Type[] {
+    this.isLoadingResults = false;   // Flip flag to show that loading has finished.
+    this.isApiError = false; // console.log(data['hydra:totalItems'] + ', ' + data.length);
+    this.resultsLength = data['hydra:totalItems'];
+    this.extractOrderAndFilterColumns(data);
+    return this.getDataFromResponse(data);
+  }
+
+  protected loadDataFromApi(page?: number, perPage?: number): Observable<JsonLdListResponse<Type>> {
+    this.isLoadingResults = true;
+    return this.service.getCollection(
+      page ?? this.getPageNumber() + 1,
+      perPage ?? this.getPageSize(),
+      [{column: this.sort.active, order: this.sort.direction.toString()}],
+      [{column: this.fulltextSearchColumn, value: this.searchInput.nativeElement.value}],
+      this.searchParamsString
+    );
+  }
+
+  public getDataFromResponse(data: JsonLdListResponse<Type> | Type[]): Type[] {
+    return data["hydra:member"] ?? data;
+  }
 }
-
 

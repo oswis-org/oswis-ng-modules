@@ -9,13 +9,13 @@ import {BasicModel} from "@oswis-org/oswis-shared";
 @Component({
   selector: 'oswis-api-entity-edit',
   template: `
-    <oswis-api-entity-editor [service]="service" [fields]="fields" [help]="help" [transform]="transform" class="entity-card-container">
+    <oswis-api-entity-editor [service]="service" [formlyFields]="formlyFields" [formHelp]="formHelp" [transform]="transform" class="entity-card-container">
     </oswis-api-entity-editor>
   `,
 })
 export class ApiEntityEditComponent<Type extends BasicModel = BasicModel> extends ApiEntitySingleAbstractComponent<Type> {
-  public fields: FormlyFieldConfig[];
-  public help?: string;
+  public formlyFields: FormlyFieldConfig[];
+  public formHelp?: string;
   public transform?: (object) => object;
 
   constructor(route: ActivatedRoute, router: Router, service: ApiEntityService<Type>, dialog: MatDialog) {

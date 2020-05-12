@@ -6,7 +6,7 @@
         <div class="entity-filter">
           <mat-form-field>
             <label for="searchInput">
-              <input #searchInput [(ngModel)]="searchValue" id="searchInput" matInput placeholder="Vyhledat" type="search">
+              <input #searchInput [(ngModel)]="fulltextSearchValue" id="searchInput" matInput placeholder="Vyhledat" type="search">
             </label><!-- (keyup)="applyFilter($event.target.value)" -->
           </mat-form-field>
         </div>
@@ -38,9 +38,9 @@
       </mat-toolbar>
     </div>
     <div class="table-wrapper">
-      <div *ngIf="isLoadingResults || isRateLimitReached" class="loading-shade">
+      <div *ngIf="isLoadingResults || isApiError" class="loading-shade">
         <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-        <div *ngIf="isRateLimitReached" class="rate-limit-reached">
+        <div *ngIf="isApiError" class="rate-limit-reached">
           Nepodařilo se získat {{ getEntityName(14, false) }} ze serveru.
         </div>
       </div>
@@ -60,7 +60,7 @@
           </td>
         </ng-container>
 
-        <ng-container *ngFor="let col of columnDefs" [matColumnDef]="col.name" [sticky]="col.sticky">
+        <ng-container *ngFor="let col of availableColumns" [matColumnDef]="col.name" [sticky]="col.sticky">
           <th *matHeaderCellDef [disabled]="!isSortable(col.getSortable())" [mat-sort-header]="col.getSortable()" [ngClass]="col.getAlign()" mat-header-cell>
             {{ col.title }}
           </th>
@@ -170,7 +170,7 @@
         <tr (click)="selectEntityByRow(row.id,$event)" *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
     </div>
-    <mat-paginator [length]="resultsLength" [pageSizeOptions]="[5, 10, 30, 50, 100, 200, 500]" [pageSize]="pageSize" [showFirstLastButtons]="true">
+    <mat-paginator [length]="resultsLength" [pageSizeOptions]="[5, 10, 30, 50, 100, 200, 500]" [pageSize]="defaultPageSize" [showFirstLastButtons]="true">
     </mat-paginator>
 
   </div>
