@@ -1,5 +1,7 @@
 <div>
-  <h3>{{ boxTitle || 'Základní informace' }}</h3>
+  <h3 class="mat-h3">
+    <strong>{{ boxTitle || 'Základní informace' }}</strong>
+  </h3>
   <table class="entity-show-simple-table">
 
     <tr *ngIf="exist('name')">

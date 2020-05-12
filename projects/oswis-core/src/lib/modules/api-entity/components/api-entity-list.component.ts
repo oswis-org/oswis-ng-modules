@@ -42,6 +42,8 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   @Input() searchColumns: string[];
   @Input() searchParamsString = '';
 
+  public orderColumns: string[] = [];
+
   resultsLength = 0;
   isLoadingResults = true;
   isRateLimitReached = false;
@@ -146,13 +148,18 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return (path.split('.').reduce((o, p) => o && o[p], obj));
   }
 
+  public isSortable(column: string | null): boolean {
+    // console.log('Column '+column+' is' + (result ? '' : ' NOT') + ' in array.');
+    return null !== column && column.length > 0 && typeof column === 'string' && this.orderColumns[column];
+  }
+
   ngOnInit() {
     this.service.addRefreshCallback(this.loadData, this);
     this.service.setSelectedByRoute(this.route);
   }
 
   loadData() {
-    console.log('Will load data.');
+    console.log('ApiEntityList is loading data...');
     const apiSearchColumns = this.searchColumns && this.searchColumns.length > 0 ? this.searchColumns : this.defaultSearchColumn;
     // this.dataSourceMyNew = new ApiEntityDataSource(this.service);
     // this.dataSourceMyNew.loadItems(1);
@@ -177,6 +184,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
         this.isRateLimitReached = false; // console.log(data['hydra:totalItems'] + ', ' + data.length);
         // @ts-ignore
         this.resultsLength = data['hydra:totalItems'] || data.length;
+        this.extractOrderColumns(data);
         return data['hydra:member'] || data;
       }),
       catchError(() => {
@@ -301,6 +309,24 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return (col.subtype === 'reversed') ? (!isTrue ? 'green' : 'red') : (isTrue ? 'green' : 'red');
   }
 
+  public extractOrderColumns(result: JsonLdListResponse<Type>) {
+    const that = this;
+    const regex = /^order\[(\S+)]$/;
+    this.orderColumns = [];
+
+    result["hydra:search"]["hydra:mapping"].forEach(
+      function (row: { '@type': string; 'property': string; 'required': boolean; 'variable': string; }) {
+        if (row.variable.startsWith('order[')) {
+          const regexResult = regex.exec(row.variable);
+          if (regexResult[1].length > 0) {
+            that.orderColumns[regexResult[1]] = true;
+          }
+        }
+      }
+    );
+    console.log('Order columns: ', this.orderColumns);
+  }
+
   protected getDataFromResponse(data: any[] | JsonLdListResponse<BasicModel> | BasicModel[]): BasicModel[] {
     if (data instanceof JsonLdListResponse) {
       return data["hydra:member"];
@@ -308,4 +334,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return data;
   }
 
+
 }
+
+

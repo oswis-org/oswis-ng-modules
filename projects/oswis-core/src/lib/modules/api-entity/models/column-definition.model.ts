@@ -1,19 +1,19 @@
 import {ApiEntityListAlignEnum} from '../enums/api-entity-list-align.enum';
 import {ApiEntityListTypeEnum} from '../enums/api-entity-list-type.enum';
-import {ColumnDefinitionValuesModel} from './column-definition-values.model';
+import {ColumnDefinitionValuesModel} from "./column-definition-values.model";
 
 export class ColumnDefinitionModel {
-  name: string = null;
-  title: string = null;
-  sticky = false;
-  align: ApiEntityListAlignEnum = ApiEntityListAlignEnum.LEFT;
-  searcheable = false;
-  sortable?: string | boolean;
+  name?: string = null;
+  title?: string = null;
+  sticky?: boolean = false;
+  align?: ApiEntityListAlignEnum = ApiEntityListAlignEnum.LEFT;
+  searcheable?: boolean | string | null = false;
+  sortable?: string | boolean | null = null;
   type?: ApiEntityListTypeEnum = null;
   subType?: string = null;
   child?: string = null;
-  prepend = '';
-  append = '';
+  prepend?: string = '';
+  append?: string = '';
   fontSize?: any = null;
 
   constructor(values: ColumnDefinitionValuesModel = null) {
@@ -22,7 +22,7 @@ export class ColumnDefinitionModel {
     this.sticky = this.sticky || values.sticky;
     this.align = values.align || this.align;
     this.searcheable = this.searcheable || values.searcheable;
-    this.sortable = values.sortable || false;
+    this.sortable = values.sortable || null;
     this.type = values.type || this.type;
     this.subType = values.subType || this.subType;
     this.child = values.child || this.child;
@@ -33,25 +33,25 @@ export class ColumnDefinitionModel {
 
   // public getHeaderAlign(): string {
   //   switch (this.align) {
-  //     case ApiEntityListAlignEnum.RIGHT:
+  //     case COL_ALIGN.RIGHT:
   //       return 'flex-end';
-  //     case ApiEntityListAlignEnum.CENTER:
+  //     case COL_ALIGN.CENTER:
   //       return 'center';
   //   }
   //   return 'flex-start';
   // }
 
-  public isSortable(): boolean {
-    return null != this.getSortableName() && typeof this.getSortableName() === 'string';
-  }
+  public getSortable(): string | null {
+    if (false === this.sortable) {
+      return null;
+    }
+    if (null == this.sortable || '' == this.sortable) {
+      return this.name;
+    }
+    if (this.sortable == 'string') {
+      return this.sortable;
+    }
 
-  public getSortableName(): string | null {
-    if (this.sortable === true && typeof this.name === 'string') {
-      return '' + this.name;
-    }
-    if (this.sortable && typeof this.sortable === 'string') {
-      return '' + this.sortable;
-    }
     return null;
   }
 

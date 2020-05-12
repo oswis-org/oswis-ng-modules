@@ -6,8 +6,8 @@ export class ColumnDefinitionValuesModel {
   title?: string;
   sticky?: boolean;
   align?: ApiEntityListAlignEnum;
-  searcheable?: boolean;
-  sortable?: string | boolean;
+  searcheable?: boolean | string | null;
+  sortable?: string | boolean | null;
   type?: ApiEntityListTypeEnum;
   subType?: string;
   child?: string;
@@ -15,3 +15,5 @@ export class ColumnDefinitionValuesModel {
   append?: string;
   fontSize?: any;
 }
+
+

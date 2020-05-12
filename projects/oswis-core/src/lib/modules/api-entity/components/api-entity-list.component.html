@@ -50,7 +50,7 @@
         <ng-container [sticky]="true" matColumnDef="select">
           <th *matHeaderCellDef mat-header-cell>
             <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
-                          [indeterminate]="selection.hasValue() && !isAllSelected()" [matBadgeHidden]="selectedCount()===0"
+                          [indeterminate]="selection.hasValue() && !isAllSelected()" [matBadgeHidden]="0===selectedCount()"
                           matBadge="{{ selectedCount() }}" matBadgeColor="warn" matBadgeSize="medium">
             </mat-checkbox>
           </th>
@@ -61,19 +61,19 @@
         </ng-container>
 
         <ng-container *ngFor="let col of columnDefs" [matColumnDef]="col.name" [sticky]="col.sticky">
-          <th *matHeaderCellDef [disabled]="!col.getSortableName()" [mat-sort-header]="col.getSortableName()" [ngClass]="col.getAlign()" mat-header-cell>
+          <th *matHeaderCellDef [disabled]="!isSortable(col.getSortable())" [mat-sort-header]="col.getSortable()" [ngClass]="col.getAlign()" mat-header-cell>
             {{ col.title }}
           </th>
-          <td *matCellDef="let row" [ngClass]="col.getAlign()" mat-cell class="entity-list-data-column">
+          <td *matCellDef="let row" [ngClass]="col.getAlign()" class="entity-list-data-column" mat-cell>
             <div [ngSwitch]="col.type">
-              <div *ngSwitchCase="ApiEntityListTypeEnum.CHILD_ROWS">
+              <div *ngSwitchCase="COL_TYPE.CHILD_ROWS">
                 <div *ngIf="isArray(getProperty(row, col.name)) && col.child">
                   <div *ngFor="let item of getProperty(row, col.name)">
                     {{ col.getPrepend() + (item[col.child] || '') + col.getAppend() }}
                   </div>
                 </div>
               </div>
-              <div *ngSwitchCase="ApiEntityListTypeEnum.LIST" class="small spaced-list">
+              <div *ngSwitchCase="COL_TYPE.LIST" class="small spaced-list">
                 <div [ngSwitch]="col.subType">
                   <div *ngSwitchCase="'ordered'">
                     <ol *ngIf="isArray(getProperty(row, col.name)) && col.child">
@@ -91,25 +91,22 @@
                   </div>
                 </div>
               </div>
-              <div *ngSwitchCase="ApiEntityListTypeEnum.DATE">
+              <div *ngSwitchCase="COL_TYPE.DATE">
                 <span *ngIf="!isArray(getProperty(row, col.name)) || !col.child" style="text-align:right;">
                 {{ col.getPrepend() + (getProperty(row, col.name)|date: F_DATE) || '' + col.getAppend() }}
                 </span>
               </div>
-              <div *ngSwitchCase="ApiEntityListTypeEnum.DATETIME">
+              <div *ngSwitchCase="COL_TYPE.DATETIME">
                 {{ col.getPrepend() + (getProperty(row, col.name)|date:F_DATE_TIME) || '' + col.getAppend() }}
               </div>
-              <div *ngSwitchCase="ApiEntityListTypeEnum.DATETIME_RANGE">
-                {{ col.getPrepend() }}
-                <div>
-                  {{ (getProperty(row, 'startDateTime') ? 'od ' + (getProperty(row, 'startDateTime')|date:F_DATE_TIME) : '') }}
-                </div>
-                <div>
-                  {{ (getProperty(row, 'endDateTime') ? 'od ' + (getProperty(row, 'endDateTime')|date:F_DATE_TIME) : '') }}
-                </div>
-                {{ col.getAppend() }}
+              <div *ngSwitchCase="COL_TYPE.DATETIME_RANGE">
+                <div>{{ col.getPrepend() }}</div>
+                <div>{{ (getProperty(row, 'startDateTime') ? 'od ' + (getProperty(row, 'startDateTime')|date:F_DATE_TIME) : '') }}</div>
+                <div>{{ (getProperty(row, 'endDateTime') ? 'od ' + (getProperty(row, 'endDateTime')|date:F_DATE_TIME) : '') }}</div>
+                <div *ngIf="!getProperty(row, 'startDateTime') && !getProperty(row, 'endDateTime')">neomezeno</div>
+                <div>{{ col.getAppend() }}</div>
               </div>
-              <div *ngSwitchCase="ApiEntityListTypeEnum.DATETIME_BOOLEAN">
+              <div *ngSwitchCase="COL_TYPE.DATETIME_BOOLEAN">
                 {{ col.getPrepend() }}
                 <mat-icon [style.color]="getBooleanColor(row, col)" style="font-weight:bold;">
                   {{ getProperty(row, col.name) ? 'done' : 'clear' }}
@@ -119,7 +116,7 @@
                 </span>
                 {{ col.getAppend() }}
               </div>
-              <div *ngSwitchCase="ApiEntityListTypeEnum.DATETIME_RANGE_BOOLEAN">
+              <div *ngSwitchCase="COL_TYPE.DATETIME_RANGE_BOOLEAN">
                 {{ col.getPrepend() }}
                 <mat-icon [style.color]="getDateRangeColor(row, col)" style="font-weight:bold;">
                   {{ isInDateRange(row, col) ? 'done' : 'clear' }}
@@ -129,30 +126,30 @@
                 </span>
                 {{ col.getAppend() }}
               </div>
-              <div *ngSwitchCase="ApiEntityListTypeEnum.PERCENT">
+              <div *ngSwitchCase="COL_TYPE.PERCENT">
                 {{ col.getPrepend() + (+getProperty(row, col.name) >= 0 ? (+getProperty(row, col.name) * 100) + ' %' : '') + ' ' + col.getAppend() }}
               </div>
-              <div *ngSwitchCase="ApiEntityListTypeEnum.BOOLEAN">
+              <div *ngSwitchCase="COL_TYPE.BOOLEAN">
                 {{ col.getPrepend() }}
                 <mat-icon [style.color]="getBooleanColor(row, col)" style="font-weight:bold;">
                   {{ getProperty(row, col.name) ? 'done' : 'clear' }}
                 </mat-icon>
                 {{ col.getAppend() }}
               </div>
-              <div *ngSwitchCase="ApiEntityListTypeEnum.URL">
+              <div *ngSwitchCase="COL_TYPE.URL">
                 {{ col.getPrepend() }}
                 <a *ngIf="getProperty(row, col.name)" [href]="getProperty(row, col.name)" target="_blank">
                   {{ getProperty(row, col.name) }}
                 </a>{{ col.getAppend() }}
               </div>
-              <div *ngSwitchCase="ApiEntityListTypeEnum.EMAIL">
+              <div *ngSwitchCase="COL_TYPE.EMAIL">
                 {{ col.getPrepend() }}
                 <a *ngIf="getProperty(row, col.name)" [href]="'mailto:' + getProperty(row, col.name)" target="_blank">
                   {{ getProperty(row, col.name) }}
                 </a>
                 {{ col.getAppend() }}
               </div>
-              <div *ngSwitchCase="ApiEntityListTypeEnum.PHONE">
+              <div *ngSwitchCase="COL_TYPE.PHONE">
                 {{ col.getPrepend() }}
                 <a *ngIf="getProperty(row, col.name)" [href]="'call:' + getProperty(row, col.name)" target="_blank">
                   {{ getProperty(row, col.name) }}

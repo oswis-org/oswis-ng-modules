@@ -3,7 +3,17 @@ export class JsonLdListResponse<Type> {
   '@id'?: string | number;
   '@type'?: string;
   'hydra:member'?: Type[];
-  'hydra:search'?: any;
+  'hydra:search'?: {
+    '@type': string;
+    'hydra:mapping': {
+      '@type': string;
+      'property': string;
+      'required': boolean;
+      'variable': string;
+    }[];
+    'hydra:template': string;
+    'hydra:variableRepresentation': string;
+  };
   'hydra:totalItems'?: number;
   'hydra:view'?: any;
 }

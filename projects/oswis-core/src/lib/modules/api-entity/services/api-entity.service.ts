@@ -231,7 +231,7 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
     if (!this.callbacksSelectedChanged.includes(callbackItem)) {
       console.log('ApiEntityService (' + this + '): Add SelectedChangedCallback.', callbackItem);
       this.callbacksSelectedChanged.push(callbackItem);
-      console.log('ApiEntityService (' + this + '): Has '+this.callbacksSelectedChanged.length+' SelectedChangedCallbacks now.', callbackItem);
+      console.log('ApiEntityService (' + this + '): Has ' + this.callbacksSelectedChanged.length + ' SelectedChangedCallbacks now.', callbackItem);
     }
   }
 

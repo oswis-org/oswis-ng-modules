@@ -10,6 +10,7 @@ import {ApiEntityService} from "./api-entity.service";
   providedIn: 'root'
 })
 export abstract class ImageAbstractService<Type extends AbstractImageModel = AbstractImageModel> extends ApiEntityService<Type> {
+  // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
   constructor(
     protected http: HttpClient,
     protected notificationService: NotificationsService,

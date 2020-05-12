@@ -1,6 +1,13 @@
 <mat-card class="entity-card mat-elevation-z8">
   <mat-card-content *ngIf="(creatingNew() || selectedEntityEmpty) || (selectedEntity$ | async) as entity; else loading">
-    <h1>{{ getH1Prefix() + ' ' + entity?.name }}</h1>
+    <h1 class="mat-h1">{{ getH1Prefix() + ' ' + entity?.name }}</h1>
+    <h2 class="mat-h2">
+      <mat-chip-list>
+        <mat-chip *ngIf="entity?.id" color="primary" selected>{{entity?.id}}</mat-chip>
+        <mat-chip *ngIf="entity?.slug" color="secondary" selected>{{entity?.slug}}</mat-chip>
+      </mat-chip-list>
+    </h2>
+    <h3 *ngIf="entity?.shortName" class="mat-h3">{{entity?.shortName}}</h3>
     <form (ngSubmit)="submit(model)" [formGroup]="form">
       <formly-form [fields]="fields" [form]="form" [model]="model">
         <div [innerHTML]="help"></div>

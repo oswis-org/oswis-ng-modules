@@ -9,8 +9,9 @@ import {BasicModel} from "@oswis-org/oswis-shared";
 
 @Directive()
 export abstract class ApiEntityAbstractComponent<Type extends BasicModel = BasicModel> implements OnInit, OnDestroy {
-  ApiEntityListTypeEnum = ApiEntityListTypeEnum;
-  ApiEntityListAlignEnum = ApiEntityListAlignEnum;
+  COL_TYPE = ApiEntityListTypeEnum;
+  // noinspection JSUnusedGlobalSymbols
+  COL_ALIGN = ApiEntityListAlignEnum;
 
   // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
   constructor(public route: ActivatedRoute, public router: Router, public service: ApiEntityService<Type>, public dialog: MatDialog) {
