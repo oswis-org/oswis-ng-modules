@@ -318,8 +318,8 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   // noinspection JSUnusedGlobalSymbols
-  public addActiveFilter(filter: { column: string, value: string }): void {
-    this.activeFilters[filter.column] = filter.value;
+  public addActiveFilter(filter: KeyValue<string, string | number | boolean | null>): void {
+    this.activeFilters[filter.key] = filter.value;
   }
 
   // noinspection JSUnusedGlobalSymbols

@@ -11,7 +11,7 @@
           </mat-form-field>
         </div>
 
-        <oswis-api-entity-list-action-button (clicked)="getAction(action)" *ngFor="let action of actionStaticButtons" [action]="action" [isMenuItem]="false">
+        <oswis-api-entity-list-action-button (clicked)="getAction(action)()" *ngFor="let action of actionStaticButtons" [action]="action" [isMenuItem]="false">
         </oswis-api-entity-list-action-button>
 
         <button [matMenuTriggerFor]="globalItemsOperationsMenu" mat-icon-button matTooltip="Obecné akce">

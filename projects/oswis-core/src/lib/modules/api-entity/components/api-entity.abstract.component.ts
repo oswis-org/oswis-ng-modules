@@ -76,7 +76,7 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
   }
 
   getDialogConfig(action: ListActionModel, extraData: object = null, items: object[] = null): MatDialogConfig {
-    return {data: {items: items, action: action, extraData: extraData}};
+    return {data: {...action.data, items: items, action: action, extraData: extraData}};
   }
 
   getApiUrl(): string {
@@ -103,8 +103,9 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
 
   openDialog(action: ListActionModel, extraData: object = null, items: object[] = null): void {
     const that = this;
-    const dialogRef = that.dialog.open(action.dialog, this.getDialogConfig(action, extraData, items));
-    dialogRef.beforeClosed().subscribe(dialogResult => this.processDialogResult(that, action, dialogResult, dialogRef));
+    const dialogRef = that.dialog.open(action.dialog, that.getDialogConfig(action, extraData, items));
+    console.log('Open dialog: dialogRef: ', dialogRef);
+    dialogRef.beforeClosed().subscribe(dialogResult => that.processDialogResult(that, action, dialogResult, dialogRef));
   }
 }
 
