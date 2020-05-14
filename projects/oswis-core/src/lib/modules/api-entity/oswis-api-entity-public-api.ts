@@ -5,10 +5,8 @@
 // Module
 export * from './oswis-api-entity.module'
 
-// Interfaces
-export * from './services/api-entity.service.interface';
-
 // Services
+export * from './services/api-entity.service.interface';
 export * from './services/api-entity.service';
 export * from './services/image.abstract.service'
 
@@ -18,11 +16,17 @@ export * from './components/api-entity-edit.component';
 export * from './components/api-entity-editor.component';
 export * from './components/api-entity-list.component';
 export * from './components/api-entity-show.component';
+export * from './components/list-filter-dialog.component';
+export * from './components/remove-entity-dialog.component';
 
 // Models
 export * from './models/column-definition-values.model';
 export * from './models/column-definition.model';
 export * from './models/list-action.model';
+export * from './models/list-operation-action.type';
+export * from './models/list-filter.model';
+export * from './models/json-ld-hydra-mapping.model';
+export * from './models/json-ld-list-response.model';
 
 // Form fields
 export * from './form-fields/address.form-fields';

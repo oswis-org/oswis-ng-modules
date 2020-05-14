@@ -2,7 +2,7 @@ import {ApiEntityService} from '../services/api-entity.service';
 import {FormlyFieldConfig} from "@ngx-formly/core";
 import {Observable} from "rxjs";
 import {BasicModel} from "@oswis-org/oswis-shared";
-import {JsonLdListResponse} from "../models/json-ld-list.response";
+import {JsonLdListResponseModel} from "../models/json-ld-list-response.model";
 
 // @dynamic
 export class BasicFormFields {
@@ -363,8 +363,8 @@ export class BasicFormFields {
     };
   }
 
-  protected static getSearchFunction(service: ApiEntityService, searchColumn: string = 'search'): (term?: string, id?: number) => Observable<BasicModel | JsonLdListResponse<BasicModel>> {
-    return function (term: string = null, id: number = -1): Observable<BasicModel | JsonLdListResponse<BasicModel>> {
+  protected static getSearchFunction(service: ApiEntityService, searchColumn: string = 'search'): (term?: string, id?: number) => Observable<BasicModel | JsonLdListResponseModel<BasicModel>> {
+    return function (term: string = null, id: number = -1): Observable<BasicModel | JsonLdListResponseModel<BasicModel>> {
       return (id < 0) ? service.getCollection(1, 5, [], [{column: searchColumn, value: term}]) : service.getById(id);
     };
   }

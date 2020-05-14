@@ -6,7 +6,8 @@ import {NotificationsService} from 'angular2-notifications';
 import {catchError, retry, tap} from 'rxjs/operators';
 import {ActivatedRoute, ParamMap} from "@angular/router";
 import {AuthenticationService, BasicModel, OSWIS_CONFIG, OswisConfig} from "@oswis-org/oswis-shared";
-import {JsonLdListResponse} from "../models/json-ld-list.response";
+import {JsonLdListResponseModel} from "../models/json-ld-list-response.model";
+import {KeyValue} from "@angular/common";
 
 @Injectable({
   providedIn: 'root'
@@ -90,29 +91,23 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
   getCollection(
     page: number = 1,
     perPage: number = 1,
-    order: { column: string, order: string }[] = [],
-    filters: { column: string, value: string }[] = [],
+    order: KeyValue<string, string | number | boolean | null>[] = [],
+    filters: KeyValue<string, string | number | boolean | null>[] = [],
     searchParamString: string = ''
-  ): Observable<JsonLdListResponse<Type>> {
-    const searchParamUrlString = searchParamString ? '&' + searchParamString : '';
-    let urlParams = `?pagination=true&itemsPerPage=${perPage}&page=${page}&${searchParamUrlString}`;
+  ): Observable<JsonLdListResponseModel<Type>> {
+    let urlParams = perPage > 0 ? `?pagination=true&itemsPerPage=${perPage}&page=${page}&${searchParamString}` : '?pagination=false';
     order.forEach(
       oneSort => {
-        if (oneSort.column) {
-          urlParams += `&order[${oneSort.column}]=`;
-          urlParams += oneSort.order ? `${oneSort.order}` : 'asc';
-        }
+        urlParams += oneSort.key ? `&order[${oneSort.key}]=` + (oneSort.value ? `${oneSort.value}` : 'asc') : null;
       }
     );
     filters.forEach(
       filter => {
-        if (filter.column && filter.value) {
-          urlParams += `&${filter.column}=${filter.value}`;
-        }
+        urlParams += filter.key ? `&${filter.key}=${filter.value ?? null}` : null;
       }
     );
     console.log('Get some items from API (' + this.path + ').');
-    return this.http.get<JsonLdListResponse<Type>>(this.getApiUrl() + '.jsonld' + urlParams)
+    return this.http.get<JsonLdListResponseModel<Type>>(this.getApiUrl() + '.jsonld' + urlParams)
       .pipe(
         retry(this.retryCount),
         catchError((err) => {

@@ -20,6 +20,7 @@ import {RemoveEntityDialog} from "./components/remove-entity-dialog.component";
 import {OswisSharedModule} from "@oswis-org/oswis-shared";
 import {RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
+import {ListFilterDialogComponent} from "./components/list-filter-dialog.component";
 
 @NgModule({
   exports: [
@@ -40,6 +41,7 @@ import {CommonModule} from "@angular/common";
     CustomListActionButton,
     CustomActionComponent,
     RemoveEntityDialog,
+    ListFilterDialogComponent,
     OswisSharedModule,
   ],
   imports: [
@@ -65,12 +67,14 @@ import {CommonModule} from "@angular/common";
     CustomListActionButton,
     CustomActionComponent,
     RemoveEntityDialog,
+    ListFilterDialogComponent,
   ],
   providers: [
     ApiEntityService,
   ],
   entryComponents: [
     RemoveEntityDialog,
+    ListFilterDialogComponent,
   ],
 })
 export class OswisApiEntityModule {

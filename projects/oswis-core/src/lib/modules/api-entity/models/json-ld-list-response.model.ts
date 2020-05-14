@@ -1,13 +1,13 @@
-import {JsonLdHydraMapping} from "./json-ld-hydra.mapping";
+import {JsonLdHydraMappingModel} from "./json-ld-hydra-mapping.model";
 
-export class JsonLdListResponse<Type> {
+export class JsonLdListResponseModel<Type> {
   '@context': string;
   '@id'?: string | number;
   '@type'?: string;
   'hydra:member'?: Type[];
   'hydra:search'?: {
     '@type': string;
-    'hydra:mapping': JsonLdHydraMapping[];
+    'hydra:mapping': JsonLdHydraMappingModel[];
     'hydra:template': string;
     'hydra:variableRepresentation': string;
   };

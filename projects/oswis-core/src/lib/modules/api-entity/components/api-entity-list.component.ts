@@ -17,10 +17,12 @@ import {ColumnDefinitionModel} from '../models/column-definition.model';
 import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
 import {debounceTime, distinctUntilChanged, map, tap} from 'rxjs/operators';
 import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
-import {JsonLdListResponse} from "../models/json-ld-list.response";
+import {JsonLdListResponseModel} from "../models/json-ld-list-response.model";
 import {BasicModel} from "@oswis-org/oswis-shared";
-import {JsonLdHydraMapping} from "../models/json-ld-hydra.mapping";
+import {JsonLdHydraMappingModel} from "../models/json-ld-hydra-mapping.model";
 import {ListFilterModel} from "../models/list-filter.model";
+import {KeyValue} from "@angular/common";
+import {ListFilterDialogComponent} from "./list-filter-dialog.component";
 
 @Component({
   selector: 'oswis-api-entity-list',
@@ -38,23 +40,32 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   @Input() defaultPageSize = 10;
   @Input() searchParamsString = '';
 
-  public hydraMappings: JsonLdHydraMapping[] = [];
+  // noinspection JSUnusedGlobalSymbols
+  public hydraMappings: JsonLdHydraMappingModel[] = [];
   public orderColumns: boolean[] = [];
   public availableFilters: ListFilterModel<ApiEntityService<Type>>[] = [];
-  public filters: string | boolean | number[] = [];
+  public activeFilters: KeyValue<string, string | number | boolean | null>[] = [];
 
   //Buttons - START
   @Input() actionSingleButtons: ListActionModel[] = [];
   @Input() actionSingleLinks: ListActionModel[] = [];
   @Input() actionMultipleMenuItems: ListActionModel[] = [];
   @Input() actionGlobalButtons: ListActionModel[] = [];
-  @Input() actionStaticButtons: ListActionModel[] = [{name: 'Filtry', icon: 'filter_list', action: this.toggleShowFilterWrapper()}];
+  @Input() actionStaticButtons: ListActionModel[] = [
+    {
+      name: 'Filtry',
+      icon: 'filter_list',
+      action: () => this.loadData(),
+      badge: this.getFiltersLengthAsString(),
+      data: {availableFilters: this.availableFilters, activeFilters: this.activeFilters,},
+      dialog: ListFilterDialogComponent,
+    },
+  ];
   //Buttons - END
 
   resultsLength = 0;
   isLoadingResults = true;
   isApiError = false;
-  public showFilter = false;
   dataSource = new MatTableDataSource<Type>();
   selection = new SelectionModel<Type>(true, []);
 
@@ -73,21 +84,19 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return filterData.includes(filter);
   }
 
+  public getFiltersLengthAsString(): () => string | null {
+    const that = this;
+    return () => that.getFilters().length > 0 ? '' + that.getFilters().length : null;
+  }
+
+  public getFilters(): KeyValue<string, string | number | boolean | null>[] {
+    return this.activeFilters.map((filter: KeyValue<string, string | number | boolean | null>) => filter);
+  }
+
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.filteredData.length;
     return numSelected >= numRows;
-  }
-
-  toggleShowFilterWrapper(target: boolean = null) {
-    const context = this;
-    return () => context.toggleShowFilter(target);
-  }
-
-  toggleShowFilter(target: boolean = null) {
-    this.showFilter = target ?? !this.showFilter;
-    console.log(this);
-    console.log('toggle, new: ' + this.showFilter);
   }
 
   selectedCount() {
@@ -103,7 +112,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     this.dataSource.filteredData.forEach(row => context.selection.select(row));
     this
       .loadDataFromApi(1, 999999)
-      .pipe(tap((data: JsonLdListResponse<Type>) => {
+      .pipe(tap((data: JsonLdListResponseModel<Type>) => {
         return this.fixSelectionAfterUpdate(data);
       }))
       .subscribe();
@@ -134,7 +143,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     merge(this.sort.sortChange, this.paginator.page).pipe(
       startWith({}),
       switchMap(() => this.loadDataFromApi()),
-      map((data: JsonLdListResponse<Type>) => this.processReceivedData(data)),
+      map((data: JsonLdListResponseModel<Type>) => this.processReceivedData(data)),
       catchError((x: any) => this.processApiError(x))
     ).subscribe((data: Type[]) => this.fillDataSource(data))
   }
@@ -151,6 +160,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return this.paginator.pageIndex = newPage;
   }
 
+  // noinspection JSUnusedGlobalSymbols
   public affectPageNumber(shift: number): number {
     return this.paginator.pageIndex += shift;
   }
@@ -170,6 +180,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     this.loadData(); // this.dataSource.paginator = this.paginator; this.dataSource.sort = this.sort;
   }
 
+  // noinspection JSUnusedGlobalSymbols
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
@@ -178,7 +189,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     this.service.setSelectedId(newEntity.id);
   }
 
-  selectEntityByRow(entityId: number, event) {
+  selectEntityByRow(entityId: number) {
     const redirectPath = '/' + this.getFrontPath() + '/' + entityId;
     this.router.navigate([redirectPath]).then();
   }
@@ -207,6 +218,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return Array.isArray(item);
   }
 
+  // noinspection JSUnusedGlobalSymbols
   public downloadPdfList(urlPath: string, type: string = 'getCollection-list-pdf', fileName: string = 'oswis-download-file.pdf') {
     this.service.downloadPdfList(urlPath, type)
       .pipe(
@@ -255,12 +267,69 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return (col.subtype === 'reversed') ? (!isTrue ? 'green' : 'red') : (isTrue ? 'green' : 'red');
   }
 
-  public extractOrderAndFilterColumns(result: JsonLdListResponse<Type>) {
-    const context = this;
+  public extractOrderAndFilterColumns(result: JsonLdListResponseModel<Type>) {
     this.orderColumns = [];
     result["hydra:search"]["hydra:mapping"].forEach((row) => this.extractOrderColumnsProcessRow(row));
     console.log('Order columns: ', this.orderColumns);
     console.log('Available filter columns: ', this.availableFilters);
+  }
+
+  public addAvailableFilter(filter: ListFilterModel): void {
+    let titlePrefix = null, titleSuffix = null;
+    filter.inputType = 'text';
+
+    if ('exists' == filter.type) {
+      filter.inputType = 'boolean';
+      titleSuffix = ' existuje ';
+    }
+    if ('fulltext' == filter.type) {
+      filter.inputType = 'text';
+      filter.title = 'Fulltextové vyhledávání';
+    }
+    if (['lt', 'lte', 'gt', 'gte'].includes(filter.type)) {
+      filter.inputType = 'number';
+      titleSuffix = 'lt' == filter.type ? ' < ' : '';
+      titleSuffix += 'lte' == filter.type ? ' <= ' : '';
+      titleSuffix += 'gt' == filter.type ? ' > ' : '';
+      titleSuffix += 'gte' == filter.type ? ' >= ' : '';
+    }
+    if ('between' == filter.type) {
+      filter.inputType = 'number';
+      titleSuffix = ' je mezi ';
+    }
+    if (['before', 'strictly_before', 'after', 'strictly_after'].includes(filter.type)) {
+      filter.inputType = 'datetime';
+      titleSuffix = 'before' == filter.type ? ' < ' : '';
+      titleSuffix += 'strictly_before' == filter.type ? ' <= ' : '';
+      titleSuffix += 'after' == filter.type ? ' > ' : '';
+      titleSuffix += 'strictly_after' == filter.type ? ' >= ' : '';
+    }
+    if (!filter.title) {
+      filter.title = titlePrefix;
+      filter.title += (this.availableColumns.filter((val: ColumnDefinitionModel) => val.name == filter.column).map((val: ColumnDefinitionModel) => val.title)[0] ?? filter.column);
+      filter.title += titleSuffix;
+    }
+    this.availableFilters[filter.key] = filter;
+  }
+
+  // noinspection JSUnusedGlobalSymbols
+  public getActiveFilters(): KeyValue<string, string | number | boolean | null>[] {
+    return this.activeFilters;
+  }
+
+  // noinspection JSUnusedGlobalSymbols
+  public addActiveFilter(filter: { column: string, value: string }): void {
+    this.activeFilters[filter.column] = filter.value;
+  }
+
+  // noinspection JSUnusedGlobalSymbols
+  public removeActiveFilter(key: string): void {
+    this.activeFilters[key] = null;
+    delete this.activeFilters[key];
+  }
+
+  public getDataFromResponse(data: JsonLdListResponseModel<Type> | Type[]): Type[] {
+    return data["hydra:member"] ?? data;
   }
 
   protected extractOrderColumnsProcessRow(
@@ -274,35 +343,24 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     switch (first) {
       case 'order':
         if (second.length > 0) {
-          context.orderColumns[second] = true;
+          context.orderColumns[row.property] = true;
         }
         break;
       case 'exists':
         if (second.length > 0) {
-          const title = 'Existence položky ' + (this.availableColumns
-            .filter((value: ColumnDefinitionModel) => value.title)
-            .map((value: ColumnDefinitionModel) => value.title)[0] ?? second);
-          this.addAvailableFilter({key: row.variable, type: 'exists', column: second, title: title});
+          this.addAvailableFilter({key: row.variable, type: 'exists', column: row.property});
         }
         break;
       case this.fulltextSearchColumn:
-        // TODO
+        this.addAvailableFilter({key: row.variable, type: 'fulltext', column: row.property});
         break;
       default:
-        // TODO
+        this.addAvailableFilter({key: row.variable, type: second, column: row.property});
         break;
     }
   }
 
-  public addAvailableFilter(filter: ListFilterModel): void {
-    this.availableFilters[filter.key] = filter;
-  }
-
-  public addFilter(key: string = null, value: string = null): void {
-    this.filters[key] = value;
-  }
-
-  protected fillDataSource(data: JsonLdListResponse<Type> | Type[]): void {
+  protected fillDataSource(data: JsonLdListResponseModel<Type> | Type[]): void {
     this.dataSource.data = this.getDataFromResponse(data);
     console.log('New data: ', this.dataSource.data);
     this.fixSelectionAfterLoad();
@@ -324,7 +382,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     });
   }
 
-  protected fixSelectionAfterUpdate(dataArray: JsonLdListResponse<Type>): () => void {
+  protected fixSelectionAfterUpdate(dataArray: JsonLdListResponseModel<Type>): () => void {
     return () => {
       return this.fixSelection(dataArray['hydra:member'])
     };
@@ -343,7 +401,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return observableOf([]);
   }
 
-  protected processReceivedData(data: JsonLdListResponse<Type>): Type[] {
+  protected processReceivedData(data: JsonLdListResponseModel<Type>): Type[] {
     this.isLoadingResults = false;   // Flip flag to show that loading has finished.
     this.isApiError = false; // console.log(data['hydra:totalItems'] + ', ' + data.length);
     this.resultsLength = data['hydra:totalItems'];
@@ -351,19 +409,15 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return this.getDataFromResponse(data);
   }
 
-  protected loadDataFromApi(page?: number, perPage?: number): Observable<JsonLdListResponse<Type>> {
+  protected loadDataFromApi(page?: number, perPage?: number): Observable<JsonLdListResponseModel<Type>> {
     this.isLoadingResults = true;
     return this.service.getCollection(
       page ?? this.getPageNumber() + 1,
       perPage ?? this.getPageSize(),
-      [{column: this.sort.active, order: this.sort.direction.toString()}],
-      [{column: this.fulltextSearchColumn, value: this.searchInput.nativeElement.value}],
+      [{key: this.sort.active, value: this.sort.direction.toString()}],
+      [{key: this.fulltextSearchColumn, value: this.searchInput.nativeElement.value}, ...this.activeFilters],
       this.searchParamsString
     );
-  }
-
-  public getDataFromResponse(data: JsonLdListResponse<Type> | Type[]): Type[] {
-    return data["hydra:member"] ?? data;
   }
 }
 

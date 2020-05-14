@@ -167,17 +167,11 @@
         </ng-container>
 
         <tr *matHeaderRowDef="displayedColumns; sticky: true" mat-header-row></tr>
-        <tr (click)="selectEntityByRow(row.id,$event)" *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+        <tr (click)="selectEntityByRow(row.id)" *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
       </table>
     </div>
     <mat-paginator [length]="resultsLength" [pageSizeOptions]="[5, 10, 30, 50, 100, 200, 500]" [pageSize]="defaultPageSize" [showFirstLastButtons]="true">
     </mat-paginator>
 
   </div>
-</div>
-
-<div *ngIf="showFilter">
-  <mat-toolbar>
-    <small>Filtry | Nastavení | Informace</small>
-  </mat-toolbar>
 </div>

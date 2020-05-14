@@ -2,10 +2,12 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {ActivatedRoute} from "@angular/router";
 import {BasicModel} from "@oswis-org/oswis-shared";
-import {JsonLdListResponse} from "../models/json-ld-list.response";
+import {JsonLdListResponseModel} from "../models/json-ld-list-response.model";
+import {KeyValue} from "@angular/common";
 
 @Injectable()
 export abstract class ApiEntityServiceInterface<Type extends BasicModel = BasicModel> {
+  // noinspection JSUnusedGlobalSymbols
   abstract getAll(): Observable<Type[]>;
 
   abstract getSelected(): Observable<Type>;
@@ -24,6 +26,7 @@ export abstract class ApiEntityServiceInterface<Type extends BasicModel = BasicM
 
   abstract callRefreshCallbacks(): void;
 
+  // noinspection JSUnusedGlobalSymbols
   abstract getPath(): string;
 
   abstract getFrontendPath(): string;
@@ -36,6 +39,7 @@ export abstract class ApiEntityServiceInterface<Type extends BasicModel = BasicM
 
   abstract postOrPut(newEntity: Type, callback?: any): Observable<Type>;
 
+  // noinspection JSUnusedGlobalSymbols
   abstract delete(entity: Type, callback?: any): Observable<Type>;
 
   abstract deleteById(id: number, callback?: any): Observable<Type>;
@@ -49,10 +53,10 @@ export abstract class ApiEntityServiceInterface<Type extends BasicModel = BasicM
   abstract getCollection(
     page: number,
     perPage: number,
-    sort?: { column: string, order: string }[],
-    filters?: { column: string, value: string }[],
+    sort?: KeyValue<string, string | number | boolean | null>[],
+    filters?: KeyValue<string, string | number | boolean | null>[],
     searchParamsString?: string
-  ): Observable<JsonLdListResponse<Type>>;
+  ): Observable<JsonLdListResponseModel<Type>>;
 
   abstract downloadPdfList(urlPath: string, type: string): Observable<any>;
 
