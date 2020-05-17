@@ -7,6 +7,7 @@ import {FormControl} from "@angular/forms";
   selector: 'oswis-formly-datepicker-with-type',
   template: `
     <mat-form-field>
+      <mat-label>{{ to.label }}</mat-label>
       <!--suppress AngularInvalidExpressionResultType -->
       <input matInput [formControl]="formControl" [matDatepicker]="picker" [max]="to.max" [min]="to.min" [type]="to.type" [readonly]="to.readonly"
              [placeholder]="to.placeholder">

@@ -22,8 +22,8 @@ export class AppErrorHandler implements ErrorHandler {
     }
     const notificationService = this.injector.get(NotificationsService);
     const statusCode = getHttpStatusCode(error.status);
-    let title = (statusCode ? statusCode.localTitle : null) || error.title || 'Chyba';
-    title += (statusCode ? ' (' + statusCode.code + ')' : null) || (error.status ? ' (' + error.status + ')' : null);
+    let title = (statusCode ? statusCode.localTitle : '') || error.title || 'Chyba';
+    title += (statusCode ? ' (' + statusCode.code + ')' : '') || (error.status ? ' (' + error.status + ')' : '');
     let message = error.status && statusCode ? statusCode.getLocalTitleOrTitle() : '';
     message += errorMessage.length > 0 && message.length > 0 ? ', ' : '';
     message += errorMessage.length > 0 ? errorMessage : '';

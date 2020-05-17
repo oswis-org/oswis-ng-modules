@@ -1,12 +1,12 @@
 <!--suppress TypeScriptUnresolvedVariable -->
 <h1 mat-dialog-title style="color: red;">
-  Odstranění {{ (items?.length || 0) + ' ' + service?.getEntityName(2, false) || 'položek' }}
+  Odstranění {{ (data?.items?.length || 0) + ' ' + data?.service?.getEntityName(2, false) || 'položek' }}
 </h1>
 <div mat-dialog-content>
   <div>
     <h2>Opravdu odstranit položky?</h2>
     <ul>
-      <li *ngFor="let item of items" class="small">
+      <li *ngFor="let item of data?.items" class="small">
         <small>
           {{ item?.id }},
           <ng-container *ngIf="item?.name || item?.contact?.name"><strong>{{ item?.name || item?.contact?.name }}</strong>,</ng-container>

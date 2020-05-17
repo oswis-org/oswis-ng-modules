@@ -1,12 +1,11 @@
 {
   "name": "@oswis-org/oswis-core",
-  "version": "0.0.141",
+  "version": "0.0.201",
   "author": "Jakub Zak <mail@jakubzak.eu> (https://jakubzak.cz)",
   "description": "Core module for OSWIS (One Simple Web IS).",
   "homepage": "http://oswis.org",
   "license": "MIT",
   "keywords": [
-    "angular",
     "oswis",
     "typescript",
     "is",

@@ -13,12 +13,7 @@ interface EntityDialogDataInterface extends DialogDataInterface {
   templateUrl: './remove-entity-dialog.component.html',
 })
 export class RemoveEntityDialog extends DialogComponent {
-  public items: BasicModel[];
-  public service: ApiEntityServiceInterface;
-
-  constructor(public dialogRef: MatDialogRef<RemoveEntityDialog>, @Inject(MAT_DIALOG_DATA) public data: MatDialogConfig<EntityDialogDataInterface>) {
+  constructor(public dialogRef: MatDialogRef<RemoveEntityDialog>, @Inject(MAT_DIALOG_DATA) public data: EntityDialogDataInterface) {
     super(dialogRef, data);
-    this.items = data.data.items;
-    this.service = data.data.service;
   }
 }

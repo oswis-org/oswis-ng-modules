@@ -38,7 +38,6 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   @Input() fulltextSearchColumn = 'search';
   @Input() fulltextSearchValue: string;
   @Input() defaultPageSize = 10;
-  @Input() searchParamsString = '';
 
   // noinspection JSUnusedGlobalSymbols
   public hydraMappings: JsonLdHydraMappingModel[] = [];
@@ -53,9 +52,13 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   @Input() actionGlobalButtons: ListActionModel[] = [];
   @Input() actionStaticButtons: ListActionModel[] = [
     {
-      name: 'Filtry',
+      name: 'Filtry a řazení',
       icon: 'filter_list',
-      action: () => this.loadData(),
+      action: () => {
+        console.log("List active filters: ", this.activeFilters);
+        this.setSearchValueFromFilters();
+        this.loadData();
+      },
       badge: this.getFiltersLengthAsString(),
       data: {availableFilters: this.availableFilters, activeFilters: this.activeFilters,},
       dialog: ListFilterDialogComponent,
@@ -90,7 +93,11 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   public getFilters(): KeyValue<string, string | number | boolean | null>[] {
-    return this.activeFilters.map((filter: KeyValue<string, string | number | boolean | null>) => filter);
+    const filters = [];
+    for (let index in this.activeFilters) {
+      filters.push(this.activeFilters[index]);
+    }
+    return filters;
   }
 
   isAllSelected() {
@@ -135,8 +142,15 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     this.service.setSelectedByRoute(this.route);
   }
 
+  setSearchValueFromFilters() {
+    if (this.activeFilters[this.fulltextSearchColumn] ?? null) {
+      this.searchInput.nativeElement.value = this.activeFilters[this.fulltextSearchColumn].value ?? null;
+    }
+  }
+
   loadData() {
     console.log('ApiEntityList is loading data...');
+    console.log("List active filters: ", this.activeFilters);
     this.sort.sortChange.subscribe(() => this.setPageNumber());
     this.dataSource.sortingDataAccessor = (obj, property) => this.getProperty(obj, property);
     this.dataSource.filterPredicate = ApiEntityListComponent.searchFilterPredicate;
@@ -166,18 +180,27 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   ngAfterViewInit() {
-    console.log('Search oldOldInput: ', this.searchInput);
-    fromEvent(this.searchInput.nativeElement, 'keyup')
+    const searchInput = this.searchInput;
+    const fulltextSearchColumn = this.fulltextSearchColumn;
+    const activeFilters = this.activeFilters;
+    const loadData = () => {
+      this.loadData();
+    };
+    const resetPagination = () => {
+      this.setPageNumber(0);
+    };
+    fromEvent(searchInput.nativeElement, 'keyup')
       .pipe(
         debounceTime(800),
         distinctUntilChanged(),
         tap(() => {
-          this.setPageNumber(0)
-          this.loadData();
+          activeFilters[fulltextSearchColumn] = {key: fulltextSearchColumn, value: searchInput.nativeElement.value};
+          resetPagination();
+          loadData();
         })
       )
       .subscribe();
-    this.loadData(); // this.dataSource.paginator = this.paginator; this.dataSource.sort = this.sort;
+    loadData(); // this.dataSource.paginator = this.paginator; this.dataSource.sort = this.sort;
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -238,6 +261,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
         items: null === items ? this.selection.selected : items,
         action: action,
         extraData: extraData,
+        ...action.data,
       }
     };
   }
@@ -275,12 +299,18 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   public addAvailableFilter(filter: ListFilterModel): void {
-    let titlePrefix = null, titleSuffix = null;
+    let titlePrefix = '';
+    let titleSuffix = '';
     filter.inputType = 'text';
-
+    const availableColumn: ColumnDefinitionModel = this.availableColumns.filter((val: ColumnDefinitionModel) => val.name == filter.column)[0] ?? null;
+    if (!availableColumn) {
+      return;
+    }
+    filter.columnType = availableColumn.type;
+    filter.service = availableColumn.service;
     if ('exists' == filter.type) {
       filter.inputType = 'boolean';
-      titleSuffix = ' existuje ';
+      titleSuffix += ' existuje ';
     }
     if ('fulltext' == filter.type) {
       filter.inputType = 'text';
@@ -288,25 +318,24 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     }
     if (['lt', 'lte', 'gt', 'gte'].includes(filter.type)) {
       filter.inputType = 'number';
-      titleSuffix = 'lt' == filter.type ? ' < ' : '';
-      titleSuffix += 'lte' == filter.type ? ' <= ' : '';
-      titleSuffix += 'gt' == filter.type ? ' > ' : '';
-      titleSuffix += 'gte' == filter.type ? ' >= ' : '';
     }
     if ('between' == filter.type) {
       filter.inputType = 'number';
-      titleSuffix = ' je mezi ';
+      titleSuffix += ' je mezi ';
     }
     if (['before', 'strictly_before', 'after', 'strictly_after'].includes(filter.type)) {
       filter.inputType = 'datetime';
-      titleSuffix = 'before' == filter.type ? ' < ' : '';
-      titleSuffix += 'strictly_before' == filter.type ? ' <= ' : '';
-      titleSuffix += 'after' == filter.type ? ' > ' : '';
-      titleSuffix += 'strictly_after' == filter.type ? ' >= ' : '';
     }
+
+    titleSuffix += ['lt', 'strictly_before'].includes(filter.type) ? " < " : '';
+    titleSuffix += ['lte', 'before'].includes(filter.type) ? " <= " : '';
+    titleSuffix += ['gt', 'strictly_after'].includes(filter.type) ? " > " : '';
+    titleSuffix += ['gte', 'after'].includes(filter.type) ? ' >= ' : '';
+
     if (!filter.title) {
-      filter.title = titlePrefix;
-      filter.title += (this.availableColumns.filter((val: ColumnDefinitionModel) => val.name == filter.column).map((val: ColumnDefinitionModel) => val.title)[0] ?? filter.column);
+      filter.title = '';
+      filter.title += titlePrefix;
+      filter.title += availableColumn ? availableColumn.title : filter.column;
       filter.title += titleSuffix;
     }
     this.availableFilters[filter.key] = filter;
@@ -338,26 +367,25 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   ): void {
     const regexResult = /^([a-zA-Z.]+)(\[(\S*)])*$/.exec(row.variable);
     const first = regexResult[1] ?? null;
-    const second = regexResult[2] ?? null;
+    const second = regexResult[3] ?? null;
+    const newFilter: ListFilterModel = {
+      key: row.variable,
+      type: second,
+      column: row.property,
+    };
 
-    switch (first) {
-      case 'order':
-        if (second.length > 0) {
-          context.orderColumns[row.property] = true;
-        }
-        break;
-      case 'exists':
-        if (second.length > 0) {
-          this.addAvailableFilter({key: row.variable, type: 'exists', column: row.property});
-        }
-        break;
-      case this.fulltextSearchColumn:
-        this.addAvailableFilter({key: row.variable, type: 'fulltext', column: row.property});
-        break;
-      default:
-        this.addAvailableFilter({key: row.variable, type: second, column: row.property});
-        break;
+    if ('order' == first) {
+      (second.length > 0) ? context.orderColumns[row.property] = true : null;
+      return;
     }
+    if (this.fulltextSearchColumn == first) {
+      newFilter.type = 'fulltext';
+    }
+    if ('exists' == first) {
+      newFilter.type = first;
+    }
+
+    this.addAvailableFilter(newFilter);
   }
 
   protected fillDataSource(data: JsonLdListResponseModel<Type> | Type[]): void {
@@ -415,8 +443,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
       page ?? this.getPageNumber() + 1,
       perPage ?? this.getPageSize(),
       [{key: this.sort.active, value: this.sort.direction.toString()}],
-      [{key: this.fulltextSearchColumn, value: this.searchInput.nativeElement.value}, ...this.activeFilters],
-      this.searchParamsString
+      [...this.getFilters()],
     );
   }
 }

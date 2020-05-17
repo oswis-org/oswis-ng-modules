@@ -11,4 +11,5 @@ export enum ApiEntityListTypeEnum {
   URL = 'url',
   EMAIL = 'email',
   PHONE = 'phone',
+  NUMBER = 'number',
 }

@@ -1,5 +1,6 @@
 import {ApiEntityListAlignEnum} from '../enums/api-entity-list-align.enum';
 import {ApiEntityListTypeEnum} from '../enums/api-entity-list-type.enum';
+import {ApiEntityService} from "../services/api-entity.service";
 
 export class ColumnDefinitionValuesModel {
   name?: string;
@@ -14,6 +15,7 @@ export class ColumnDefinitionValuesModel {
   prepend?: string;
   append?: string;
   fontSize?: any;
+  service?: ApiEntityService;
 }
 
 

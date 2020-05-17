@@ -1,6 +1,7 @@
 import {ApiEntityListAlignEnum} from '../enums/api-entity-list-align.enum';
 import {ApiEntityListTypeEnum} from '../enums/api-entity-list-type.enum';
 import {ColumnDefinitionValuesModel} from "./column-definition-values.model";
+import {ApiEntityService} from "../services/api-entity.service";
 
 export class ColumnDefinitionModel {
   name?: string = null;
@@ -15,6 +16,7 @@ export class ColumnDefinitionModel {
   prepend?: string = '';
   append?: string = '';
   fontSize?: any = null;
+  service?: ApiEntityService = null;
 
   constructor(values: ColumnDefinitionValuesModel = null) {
     this.name = values.name || this.name;
@@ -29,6 +31,7 @@ export class ColumnDefinitionModel {
     this.prepend = values.prepend || this.prepend;
     this.append = values.append || this.append;
     this.fontSize = values.fontSize || this.fontSize;
+    this.service = values.service || this.service;
   }
 
   // public getHeaderAlign(): string {

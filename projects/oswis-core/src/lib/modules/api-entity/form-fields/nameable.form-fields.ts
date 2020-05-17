@@ -193,4 +193,15 @@ export class NameableFormFields {
 
     return BasicFormFields.simpleWrapper(config);
   }
+
+  // noinspection JSUnusedGlobalSymbols
+  static numericRange(config: FormlyFieldConfig = {}): FormlyFieldConfig {
+    config.className = undefined === config.className ? 'wid-100' : config.className;
+    config.fieldGroup = config.fieldGroup ?? [
+      this.startDateTime({className: 'wid-50'}),
+      this.endDateTime({className: 'wid-50'})
+    ];
+
+    return BasicFormFields.simpleWrapper(config);
+  }
 }

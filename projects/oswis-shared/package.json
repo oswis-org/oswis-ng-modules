@@ -1,6 +1,6 @@
 {
   "name": "@oswis-org/oswis-shared",
-  "version": "0.0.19",
+  "version": "0.0.22",
   "author": "Jakub Zak <mail@jakubzak.eu> (https://jakubzak.cz)",
   "description": "Shared module for OSWIS (One Simple Web IS).",
   "homepage": "http://oswis.org",

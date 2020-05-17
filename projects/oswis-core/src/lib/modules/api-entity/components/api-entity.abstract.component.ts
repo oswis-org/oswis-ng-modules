@@ -70,13 +70,18 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
   }
 
   backToShow() {
-    this.router
-      .navigate(['/' + this.service.getFrontendPath() + '/' + this.service.getSelectedId()])
-      .then();
+    this.router.navigate(['/' + this.service.getFrontendPath() + '/' + this.service.getSelectedId()]).then();
   }
 
   getDialogConfig(action: ListActionModel, extraData: object = null, items: object[] = null): MatDialogConfig {
-    return {data: {...action.data, items: items, action: action, extraData: extraData}};
+    return {
+      data: {
+        items: items,
+        action: action,
+        extraData: extraData,
+        ...action.data,
+      }
+    };
   }
 
   getApiUrl(): string {
@@ -108,4 +113,3 @@ export abstract class ApiEntityAbstractComponent<Type extends BasicModel = Basic
     dialogRef.beforeClosed().subscribe(dialogResult => that.processDialogResult(that, action, dialogResult, dialogRef));
   }
 }
-

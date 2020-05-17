@@ -70,6 +70,18 @@ export class BasicFormFields {
     return this.input(config);
   }
 
+  static percent(config: FormlyFieldConfig = {}): FormlyFieldConfig {
+    config.key = undefined === config.key ? 'percent' : config.key;
+    config.templateOptions = undefined === config.templateOptions ? {} : config.templateOptions;
+    config.templateOptions.min = undefined === config.templateOptions.min ? 0 : config.templateOptions.min;
+    config.templateOptions.max = undefined === config.templateOptions.max ? 100 : config.templateOptions.max;
+    config.templateOptions.step = undefined === config.templateOptions.step ? 1 : config.templateOptions.step;
+
+    return this.number(config);
+  }
+
+
+
   // noinspection JSUnusedGlobalSymbols
   static textArea(config: FormlyFieldConfig = {}): FormlyFieldConfig {
     config.key = undefined === config.key ? 'textValue' : config.key;

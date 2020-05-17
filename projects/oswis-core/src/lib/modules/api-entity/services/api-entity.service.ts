@@ -93,19 +93,19 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
     perPage: number = 1,
     order: KeyValue<string, string | number | boolean | null>[] = [],
     filters: KeyValue<string, string | number | boolean | null>[] = [],
-    searchParamString: string = ''
   ): Observable<JsonLdListResponseModel<Type>> {
-    let urlParams = perPage > 0 ? `?pagination=true&itemsPerPage=${perPage}&page=${page}&${searchParamString}` : '?pagination=false';
-    order.forEach(
-      oneSort => {
-        urlParams += oneSort.key ? `&order[${oneSort.key}]=` + (oneSort.value ? `${oneSort.value}` : 'asc') : null;
-      }
-    );
-    filters.forEach(
-      filter => {
-        urlParams += filter.key ? `&${filter.key}=${filter.value ?? null}` : null;
-      }
-    );
+    console.log("getCollection: ");
+    console.log("getCollection order: ", order);
+    console.log("getCollection filters: ", filters);
+    let urlParams = perPage > 0 ? `?pagination=true&itemsPerPage=${perPage}&page=${page}` : '?pagination=false';
+    for (let index in order) {
+      const oneSort = order[index];
+      urlParams += oneSort.key ? `&order[${oneSort.key}]=` + (oneSort.value ? `${oneSort.value}` : 'asc') : '';
+    }
+    for (let index in filters) {
+      const filter = filters[index];
+      urlParams += filter.key ? `&${filter.key}=${filter.value ?? ''}` : '';
+    }
     console.log('Get some items from API (' + this.path + ').');
     return this.http.get<JsonLdListResponseModel<Type>>(this.getApiUrl() + '.jsonld' + urlParams)
       .pipe(
