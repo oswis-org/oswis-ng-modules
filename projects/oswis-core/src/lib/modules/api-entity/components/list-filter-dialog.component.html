@@ -1,12 +1,12 @@
 <!--suppress TypeScriptUnresolvedVariable -->
 <form (ngSubmit)="submit()" [formGroup]="form">
-<h1 mat-dialog-title>Filtrování položek</h1>
-<div mat-dialog-content>
+  <h1 mat-dialog-title>Filtrování položek</h1>
+  <div mat-dialog-content>
     <formly-form [fields]="formlyFields" [form]="form" [model]="model">
     </formly-form>
-</div>
-<div mat-dialog-actions>
-  <button color="primary" mat-raised-button type="submit">Použít</button>
-  <!--    <button (click)="cancel()" mat-button>Zavřít</button>    <button mat-button>Použít</button>    -->
-</div>
+  </div>
+  <div mat-dialog-actions>
+    <button color="primary" mat-raised-button type="submit">Použít</button>
+    <!--    <button (click)="cancel()" mat-button>Zavřít</button>    <button mat-button>Použít</button>    -->
+  </div>
 </form>

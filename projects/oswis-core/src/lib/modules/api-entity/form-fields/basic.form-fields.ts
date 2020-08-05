@@ -81,7 +81,6 @@ export class BasicFormFields {
   }
 
 
-
   // noinspection JSUnusedGlobalSymbols
   static textArea(config: FormlyFieldConfig = {}): FormlyFieldConfig {
     config.key = undefined === config.key ? 'textValue' : config.key;
@@ -191,10 +190,7 @@ export class BasicFormFields {
             required: required,
             placeholder: entityName,
             search$: (term, id: number = -1) => {
-              if (id < 0) {
-                return service.getCollection(1, 5, [], [{key: 'search', value: term}]);
-              }
-              return service.getById(id);
+              return (id < 0) ?  service.getCollection(1, 5, [{key: 'search', value: term}]) : service.getById(id);
             },
           },
         },
@@ -254,7 +250,7 @@ export class BasicFormFields {
                 placeholder: entityName,
                 search$: (term, id: number = -1) => {
                   if (id < 0) {
-                    return service.getCollection(1, 5, [], [{key: nameColumnName ?? 'name', value: term}]);
+                    return service.getCollection(1, 5,[{key: nameColumnName ?? 'name', value: term}]);
                   }
                   return service.getById(id);
                 },
@@ -377,7 +373,7 @@ export class BasicFormFields {
 
   protected static getSearchFunction(service: ApiEntityService, searchColumn: string = 'search'): (term?: string, id?: number) => Observable<BasicModel | JsonLdListResponseModel<BasicModel>> {
     return function (term: string = null, id: number = -1): Observable<BasicModel | JsonLdListResponseModel<BasicModel>> {
-      return (id < 0) ? service.getCollection(1, 5, [], [{key: searchColumn, value: term}]) : service.getById(id);
+      return (id < 0) ? service.getCollection(1, 5, [{key: searchColumn, value: term}]) : service.getById(id);
     };
   }
 

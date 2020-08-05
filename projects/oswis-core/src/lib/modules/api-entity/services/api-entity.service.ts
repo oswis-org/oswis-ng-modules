@@ -8,6 +8,7 @@ import {ActivatedRoute, ParamMap} from "@angular/router";
 import {AuthenticationService, BasicModel, OSWIS_CONFIG, OswisConfig} from "@oswis-org/oswis-shared";
 import {JsonLdListResponseModel} from "../models/json-ld-list-response.model";
 import {KeyValue} from "@angular/common";
+import {FilterKeyValue} from "../models/filter-key-value.model";
 
 @Injectable({
   providedIn: 'root'
@@ -79,7 +80,36 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
 
   getAll(): Observable<Type[]> {
     console.log('Get all items from API (' + this.path + ').');
-    return this.http.get<Type[]>(this.getApiUrl())
+    return this.http.get<Type[]>(this.getApiUrl()).pipe(
+      retry(this.retryCount),
+      catchError((err) => {
+        return ApiEntityService.handleError('Nelze získat data', err);
+      })
+    );
+  }
+
+  getFiltersString(filters: KeyValue<string, string | number | boolean | null>[] = []): string {
+    let result = '';
+    for (let index in filters) {
+      const filter = filters[index];
+      if (filter.value['type']) {
+        result += filter.key ? `&order[${filter.key}]=` + (filter.value ? `${filter.value}` : 'asc') : '';
+        continue;
+      }
+      result += filter.key ? `&${filter.key}=${filter.value ?? ''}` : '';
+    }
+    return result;
+  }
+
+  getCollectionUrlParams(page: number = 1, perPage: number = 1, filters: FilterKeyValue[] = []): string {
+    let urlParams = perPage > 0 ? `?pagination=true&itemsPerPage=${perPage}&page=${page}` : '?pagination=false';
+    urlParams += this.getFiltersString(filters);
+    return urlParams;
+  }
+
+  getCollection(page: number = 1, perPage: number = 1, filters: FilterKeyValue[] = []): Observable<JsonLdListResponseModel<Type>> {
+    console.log("getCollection: ");
+    return this.http.get<JsonLdListResponseModel<Type>>(this.getApiUrl() + '.jsonld' + this.getCollectionUrlParams(page, perPage, filters))
       .pipe(
         retry(this.retryCount),
         catchError((err) => {
@@ -88,32 +118,32 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
       );
   }
 
-  getCollection(
-    page: number = 1,
-    perPage: number = 1,
-    order: KeyValue<string, string | number | boolean | null>[] = [],
-    filters: KeyValue<string, string | number | boolean | null>[] = [],
-  ): Observable<JsonLdListResponseModel<Type>> {
-    console.log("getCollection: ");
-    console.log("getCollection order: ", order);
-    console.log("getCollection filters: ", filters);
-    let urlParams = perPage > 0 ? `?pagination=true&itemsPerPage=${perPage}&page=${page}` : '?pagination=false';
-    for (let index in order) {
-      const oneSort = order[index];
-      urlParams += oneSort.key ? `&order[${oneSort.key}]=` + (oneSort.value ? `${oneSort.value}` : 'asc') : '';
-    }
-    for (let index in filters) {
-      const filter = filters[index];
-      urlParams += filter.key ? `&${filter.key}=${filter.value ?? ''}` : '';
-    }
-    console.log('Get some items from API (' + this.path + ').');
-    return this.http.get<JsonLdListResponseModel<Type>>(this.getApiUrl() + '.jsonld' + urlParams)
-      .pipe(
-        retry(this.retryCount),
-        catchError((err) => {
-          return ApiEntityService.handleError('Nelze získat data', err);
-        })
-      );
+  downloadExport(
+    filters: FilterKeyValue[] = [],
+    urlPath: string = 'export/pdf',
+    singleEntityId: number = null,
+    mimeType: string = 'application/pdf',
+    fileName: string = 'oswis-export.pdf'
+  ): Observable<{ data: string }> {
+    return this.getExport(filters, urlPath).pipe(
+      tap(x => {
+        ApiEntityService.getDownloadLink(x, fileName, mimeType).click();
+      })
+    )
+  }
+
+  getExport(filters: FilterKeyValue[] = [], urlPath: string = 'export/pdf', singleEntityId: number = null,): Observable<{ data: string }> {
+    let url = this.getApiUrl() + '/';
+    url += null === singleEntityId ? urlPath + this.getCollectionUrlParams(1, 0, filters) : (singleEntityId + '/' + urlPath);
+    return this.http.get<{ data: string }>(url, {}).pipe(
+      tap(() => {
+        this.notificationService.success('Stahování...', 'Pokus o stažení exportu do zařízení.');
+      }),
+      catchError((error) => {
+        ApiEntityService.handleError('Nelze stáhnout soubor.', error);
+        return new Observable<{ data: string }>();
+      })
+    );
   }
 
   getSelected(): Observable<Type> {
@@ -133,63 +163,57 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
     if (!id || id < 1) {
       return new Observable<Type>();
     }
-    return this.http.get<Type>(this.getApiUrl() + '/' + id)
-      .pipe(
-        retry(this.retryCount),
-        catchError((err) => {
-          return ApiEntityService.handleError('Nelze načíst položku', err);
-        })
-      );
+    return this.http.get<Type>(this.getApiUrl() + '/' + id).pipe(
+      retry(this.retryCount),
+      catchError((err) => {
+        return ApiEntityService.handleError('Nelze načíst položku', err);
+      })
+    );
   }
 
   post(newEntity: Type, callback?: any): Observable<Type> {
-    return this.http.post<Type>(this.getApiUrl(), newEntity)
-      .pipe(
-        tap(x => {
-          const title = this.getEntityName() + ' vytvořen' + this.getA() + '.';
-          const message = this.getEntityName() + ' ' + (x['id'] || '') + ' ' +
-            ' byl' + this.getA() + ' úspěšně vytvořen' + this.getA() + '.';
-          this.callRefreshCallbacks();
-          if (callback) {
-            callback();
-          }
-          this.notificationService.success(title, message);
-        }),
-        catchError((err) => {
-          const errorMessage = 'Nelze vytvořit ' + this.getEntityName(4, false) + ' ' + newEntity.id + '.';
-          ApiEntityService.handleError(errorMessage, err);
-          return new Observable<Type>();
-        })
-      );
+    return this.http.post<Type>(this.getApiUrl(), newEntity).pipe(
+      tap(x => {
+        const title = this.getEntityName() + ' vytvořen' + this.getA() + '.';
+        const message = this.getEntityName() + ' ' + (x['id'] || '') + ' ' + ' byl' + this.getA() + ' úspěšně vytvořen' + this.getA() + '.';
+        this.callRefreshCallbacks();
+        if (callback) {
+          callback();
+        }
+        this.notificationService.success(title, message);
+      }),
+      catchError((err) => {
+        const errorMessage = 'Nelze vytvořit ' + this.getEntityName(4, false) + ' ' + newEntity.id + '.';
+        ApiEntityService.handleError(errorMessage, err);
+        return new Observable<Type>();
+      })
+    );
   }
 
   put(updatedEntity: Type, callback?: any): Observable<Type> {
     console.log('Will put: ');
     console.log(updatedEntity);
-    return this.http.put<Type>(this.getApiUrl() + '/' + updatedEntity.id, updatedEntity)
-      .pipe(
-        tap(() => {
-          const title = this.getEntityName() + ' upraven' + this.getA() + '.';
-          const message = this.getEntityName() + ' ' + updatedEntity.id + ' ' + ' byl' + this.getA() + ' úspěšně upraven' + this.getA() + '.';
-          this.callRefreshCallbacks();
-          if (callback) {
-            callback();
-          }
-          this.notificationService.success(title, message);
-        }),
-        catchError((err) => {
-          const errorMessage = 'Nelze vytvořit ' + this.getEntityName(4, false) + ' ' + updatedEntity.id + '.';
-          ApiEntityService.handleError(errorMessage, err);
-          return new Observable<Type>();
-        })
-      );
+    return this.http.put<Type>(this.getApiUrl() + '/' + updatedEntity.id, updatedEntity).pipe(
+      tap(() => {
+        const title = this.getEntityName() + ' upraven' + this.getA() + '.';
+        const message = this.getEntityName() + ' ' + updatedEntity.id + ' ' + ' byl' + this.getA() + ' úspěšně upraven' + this.getA() + '.';
+        this.callRefreshCallbacks();
+        if (callback) {
+          callback();
+        }
+        this.notificationService.success(title, message);
+      }),
+      catchError((err) => {
+        const errorMessage = 'Nelze vytvořit ' + this.getEntityName(4, false) + ' ' + updatedEntity.id + '.';
+        ApiEntityService.handleError(errorMessage, err);
+        return new Observable<Type>();
+      })
+    );
   }
 
   postOrPut(updatedEntity: Type, callback?: any): Observable<Type> {
-    if (updatedEntity && updatedEntity.id && updatedEntity.id > 0) {
-      return this.put(updatedEntity, callback);
-    } else if (updatedEntity) {
-      return this.post(updatedEntity, callback);
+    if (updatedEntity) {
+      return updatedEntity.id && updatedEntity.id > 0 ? this.post(updatedEntity, callback) : this.put(updatedEntity, callback);
     }
     return new Observable();
   }
@@ -200,24 +224,22 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
 
   deleteById(id: number, callback?: any): Observable<Type> {
     if (id && id > 0) {
-      return this.http.delete<Type>(this.getApiUrl() + '/' + id)
-        .pipe(
-          tap(() => {
-            const title = this.getEntityName() + ' smazán' + this.getA() + '.';
-            const message = this.getEntityName() + ' ' + id + ' ' +
-              ' byl' + this.getA() + ' úspěšně smazán' + this.getA() + '.';
-            this.callRefreshCallbacks();
-            if (callback) {
-              callback();
-            }
-            this.notificationService.success(title, message);
-          }),
-          catchError((err) => {
-            const errorMessage = 'Nelze smazat ' + this.getEntityName(4, false) + ' ' + id + '.';
-            ApiEntityService.handleError(errorMessage, err);
-            return new Observable<Type>();
-          })
-        );
+      return this.http.delete<Type>(this.getApiUrl() + '/' + id).pipe(
+        tap(() => {
+          const title = this.getEntityName() + ' smazán' + this.getA() + '.';
+          const message = this.getEntityName() + ' ' + id + ' ' + ' byl' + this.getA() + ' úspěšně smazán' + this.getA() + '.';
+          this.callRefreshCallbacks();
+          if (callback) {
+            callback();
+          }
+          this.notificationService.success(title, message);
+        }),
+        catchError((err) => {
+          const errorMessage = 'Nelze smazat ' + this.getEntityName(4, false) + ' ' + id + '.';
+          ApiEntityService.handleError(errorMessage, err);
+          return new Observable<Type>();
+        })
+      );
     }
     return new Observable<Type>();
   }
@@ -281,26 +303,6 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
     return this.entityName.preSuffix || '';
   }
 
-  downloadPdfList(urlPath: string, type: string = 'getCollection-list-pdf'): Observable<any> {
-    console.log('Downloading resource as PDF...');
-    const req = {};
-    req['type'] = type;
-    return this.http.post<any>(this.baseUrl + '/' + urlPath, req)
-      .pipe(
-        tap(() => {
-          // window.open(this.baseUrl + '/' + x.download);
-          const title = 'Stahování...';
-          const message = 'Pokus o stažení souboru do zařízení.';
-          this.notificationService.success(title, message);
-        }),
-        catchError((err) => {
-          const errorMessage = 'Nelze stáhnout soubor.';
-          ApiEntityService.handleError(errorMessage, err);
-          return new Observable();
-        })
-      );
-  }
-
   setSelectedByRoute(route: ActivatedRoute): void {
     if (!route) {
       return;
@@ -310,5 +312,4 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
       console.log('ApiEntity ' + this.getEntityName(1, true) + ' ' + params['id'] ? +params['id'] : 'not' + ' selected.');
     });
   }
-
 }

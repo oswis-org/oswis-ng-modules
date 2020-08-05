@@ -24,5 +24,4 @@ export class CustomListActionButton {
   getBadge(): string {
     return this.action.badge ? this.action.badge() : null;
   }
-
 }

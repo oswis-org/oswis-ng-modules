@@ -21,8 +21,8 @@ import {JsonLdListResponseModel} from "../models/json-ld-list-response.model";
 import {BasicModel} from "@oswis-org/oswis-shared";
 import {JsonLdHydraMappingModel} from "../models/json-ld-hydra-mapping.model";
 import {ListFilterModel} from "../models/list-filter.model";
-import {KeyValue} from "@angular/common";
 import {ListFilterDialogComponent} from "./list-filter-dialog.component";
+import {FilterKeyValue} from "../models/filter-key-value.model";
 
 @Component({
   selector: 'oswis-api-entity-list',
@@ -43,30 +43,9 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   public hydraMappings: JsonLdHydraMappingModel[] = [];
   public orderColumns: boolean[] = [];
   public availableFilters: ListFilterModel<ApiEntityService<Type>>[] = [];
-  public activeFilters: KeyValue<string, string | number | boolean | null>[] = [];
+  public activeFilters: FilterKeyValue[] = [];
 
-  //Buttons - START
-  @Input() actionSingleButtons: ListActionModel[] = [];
-  @Input() actionSingleLinks: ListActionModel[] = [];
-  @Input() actionMultipleMenuItems: ListActionModel[] = [];
-  @Input() actionGlobalButtons: ListActionModel[] = [];
-  @Input() actionStaticButtons: ListActionModel[] = [
-    {
-      name: 'Filtry a řazení',
-      icon: 'filter_list',
-      action: () => {
-        console.log("List active filters: ", this.activeFilters);
-        this.setSearchValueFromFilters();
-        this.loadData();
-      },
-      badge: this.getFiltersLengthAsString(),
-      data: {availableFilters: this.availableFilters, activeFilters: this.activeFilters,},
-      dialog: ListFilterDialogComponent,
-    },
-  ];
-  //Buttons - END
-
-  resultsLength = 0;
+  totalItems = 0;
   isLoadingResults = true;
   isApiError = false;
   dataSource = new MatTableDataSource<Type>();
@@ -75,6 +54,44 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   @ViewChild('searchInput', {read: ElementRef, static: true}) searchInput: ElementRef;
+
+  public readonly ACTION_FILTERS: ListActionModel = {
+    name: 'Filtry',
+    icon: 'filter_list',
+    action: () => {
+      console.log("List active filters: ", this.activeFilters);
+      this.setSearchValueFromFilters();
+      this.loadData();
+    },
+    badge: this.getFiltersLengthAsString(),
+    data: {availableFilters: this.availableFilters, activeFilters: this.activeFilters,},
+    dialog: ListFilterDialogComponent,
+  };
+
+  public readonly ACTION_EXPORT_PDF: ListActionModel = {
+    name: 'Export do PDF',
+    icon: 'picture_as_pdf',
+    action: () => {
+      return this.downloadExport();
+    },
+  };
+
+  public readonly ACTION_EXPORT_CSV: ListActionModel = {
+    name: 'Export do CSV',
+    icon: 'format_align_left',
+    action: () => {
+      return this.downloadExport('export/csv', 'oswis-export.csv', 'text/csv');
+    },
+  };
+
+  //Buttons - START
+  @Input() actionSingleButtons: ListActionModel[] = [];
+  @Input() actionSingleLinks: ListActionModel[] = [];
+  @Input() actionMultipleMenuItems: ListActionModel[] = [];
+  @Input() actionGlobalButtons: ListActionModel[] = [this.ACTION_EXPORT_PDF, this.ACTION_EXPORT_CSV];
+  @Input() actionStaticButtons: ListActionModel[] = [this.ACTION_FILTERS];
+
+  //Buttons - END
 
   constructor(public http: HttpClient, route: ActivatedRoute, router: Router, service: ApiEntityService<Type>, dialog: MatDialog) {
     super(route, router, service, dialog);
@@ -92,8 +109,11 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return () => that.getFilters().length > 0 ? '' + that.getFilters().length : null;
   }
 
-  public getFilters(): KeyValue<string, string | number | boolean | null>[] {
-    const filters = [];
+  public getFilters(): FilterKeyValue[] {
+    const filters: FilterKeyValue[] = [];
+    if (this.sort.direction.toString() && '' != this.sort.direction.toString()) {
+      filters.push({key: this.sort.active, value: this.sort.direction.toString()});
+    }
     for (let index in this.activeFilters) {
       filters.push(this.activeFilters[index]);
     }
@@ -242,13 +262,8 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   // noinspection JSUnusedGlobalSymbols
-  public downloadPdfList(urlPath: string, type: string = 'getCollection-list-pdf', fileName: string = 'oswis-download-file.pdf') {
-    this.service.downloadPdfList(urlPath, type)
-      .pipe(
-        tap(x => {
-          ApiEntityService.getDownloadLink(x, fileName, 'application/pdf').click();
-        })
-      ).subscribe();
+  public downloadExport(urlPath: string = 'export/pdf', fileName: string = 'oswis-export.pdf', mimeType: string = 'application/pdf') {
+    this.service.downloadExport(this.getFilters(), urlPath, null, mimeType, fileName).subscribe();
   }
 
   getAction(action: ListActionModel, extraData: object = null, items: object[] = null): () => void {
@@ -327,10 +342,10 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
       filter.inputType = 'datetime';
     }
 
-    titleSuffix += ['lt', 'strictly_before'].includes(filter.type) ? " < " : '';
-    titleSuffix += ['lte', 'before'].includes(filter.type) ? " <= " : '';
-    titleSuffix += ['gt', 'strictly_after'].includes(filter.type) ? " > " : '';
-    titleSuffix += ['gte', 'after'].includes(filter.type) ? ' >= ' : '';
+    titleSuffix += ['lt', 'strictly_before'].includes(filter.type) ? " je menší než " : '';
+    titleSuffix += ['lte', 'before'].includes(filter.type) ? " je menší nebo rovno " : '';
+    titleSuffix += ['gt', 'strictly_after'].includes(filter.type) ? " je větší než " : '';
+    titleSuffix += ['gte', 'after'].includes(filter.type) ? ' je větší nebo rovno ' : '';
 
     if (!filter.title) {
       filter.title = '';
@@ -342,12 +357,12 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   }
 
   // noinspection JSUnusedGlobalSymbols
-  public getActiveFilters(): KeyValue<string, string | number | boolean | null>[] {
+  public getActiveFilters(): FilterKeyValue[] {
     return this.activeFilters;
   }
 
   // noinspection JSUnusedGlobalSymbols
-  public addActiveFilter(filter: KeyValue<string, string | number | boolean | null>): void {
+  public addActiveFilter(filter: FilterKeyValue): void {
     this.activeFilters[filter.key] = filter.value;
   }
 
@@ -432,7 +447,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   protected processReceivedData(data: JsonLdListResponseModel<Type>): Type[] {
     this.isLoadingResults = false;   // Flip flag to show that loading has finished.
     this.isApiError = false; // console.log(data['hydra:totalItems'] + ', ' + data.length);
-    this.resultsLength = data['hydra:totalItems'];
+    this.totalItems = data['hydra:totalItems'];
     this.extractOrderAndFilterColumns(data);
     return this.getDataFromResponse(data);
   }
@@ -442,8 +457,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     return this.service.getCollection(
       page ?? this.getPageNumber() + 1,
       perPage ?? this.getPageSize(),
-      [{key: this.sort.active, value: this.sort.direction.toString()}],
-      [...this.getFilters()],
+      this.getFilters(),
     );
   }
 }

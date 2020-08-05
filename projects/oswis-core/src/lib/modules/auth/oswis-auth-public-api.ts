@@ -12,3 +12,5 @@ export * from './components/app-user-password-change-request.component';
 export * from './components/app-user-login.component';
 export * from './components/app-user-logout.component';
 
+export * from './oswis-auth-menu-items';
+

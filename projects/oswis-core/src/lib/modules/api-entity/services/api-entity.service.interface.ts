@@ -3,7 +3,7 @@ import {Observable} from 'rxjs/Observable';
 import {ActivatedRoute} from "@angular/router";
 import {BasicModel} from "@oswis-org/oswis-shared";
 import {JsonLdListResponseModel} from "../models/json-ld-list-response.model";
-import {KeyValue} from "@angular/common";
+import {FilterKeyValue} from "../models/filter-key-value.model";
 
 @Injectable()
 export abstract class ApiEntityServiceInterface<Type extends BasicModel = BasicModel> {
@@ -50,15 +50,9 @@ export abstract class ApiEntityServiceInterface<Type extends BasicModel = BasicM
 
   abstract getPreSuffix(): string;
 
-  abstract getCollection(
-    page: number,
-    perPage: number,
-    sort?: KeyValue<string, string | number | boolean | null>[],
-    filters?: KeyValue<string, string | number | boolean | null>[],
-    searchParamsString?: string
-  ): Observable<JsonLdListResponseModel<Type>>;
+  abstract getCollection(page: number, perPage: number, filters?: FilterKeyValue[]): Observable<JsonLdListResponseModel<Type>>;
 
-  abstract downloadPdfList(urlPath: string, type: string): Observable<any>;
+  abstract downloadExport(filters: FilterKeyValue[], urlPath: string, singleEntityId: number, mimeType: string, fileName: string): Observable<any>;
 
   abstract setSelectedByRoute(route: ActivatedRoute): void;
 }
