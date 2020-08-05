@@ -40,7 +40,7 @@ import {CommonModule} from "@angular/common";
 })
 export class OswisCoreModule {
   // noinspection JSUnusedGlobalSymbols
-  static forRoot(oswisConfig: OswisConfig): ModuleWithProviders {
+  static forRoot(oswisConfig: OswisConfig): ModuleWithProviders<OswisCoreModule> {
     return {ngModule: OswisCoreModule, providers: [{provide: OSWIS_CONFIG, useValue: oswisConfig,}]};
   }
 }

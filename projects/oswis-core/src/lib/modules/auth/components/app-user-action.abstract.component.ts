@@ -1,7 +1,8 @@
-import {OnInit} from '@angular/core';
+import { OnInit, Directive } from '@angular/core';
 import {ActivatedRoute, ParamMap} from '@angular/router';
 import {AppUserActionModel, AuthenticationService} from "@oswis-org/oswis-shared";
 
+@Directive()
 export abstract class AppUserActionAbstractComponent implements OnInit {
   actionType: string;
   model = new AppUserActionModel();

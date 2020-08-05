@@ -47,8 +47,10 @@
     "rxjs": "^6.5.5",
     "rxjs-compat": "^6.5.5",
     "screenfull": "^5.0.2",
-    "tslib": "^1.10.0",
     "zone.js": "~0.10.2",
     "@oswis-org/oswis-shared": "^0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0"
   }
 }
