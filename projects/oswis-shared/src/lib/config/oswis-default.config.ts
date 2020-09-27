@@ -21,7 +21,7 @@ export abstract class OswisDefaultConfig implements OswisConfig {
   primaryMenuItems = PRIMARY_MENU_ITEMS;
   secondaryMenuItems = SECONDARY_MENU_ITEMS;
   loggerConfig = {
-    serverLoggingUrl: this.backendApiUrl + '/client_log_records',
+    serverLoggingUrl: this.getLogUrl(),
     level: NgxLoggerLevel.DEBUG,
     serverLogLevel: NgxLoggerLevel.DEBUG,
   };
@@ -47,6 +47,10 @@ export abstract class OswisDefaultConfig implements OswisConfig {
       deps: [TokenStorageService]
     }
   };
+
+  getLogUrl(): string {
+    return this.backendApiUrl + '/client_log_records';
+  }
 
   getWhitelistedDomains(): string[] {
     return this.getAutoWhitelistedDomains();
