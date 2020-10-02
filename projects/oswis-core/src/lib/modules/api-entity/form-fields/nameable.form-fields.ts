@@ -33,7 +33,7 @@ export class NameableFormFields {
   // noinspection JSUnusedGlobalSymbols
   static slug(config: FormlyFieldConfig = {}): FormlyFieldConfig {
     const description = 'Jedinečný textový identifikátor do URL (adresy). Může se skládat pouze z malých a velkých písmen, číslic a pomlček. ' +
-      'Pokud není vyplněn, generuje se z názvu/jména. Po uložení by se již neměl měnit, pokud je to možné';
+      'Pokud není vyplněn, generuje se z názvu/jména. Po uložení by se již neměl měnit, pokud je není nezbytně nutné.';
     config.key = undefined === config.key ? 'forcedSlug' : config.key;
     config.templateOptions = undefined === config.templateOptions ? {} : config.templateOptions;
     config.templateOptions.label = undefined === config.templateOptions.label ? 'URL řetězec („slug“)' : config.templateOptions.label;
