@@ -40,8 +40,8 @@ export abstract class OswisDefaultConfig implements OswisConfig {
       useFactory: (tokenStorageService: TokenStorageService) => {
         return {
           tokenGetter: this.loadTokenFactory(tokenStorageService),
-          whitelistedDomains: this.getWhitelistedDomains(),
-          blacklistedRoutes: this.getJwtBlacklistedDomains(),
+          allowedDomains: this.getWhitelistedDomains(),
+          disallowedRoutes: this.getJwtBlacklistedDomains(),
         };
       },
       deps: [TokenStorageService]

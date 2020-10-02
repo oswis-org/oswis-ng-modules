@@ -1,6 +1,6 @@
 {
   "name": "@oswis-org/oswis-shared",
-  "version": "0.0.24",
+  "version": "0.0.27",
   "author": "Jakub Zak <mail@jakubzak.eu> (https://jakubzak.cz)",
   "description": "Shared module for OSWIS (One Simple Web IS).",
   "homepage": "http://oswis.org",
@@ -33,23 +33,24 @@
     "@angular/platform-browser": "^9.0.0",
     "@angular/platform-browser-dynamic": "^9.0.0",
     "@angular/router": "^9.0.0",
+    "@auth0/angular-jwt": "^5.0.1",
     "@ng-select/ng-select": "^4.0.0",
-    "@ngx-formly/core": "^5.5.15",
-    "@ngx-formly/material": "^5.5.15",
-    "@ngx-loading-bar/core": "^4.2.0",
-    "@ngx-loading-bar/http-client": "^4.2.0",
-    "@ngx-loading-bar/router": "^4.2.0",
+    "@ngx-formly/core": "^5.10.2",
+    "@ngx-formly/material": "^5.10.2",
+    "@ngx-loading-bar/core": "^5.1.0",
+    "@ngx-loading-bar/http-client": "^5.1.0",
+    "@ngx-loading-bar/router": "^5.1.0",
     "angular2-notifications": "^9.0.0",
     "moment": "2.24.*",
-    "ngx-img-cropper": "^9.0.1",
-    "ngx-logger": "^4.1.2",
-    "ngx-mat-select-search": "^2.1.2",
+    "ngx-img-cropper": "^10.0.0",
+    "ngx-logger": "^4.1.9",
+    "ngx-mat-select-search": "^3.1.0",
     "rxjs": "^6.5.5",
     "rxjs-compat": "^6.5.5",
     "screenfull": "^5.0.2",
     "zone.js": "~0.10.2"
   },
   "dependencies": {
-    "tslib": "^2.0.0"
+    "tslib": "^2.0.1"
   }
 }

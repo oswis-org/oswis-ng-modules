@@ -11,7 +11,7 @@ export class RefreshTokenInterceptor implements HttpInterceptor {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (this.jwtInterceptor.isWhitelistedDomain(req) && !this.jwtInterceptor.isBlacklistedRoute(req)) {
+    if (this.jwtInterceptor.isAllowedDomain(req) && !this.jwtInterceptor.isDisallowedRoute(req)) {
       return next.handle(req).pipe(
         catchError((err) => {
           const errorResponse = err as HttpErrorResponse;
