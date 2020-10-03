@@ -70,10 +70,12 @@ export abstract class OswisDefaultConfig implements OswisConfig {
     const blackListedDomains = [];
     this.getDomains().map(
       (domain: String) => {
-       blackListedDomains.push('//' + domain + '/login_check');
-       blackListedDomains.push('//' + domain + '/token/refresh');
+       blackListedDomains.push('//' + domain + '/api/login_check');
+       blackListedDomains.push('//' + domain + '/api/token/refresh');
       }
     );
+
+    console.log("Black: ", blackListedDomains);
 
     return blackListedDomains;
   }

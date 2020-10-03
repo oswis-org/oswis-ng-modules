@@ -165,11 +165,11 @@ export class AuthenticationService {
     const refreshObservable = this.http.post<LoginResponse>(this.refreshTokenUrl, body.toString(), {headers});
     const refreshSubject = new ReplaySubject<LoginResponse>(1);
     refreshSubject.subscribe((r: LoginResponse) => {
-      // console.log('Token refreshed.');
       this.setAccessToken(r.token);
       this.setRefreshToken(r.refresh_token);
     }, (err) => {
       this.handleAuthenticationError(err);
+      this.setRefreshToken(null);
     });
 
     refreshObservable.subscribe(refreshSubject);
