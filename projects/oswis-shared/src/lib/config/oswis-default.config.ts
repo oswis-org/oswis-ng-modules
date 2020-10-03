@@ -67,7 +67,7 @@ export abstract class OswisDefaultConfig implements OswisConfig {
   }
 
   getAutoJwtBlacklistedDomains(): string[] {
-    return this.getDomains().map((domain: String) => '//:' + domain + '/login_check');
+    return this.getDomains().map((domain: String) => '//' + domain + '/login_check');
   }
 
   loadTokenFactory(tokenStorageService: TokenStorageService): () => string {
