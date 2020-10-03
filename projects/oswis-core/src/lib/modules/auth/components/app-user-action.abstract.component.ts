@@ -1,4 +1,4 @@
-import { OnInit, Directive } from '@angular/core';
+import {Directive, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap} from '@angular/router';
 import {AppUserActionModel, AuthenticationService} from "@oswis-org/oswis-shared";
 

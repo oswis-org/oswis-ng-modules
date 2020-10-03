@@ -21,7 +21,5 @@ export interface OswisConfig {
   primaryMenuItems?: MenuItemModel[];
   secondaryMenuItems?: MenuItemModel[];
 
-  getWhitelistedDomains(): string[];
-
-  getJwtBlacklistedDomains(): string[];
+  getDomains(): string[];
 }

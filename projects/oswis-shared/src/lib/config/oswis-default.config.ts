@@ -48,6 +48,8 @@ export abstract class OswisDefaultConfig implements OswisConfig {
     }
   };
 
+  abstract getDomains(): string[];
+
   getLogUrl(): string {
     return this.backendApiUrl + '/client_log_records';
   }
@@ -61,11 +63,11 @@ export abstract class OswisDefaultConfig implements OswisConfig {
   }
 
   getAutoWhitelistedDomains(): string[] {
-    return this.domains.map((domain: String) => domain + '');
+    return this.getDomains().map((domain: String) => domain + '');
   }
 
   getAutoJwtBlacklistedDomains(): string[] {
-    return this.domains.map((domain: String) => domain + '/admin/auth');
+    return this.getDomains().map((domain: String) => '//:' + domain + '/login_check');
   }
 
   loadTokenFactory(tokenStorageService: TokenStorageService): () => string {

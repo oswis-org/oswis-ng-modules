@@ -190,7 +190,7 @@ export class BasicFormFields {
             required: required,
             placeholder: entityName,
             search$: (term, id: number = -1) => {
-              return (id < 0) ?  service.getCollection(1, 5, [{key: 'search', value: term}]) : service.getById(id);
+              return (id < 0) ? service.getCollection(1, 5, [{key: 'search', value: term}]) : service.getById(id);
             },
           },
         },
@@ -250,7 +250,7 @@ export class BasicFormFields {
                 placeholder: entityName,
                 search$: (term, id: number = -1) => {
                   if (id < 0) {
-                    return service.getCollection(1, 5,[{key: nameColumnName ?? 'name', value: term}]);
+                    return service.getCollection(1, 5, [{key: nameColumnName ?? 'name', value: term}]);
                   }
                   return service.getById(id);
                 },

@@ -53,9 +53,9 @@ export class AuthenticationService {
 
   public static handleError(text: string, err: HttpErrorResponse) {
     const errorEvent = err.error instanceof ErrorEvent;
-    const typeMessage = errorEvent ? 'Chyba na serveru:' : 'Chyba:';
+    const messageType = errorEvent ? 'Chyba na serveru:' : 'Chyba:';
     const message = errorEvent ? err.error.message : (typeof err.error.detail === 'string') ? err.error.detail : err.name;
-    console.error(typeMessage, message);
+    console.error(messageType, message);
     return throwError({status: err.status, title: text, message: message});
   }
 

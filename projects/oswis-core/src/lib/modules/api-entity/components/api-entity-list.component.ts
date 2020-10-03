@@ -112,7 +112,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
   public getFilters(): FilterKeyValue[] {
     const filters: FilterKeyValue[] = [];
     if (this.sort.direction.toString() && '' != this.sort.direction.toString()) {
-      filters.push({key: 'order['+this.sort.active+']', value: this.sort.direction.toString()});
+      filters.push({key: 'order[' + this.sort.active + ']', value: this.sort.direction.toString()});
     }
     for (let index in this.activeFilters) {
       filters.push(this.activeFilters[index]);
