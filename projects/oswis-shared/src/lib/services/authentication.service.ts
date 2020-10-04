@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {Observable, ReplaySubject, throwError} from 'rxjs';
-import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {TokenStorageService} from './token-storage.service';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {LoginResult} from '../models/login-result.model';
@@ -13,11 +13,13 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import {OSWIS_CONFIG} from "../config/oswis.config.token";
 import {OswisConfig} from "../config/oswis.config";
+import {ErrorHandlerService} from "./error-handler.service";
 
 const httpOptions = {
   headers: new HttpHeaders({'Content-Type': 'application/json'})
 };
 
+// noinspection JSUnusedGlobalSymbols
 @Injectable({
   providedIn: "root",
 })
@@ -51,14 +53,6 @@ export class AuthenticationService {
     this.refreshToken = tokenStorage.loadRefreshToken();
   }
 
-  public static handleError(text: string, err: HttpErrorResponse) {
-    const errorEvent = err.error instanceof ErrorEvent;
-    const messageType = errorEvent ? 'Chyba na serveru:' : 'Chyba:';
-    const message = errorEvent ? err.error.message : (typeof err.error.detail === 'string') ? err.error.detail : err.name;
-    console.error(messageType, message);
-    return throwError({status: err.status, title: text, message: message});
-  }
-
   attemptAuth(username: string, password: string): Observable<Object> {
     console.log('Trying login with username ' + username + ' and some password (' + this.loginCheckUrl + ').');
     return this.http.post(this.loginCheckUrl, {username: username, password: password}, httpOptions);
@@ -88,7 +82,7 @@ export class AuthenticationService {
             return new LoginResult(false, 'Špatné přihlašovací údaje.', null);
           }
         }
-      ).toPromise().catch((err) => {
+      ).toPromise().catch(() => {
         return new LoginResult(false, 'Špatné přihlašovací údaje.', null);
       });
   }
@@ -104,13 +98,13 @@ export class AuthenticationService {
       this.refreshing = true;
       this.refresh()
         .pipe(
-          tap(x => {
+          tap(() => {
             this.refreshing = false;
             if (!this.isAuthenticated()) {
               this.tokenStorage.removeRefreshToken();
             }
           }),
-          catchError((err, resp) => {
+          catchError((err) => {
             this.refreshing = false;
             if (!this.isAuthenticated()) {
               this.tokenStorage.removeRefreshToken();
@@ -179,14 +173,14 @@ export class AuthenticationService {
   appUserAction(newEntity: AppUserActionModel): Observable<AppUserActionModel> {
     return this.http.post<AppUserActionModel>(this.appUserActionUrl, newEntity)
       .pipe(
-        tap(x => {
+        tap(() => {
           const title = 'Požadavek na změnu účtu odeslán.';
           const message = 'Požadovaná akce s účtem byla provedena.';
           this.notificationService.success(title, message);
         }),
-        catchError((err, caught) => {
+        catchError((err) => {
           const errorMessage = 'Nepodařilo se provést požadovanou akci s účtem.';
-          AuthenticationService.handleError(errorMessage, err);
+          ErrorHandlerService.handleError(errorMessage, err);
           return new Observable<AppUserActionModel>();
         })
       );
@@ -205,7 +199,7 @@ export class AuthenticationService {
   }
 
   private handleAuthenticationError(err: any) { // TODO: Only for authentication error codes
-    console.log('Problem with JWT.');
+    console.log('Problem with JWT.', err);
     this.setAccessToken();
     this.setRefreshToken();
   }
