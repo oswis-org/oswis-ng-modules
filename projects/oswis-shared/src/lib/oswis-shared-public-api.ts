@@ -50,6 +50,7 @@ export * from './config/oswis-default.config';
 export * from './services/sidebar-show.service';
 export * from './services/token-storage.service';
 export * from './services/authentication.service';
+export * from './services/error-handler.service';
 
 // Menu items
 export * from './config/primary-menu-items';
