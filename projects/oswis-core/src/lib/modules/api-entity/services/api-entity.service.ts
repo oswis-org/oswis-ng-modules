@@ -218,7 +218,7 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
 
   postOrPut(updatedEntity: Type, callback?: any): Observable<Type> {
     if (updatedEntity) {
-      return updatedEntity.id && updatedEntity.id > 0 ? this.post(updatedEntity, callback) : this.put(updatedEntity, callback);
+      return (updatedEntity.id && updatedEntity.id > 0) ? this.put(updatedEntity, callback) : this.post(updatedEntity, callback);
     }
     return new Observable();
   }
