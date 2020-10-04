@@ -9,7 +9,7 @@ import {BasicModel, OSWIS_CONFIG, OswisConfig} from "@oswis-org/oswis-shared";
 import {JsonLdListResponseModel} from "../models/json-ld-list-response.model";
 import {KeyValue} from "@angular/common";
 import {FilterKeyValue} from "../models/filter-key-value.model";
-import {ErrorHandlerService} from "../../../../../../oswis-shared/src/lib/services/error-handler.service";
+import {ErrorHandlerService} from "@oswis-org/oswis-shared";
 
 @Injectable({
   providedIn: 'root'
