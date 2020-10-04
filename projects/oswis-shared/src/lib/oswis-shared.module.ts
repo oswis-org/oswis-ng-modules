@@ -27,6 +27,7 @@ import {FormlyFieldSelectSearchComponent} from './forms/formly-field-select-sear
 import {HomeComponent} from "./components/home.component";
 import {HeaderComponent} from "./components/header.component";
 import {SidebarComponent} from "./components/sidebar.component";
+import {ErrorHandlerService} from "./services/error-handler.service";
 
 @NgModule({
   exports: [
@@ -107,6 +108,7 @@ import {SidebarComponent} from "./components/sidebar.component";
     SidebarShowService,
     AuthenticationService,
     TokenStorageService,
+    ErrorHandlerService,
     RefreshTokenInterceptor,
   ],
   entryComponents: [
