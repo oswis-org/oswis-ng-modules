@@ -5,10 +5,11 @@ import {ApiEntityServiceInterface} from './api-entity.service.interface';
 import {NotificationsService} from 'angular2-notifications';
 import {catchError, retry, tap} from 'rxjs/operators';
 import {ActivatedRoute, ParamMap} from "@angular/router";
-import {AuthenticationService, BasicModel, OSWIS_CONFIG, OswisConfig} from "@oswis-org/oswis-shared";
+import {BasicModel, OSWIS_CONFIG, OswisConfig} from "@oswis-org/oswis-shared";
 import {JsonLdListResponseModel} from "../models/json-ld-list-response.model";
 import {KeyValue} from "@angular/common";
 import {FilterKeyValue} from "../models/filter-key-value.model";
+import {ErrorHandlerService} from "../../../../../../oswis-shared/src/lib/services/error-handler.service";
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +38,11 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
   protected callbacksSelectedChanged: { callback: any; context: any }[] = [];
   protected callbacksRefresh = [];
 
-  constructor(protected http: HttpClient, protected notificationService: NotificationsService, @Inject(OSWIS_CONFIG) protected oswisConfig: OswisConfig) {
+  constructor(
+    protected http: HttpClient,
+    protected notificationService: NotificationsService,
+    @Inject(OSWIS_CONFIG) protected oswisConfig: OswisConfig,
+  ) {
     this.baseUrl = oswisConfig.backendApiUrl;
   }
 
@@ -46,7 +51,7 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
   }
 
   public static handleError(text: string, err: HttpErrorResponse) {
-    return AuthenticationService.handleError(text, err);
+    return ErrorHandlerService.handleError(text, err);
   }
 
   public static convertBase64toArrayBuffer(base64) {
