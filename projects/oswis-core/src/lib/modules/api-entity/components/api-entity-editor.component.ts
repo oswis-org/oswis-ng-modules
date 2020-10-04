@@ -13,8 +13,8 @@ import {MatDialog} from "@angular/material/dialog";
   selector: 'oswis-api-entity-editor',
   templateUrl: './api-entity-editor.component.html',
 })
-export class ApiEntityEditorComponent<Type extends BasicModel = BasicModel | NameableModel> extends ApiEntitySingleAbstractComponent<Type> {
-  @Input() public model: Type;
+export class ApiEntityEditorComponent<Type extends BasicModel = BasicModel|NameableModel> extends ApiEntitySingleAbstractComponent<Type> {
+  @Input() public model: object|Type = new BasicModel();
   @Input() public formlyFields: FormlyFieldConfig[];
   public form: FormGroup = new FormGroup({});
   public errorMessage = '';
