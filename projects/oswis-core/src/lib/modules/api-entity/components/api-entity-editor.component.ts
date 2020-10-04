@@ -5,7 +5,7 @@ import {catchError, tap} from 'rxjs/operators';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {ApiEntitySingleAbstractComponent} from "./api-entity-single.abstract.component";
 import {ApiEntityService} from "../services/api-entity.service";
-import {BasicModel} from "@oswis-org/oswis-shared";
+import {BasicModel, NameableModel} from "@oswis-org/oswis-shared";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 
@@ -13,8 +13,8 @@ import {MatDialog} from "@angular/material/dialog";
   selector: 'oswis-api-entity-editor',
   templateUrl: './api-entity-editor.component.html',
 })
-export class ApiEntityEditorComponent<Type extends BasicModel = BasicModel> extends ApiEntitySingleAbstractComponent<Type> {
-  @Input() public model: object = {};
+export class ApiEntityEditorComponent<Type extends BasicModel = BasicModel|NameableModel> extends ApiEntitySingleAbstractComponent<Type> {
+  @Input() public model: Type;
   @Input() public formlyFields: FormlyFieldConfig[];
   public form: FormGroup = new FormGroup({});
   public errorMessage = '';
@@ -41,7 +41,7 @@ export class ApiEntityEditorComponent<Type extends BasicModel = BasicModel> exte
           this.form.patchValue(x);
           this.model = x;
         }),
-        catchError((err, caught) => {
+        catchError(() => {
           this.selectedEntityEmpty = true;
           return new Observable<Type>();
         })
@@ -75,7 +75,7 @@ export class ApiEntityEditorComponent<Type extends BasicModel = BasicModel> exte
             this.backToShow();
           }
         }),
-        catchError((err, caught) => {
+        catchError(() => {
           this.errorMessage = 'Nastala chyba při ukládání.';
           return new Observable();
         })
