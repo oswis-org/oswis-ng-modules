@@ -26,7 +26,7 @@
     "@ng-select/ng-select": "^5.0.3",
     "@ngx-formly/core": "^5.10.3",
     "@ngx-formly/material": "^5.10.3",
-    "@oswis-org/oswis-shared": "^0.0.33",
+    "@oswis-org/oswis-shared": "^0.0.37",
     "angular2-notifications": "^9.0.0",
     "moment": "^2.29.0",
     "ngx-img-cropper": "^10.0.0",

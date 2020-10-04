@@ -1,6 +1,6 @@
 {
   "name": "@oswis-org/oswis-core",
-  "version": "0.0.213",
+  "version": "0.0.214",
   "author": "Jakub Zak <mail@jakubzak.eu> (https://jakubzak.cz)",
   "description": "Core module for OSWIS (One Simple Web IS).",
   "homepage": "http://oswis.org",
