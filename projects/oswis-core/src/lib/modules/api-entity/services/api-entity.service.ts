@@ -5,11 +5,10 @@ import {ApiEntityServiceInterface} from './api-entity.service.interface';
 import {NotificationsService} from 'angular2-notifications';
 import {catchError, retry, tap} from 'rxjs/operators';
 import {ActivatedRoute, ParamMap} from "@angular/router";
-import {BasicModel, OSWIS_CONFIG, OswisConfig} from "@oswis-org/oswis-shared";
+import {BasicModel, ErrorHandlerService, OSWIS_CONFIG, OswisConfig} from "@oswis-org/oswis-shared";
 import {JsonLdListResponseModel} from "../models/json-ld-list-response.model";
 import {KeyValue} from "@angular/common";
 import {FilterKeyValue} from "../models/filter-key-value.model";
-import {ErrorHandlerService} from "@oswis-org/oswis-shared";
 
 @Injectable({
   providedIn: 'root'
@@ -97,10 +96,10 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
     let result = '';
     for (let index in filters) {
       const filter = filters[index];
-      if (filter.value['type']) {
-        result += filter.key ? `&order[${filter.key}]=` + (filter.value ? `${filter.value}` : 'asc') : '';
-        continue;
-      }
+      // if (false && filter.value['type']) {
+      //   result += filter.key ? `&order[${filter.key}]=` + (filter.value ? `${filter.value}` : 'asc') : '';
+      //   continue;
+      // }
       result += filter.key ? `&${filter.key}=${filter.value ?? ''}` : '';
     }
     return result;
