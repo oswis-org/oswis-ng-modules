@@ -1,6 +1,6 @@
 <mat-card class="entity-card mat-elevation-z8">
   <mat-card-content *ngIf="(creatingNew() || selectedEntityEmpty) || (selectedEntity$ | async) as entity; else loading">
-    <h1 class="mat-h1">{{ getH1Prefix() + ' ' + entity?.name }}</h1>
+    <h1 class="mat-h1">{{ getH1Prefix() + ' ' + (entity?.name || '') }}</h1>
     <h2 class="mat-h2">
       <mat-chip-list>
         <mat-chip *ngIf="entity?.id" color="primary" selected>{{entity?.id}}</mat-chip>
