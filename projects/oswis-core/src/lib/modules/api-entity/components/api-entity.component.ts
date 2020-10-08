@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {BreakpointObserver, BreakpointState} from '@angular/cdk/layout';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {ApiEntityAbstractComponent} from "./api-entity.abstract.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ListActionModel} from "../models/list-action.model";
@@ -28,6 +28,9 @@ export class ApiEntityComponent<Type extends BasicModel = BasicModel> extends Ap
     this.mobileBreakpointObserver();
     this.wideBreakpointObserver();
     this.isNewEntity = this.router.url.indexOf('new') > 0;
+    router.events.subscribe((val) => {
+      this.isNewEntity = this.router.url.indexOf('new') > 0;
+    });
   }
 
   processDialogResult(context: ApiEntityAbstractComponent, action: ListActionModel, dialogResult, dialogRef): void {
