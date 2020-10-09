@@ -135,7 +135,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     }
     this.dataSource.filteredData.forEach(row => context.selection.select(row));
     this
-      .loadDataFromApi(1, 999999) // TODO: Needs refactor. Requesting all items from API is not right way :D :D
+      .loadDataFromApi(1, 999999) // TODO: Needs refactor. Requesting all items from API is probably not right way :D :D
       .pipe(tap((data: JsonLdListResponseModel<Type>) => {
         return this.fixSelectionAfterUpdate(data);
       }))
