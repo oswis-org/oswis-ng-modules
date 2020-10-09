@@ -17,10 +17,6 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
   protected baseUrl: string;
   protected path: string;
   protected frontendPath: string;
-  protected entityName = {
-    1: 'položka', 2: 'položky', 3: 'položce', 4: 'položku', 6: 'položce', 7: 'položkou', 'a': '(a)',
-    11: 'položky', 12: 'položek', 13: 'položkám', 14: 'položky', 16: 'položkách', 17: 'položkami', 'preSuffix': 'á',
-  };
 
   /*
     1. nominativ (kdo, co?)
@@ -31,7 +27,11 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
     6. lokál neboli lokativ (o kom, o čem?)
     7. instrumentál (kým, čím?)
    */
-  // protected retryDelay = 300;
+  protected entityName = {
+    1: 'položka', 2: 'položky', 3: 'položce', 4: 'položku', 6: 'položce', 7: 'položkou', 'a': 'a',
+    11: 'položky', 12: 'položek', 13: 'položkám', 14: 'položky', 16: 'položkách', 17: 'položkami', 'preSuffix': 'á',
+  };
+
   protected retryCount = 2;
   protected selectedEntityId? = null;
   protected callbacksSelectedChanged: { callback: any; context: any }[] = [];
