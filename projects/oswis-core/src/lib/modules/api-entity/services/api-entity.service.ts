@@ -96,10 +96,6 @@ export class ApiEntityService<Type extends BasicModel = BasicModel> implements A
     let result = '';
     for (let index in filters) {
       const filter = filters[index];
-      // if (false && filter.value['type']) {
-      //   result += filter.key ? `&order[${filter.key}]=` + (filter.value ? `${filter.value}` : 'asc') : '';
-      //   continue;
-      // }
       result += filter.key ? `&${filter.key}=${filter.value ?? ''}` : '';
     }
     return result;
