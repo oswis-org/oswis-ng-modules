@@ -84,14 +84,11 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     },
   };
 
-  //Buttons - START
   @Input() actionSingleButtons: ListActionModel[] = [];
   @Input() actionSingleLinks: ListActionModel[] = [];
   @Input() actionMultipleMenuItems: ListActionModel[] = [];
   @Input() actionGlobalButtons: ListActionModel[] = [this.ACTION_EXPORT_PDF, this.ACTION_EXPORT_CSV];
   @Input() actionStaticButtons: ListActionModel[] = [this.ACTION_FILTERS];
-
-  //Buttons - END
 
   constructor(public http: HttpClient, route: ActivatedRoute, router: Router, service: ApiEntityService<Type>, dialog: MatDialog) {
     super(route, router, service, dialog);
@@ -138,7 +135,7 @@ export class ApiEntityListComponent<Type extends BasicModel = BasicModel> extend
     }
     this.dataSource.filteredData.forEach(row => context.selection.select(row));
     this
-      .loadDataFromApi(1, 999999)
+      .loadDataFromApi(1, 999999) // TODO: Needs refactor. Requesting all items from API is not right way :D :D
       .pipe(tap((data: JsonLdListResponseModel<Type>) => {
         return this.fixSelectionAfterUpdate(data);
       }))
